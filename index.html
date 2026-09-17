@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pawan K. Kushwaha | Product Designer &amp; Hardware Engineer</title>
+  <meta name="description" content="Portfolio of Pawan K. Kushwaha - Hardware and Digital Product Designer. Design. Make. Explore.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Google Fonts: Bebas Neue (Condensed Headings), Caveat (Signature Script), Plus Jakarta Sans (Clean Body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Anti-Flicker Pre-Hydration: Instantly applies saved backgrounds & theme colors before first paint -->
+  <script>
+    (function() {
+      try {
+        var raw = localStorage.getItem('portfolio_master_data');
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        if (!d || !d.customization) return;
+        var c = d.customization;
+        var root = document.documentElement;
+
+        if (c.colors) {
+          if (c.colors.primary) root.style.setProperty('--primary-theme-color', c.colors.primary);
+          if (c.colors.headerBg) root.style.setProperty('--header-bg-color', c.colors.headerBg);
+          if (c.colors.boldText) root.style.setProperty('--bold-heading-color', c.colors.boldText);
+          if (c.colors.buttons) root.style.setProperty('--btn-theme-color', c.colors.buttons);
+          if (c.colors.maroon) root.style.setProperty('--color-maroon', c.colors.maroon);
+          if (c.colors.maroonDark) root.style.setProperty('--color-maroon-dark', c.colors.maroonDark);
+        }
+
+        if (c.backgrounds) {
+          var b = c.backgrounds;
+          if (b.hero) {
+            var isHeroCol = b.hero.type === 'color' || (!b.hero.image && b.hero.color);
+            var heroCol = b.hero.color || '#55161C';
+            root.style.setProperty('--hero-bg-color', heroCol);
+            root.style.setProperty('--hero-bg-image', (!isHeroCol && b.hero.image) ? "url('" + b.hero.image + "')" : 'none');
+          }
+          if (b.prototyping) {
+            var isProtoCol = b.prototyping.type === 'color' || (!b.prototyping.image && b.prototyping.color);
+            var protoCol = b.prototyping.color || '#55161C';
+            root.style.setProperty('--proto-bg-color', protoCol);
+            root.style.setProperty('--proto-bg-image', (!isProtoCol && b.prototyping.image) ? "url('" + b.prototyping.image + "')" : 'none');
+            if (b.prototyping.overlayOpacity !== undefined) {
+              var pOp = b.prototyping.overlayOpacity > 1 ? b.prototyping.overlayOpacity / 100 : b.prototyping.overlayOpacity;
+              root.style.setProperty('--proto-overlay-opacity', pOp);
+            }
+          }
+          if (b.connect) {
+            var isConnCol = b.connect.type === 'color' || (!b.connect.image && b.connect.color);
+            var connCol = b.connect.color || '#55161C';
+            root.style.setProperty('--connect-bg-color', connCol);
+            root.style.setProperty('--connect-bg-image', (!isConnCol && b.connect.image) ? "url('" + b.connect.image + "')" : 'none');
+            if (b.connect.overlayOpacity !== undefined) {
+              var cOp = b.connect.overlayOpacity > 1 ? b.connect.overlayOpacity / 100 : b.connect.overlayOpacity;
+              root.style.setProperty('--connect-overlay-opacity', cOp);
+            }
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Sticky Navbar -->
+  <header class="site-header" id="siteHeader">
+    <div class="nav-container">
+      <a href="index.html" class="logo-script" aria-label="Pawan Kushwaha Home">Pawan.</a>
+      
+      <nav class="desktop-nav" aria-label="Main Navigation">
+        <a href="#work" class="nav-link">Work</a>
+        <a href="#prototyping" class="nav-link">Prototyping</a>
+        <a href="#gallery" class="nav-link">Gallery</a>
+        <a href="#connect" class="nav-link">Connect</a>
+      </nav>
+
+      <button class="mobile-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        <svg class="hamburger-svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" class="nav-bar nav-bar-1"></line>
+          <line x1="3" y1="12" x2="21" y2="12" class="nav-bar nav-bar-2"></line>
+          <line x1="3" y1="18" x2="21" y2="18" class="nav-bar nav-bar-3"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="mobile-drawer" id="mobileDrawer">
+      <nav class="mobile-nav-links">
+        <a href="#work" class="mobile-nav-link">Work</a>
+        <a href="#prototyping" class="mobile-nav-link">Prototyping</a>
+        <a href="#gallery" class="mobile-nav-link">Gallery</a>
+        <a href="#connect" class="mobile-nav-link">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <!-- Animated Interactive Parallax Cloudscape Background -->
+      <div class="hero-clouds-container" id="heroCloudsContainer" aria-hidden="true">
+        <div class="hero-clouds-layer" id="heroCloudsLayer"></div>
+      </div>
+
+      <div class="hero-container">
+        <!-- Left Hero Content -->
+        <div class="hero-content">
+          <h1 class="hero-title">
+            <span class="title-line">PAWAN K.</span>
+            <span class="title-line">KUSHWAHA</span>
+          </h1>
+
+          <div class="hero-role">PRODUCT DESIGNER</div>
+
+          <div class="hero-tagline">Design. Make. Explore.</div>
+
+          <div class="hero-status-group">
+            <div class="hero-location">
+              <svg class="location-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+              </svg>
+              <span>Chandigarh, India</span>
+            </div>
+            <div class="status-indicator">
+              <span class="status-dot status-dot-gold"></span>
+              <span class="status-text">Available for opportunities</span>
+            </div>
+          </div>
+
+          <div class="hero-cta-group">
+            <a href="#work" class="btn btn-white">
+              <span>View My Work</span>
+              <span class="btn-arrow">&rarr;</span>
+            </a>
+            <a href="about.html" class="btn btn-outline-hero" id="heroAboutBtn">About Me</a>
+          </div>
+
+          <!-- Music Player Widget: Currently Listening with Real Audio Play/Pause -->
+          <div class="music-player-widget" id="musicPlayerWidget" role="button" tabindex="0" aria-label="Play or pause music" title="Click to play / pause music">
+            <div class="vinyl-record-wrap">
+              <div class="vinyl-disc" id="vinylDisc">
+                <div class="vinyl-groove-rings"></div>
+                <div class="vinyl-center-label">
+                  <span class="vinyl-play-icon" id="vinylPlayIcon">&#9654;</span>
+                </div>
+              </div>
+            </div>
+            <div class="music-player-info">
+              <span class="music-caption">CURRENTLY LISTENING</span>
+              <span class="music-track-name">Cinematic Ambient &amp; Lo-Fi Beats</span>
+            </div>
+            <!-- Equalizer Soundwave Bars -->
+            <div class="equalizer-bars" id="equalizerBars" aria-hidden="true">
+              <span class="bar bar-1"></span>
+              <span class="bar bar-2"></span>
+              <span class="bar bar-3"></span>
+              <span class="bar bar-4"></span>
+            </div>
+          </div>
+
+          <!-- Hidden Native Audio for Seamless Playback -->
+          <audio id="heroBgAudio" src="assets/audio/ambient_lofi.wav" loop preload="auto"></audio>
+        </div>
+
+        <!-- Right Hero Graphic (Character Illustration matching Reference Design) -->
+        <div class="hero-graphic">
+          <div class="avatar-container hero-avatar-container">
+            <img src="assets/images/hero_character.png" alt="Pawan K. Kushwaha illustration portrait" class="hero-character-img">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scalloped Wave Divider: Maroon to White -->
+    <div class="scallop-divider wave-to-white-bg" aria-hidden="true"></div>
+
+    <!-- SELECTED WORK SECTION -->
+    <section class="work-section" id="work">
+      <div class="section-container">
+        <!-- Work Header -->
+        <div class="section-header-flex">
+          <div class="header-left">
+            <h2 class="section-title text-maroon">SELECTED WORK</h2>
+            <p class="section-subtitle">Ideas transformed into meaningful, functional experiences.</p>
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div class="filter-pills" role="tablist">
+            <button class="filter-pill active" data-category="product" role="tab" aria-selected="true">
+              Product Design <span class="pill-badge">7 Projects</span>
+            </button>
+            <button class="filter-pill" data-category="uiux" role="tab" aria-selected="false">
+              UI/UX Design <span class="pill-badge">3 Projects</span>
+            </button>
+            <button class="filter-pill" data-category="graphic" role="tab" aria-selected="false">
+              Graphic Design <span class="pill-badge">5 Projects</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Work Cards Grid: 7 Product Design, 3 UI/UX Design, 5 Graphic Design -->
+        <div class="work-grid" id="workGrid">
+          <!-- PRODUCT DESIGN (7 Projects) -->
+          <!-- Card 1: LUMA -->
+          <article class="work-card" data-category="product" data-id="luma">
+            <div class="card-media">
+              <img src="assets/images/work_luma.jpg" alt="LUMA Modular Desk Lamp" loading="lazy">
+              <span class="card-pill-tag">CAD &rarr; 3D Print</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">PRODUCT DESIGN</span>
+              <h3 class="card-title">LUMA</h3>
+              <p class="card-desc">A minimalist modular desk lamp exploring diffused warm lighting and ergonomic pivot..</p>
+            </div>
+          </article>
+
+          <!-- Card 2: ANALOG -->
+          <article class="work-card" data-category="product" data-id="analog">
+            <div class="card-media">
+              <img src="assets/images/work_analog.jpg" alt="Analog Tactile Digital Camera" loading="lazy">
+              <span class="card-pill-tag">Concept CAD</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">INDUSTRIAL DESIGN</span>
+              <h3 class="card-title">ANALOG</h3>
+              <p class="card-desc">A tactile digital camera concept prioritizing mechanical feedback with physical click...</p>
+            </div>
+          </article>
+
+          <!-- Card 3: GANTRI LAMP -->
+          <article class="work-card" data-category="product" data-id="gantri">
+            <div class="card-media">
+              <img src="assets/images/work_gantri.jpg" alt="Gantri Lighting Collaboration" loading="lazy">
+              <span class="card-pill-tag">Additive DFM</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">PRODUCT DESIGN</span>
+              <h3 class="card-title">GANTRI LAMP</h3>
+              <p class="card-desc">Modular desktop luminaire engineered for scalable zero-waste additive manufacturing...</p>
+            </div>
+          </article>
+
+          <!-- Card 4: KINETIC CHAIR -->
+          <article class="work-card" data-category="product" data-id="kinetic_chair">
+            <div class="card-media">
+              <img src="assets/images/work_chair.jpg" alt="Kinetic Ergonomic Chairs" loading="lazy">
+              <span class="card-pill-tag">Scale Prototyping</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">FURNITURE DESIGN</span>
+              <h3 class="card-title">KINETIC CHAIR</h3>
+              <p class="card-desc">Ergonomic study chairs exploring lightweight bent plywood geometry and spine curvature...</p>
+            </div>
+          </article>
+
+          <!-- Card 5: MODU BOTTLE -->
+          <article class="work-card" data-category="product" data-id="modu_bottles">
+            <div class="card-media">
+              <img src="assets/images/work_bottles.jpg" alt="Modu Interlocking Bottles" loading="lazy">
+              <span class="card-pill-tag">Blow Molding CAD</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">INDUSTRIAL DESIGN</span>
+              <h3 class="card-title">MODU BOTTLE</h3>
+              <p class="card-desc">Parametric ribbed interlocking water bottle system reducing resin usage by 24%...</p>
+            </div>
+          </article>
+
+          <!-- Card 6: CHASSIS M1 -->
+          <article class="work-card" data-category="product" data-id="chassis_m1">
+            <div class="card-media">
+              <img src="assets/images/work_chassis.jpg" alt="Chassis M1 Rangefinder Body" loading="lazy">
+              <span class="card-pill-tag">Class-A Surfacing</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">HARDWARE DESIGN</span>
+              <h3 class="card-title">CHASSIS M1</h3>
+              <p class="card-desc">Precision machined rangefinder body with knurled physical dials and modular battery sled...</p>
+            </div>
+          </article>
+
+          <!-- Card 7: APEX GEARS -->
+          <article class="work-card" data-category="product" data-id="apex_gears">
+            <div class="card-media">
+              <img src="assets/images/work_gears.jpg" alt="Apex Planetary Gears" loading="lazy">
+              <span class="card-pill-tag">Additive Tooling</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">MECHANICAL DESIGN</span>
+              <h3 class="card-title">APEX GEARS</h3>
+              <p class="card-desc">High-durability micro planetary gear systems tested for repeatable low-volume production...</p>
+            </div>
+          </article>
+
+          <!-- UI/UX DESIGN (3 Projects) -->
+          <!-- Card 8: BREATHE -->
+          <article class="work-card hidden" data-category="uiux" data-id="breathe">
+            <div class="card-media">
+              <img src="assets/images/work_breathe.png" alt="Breathe Mindful Living App" loading="lazy">
+              <span class="card-pill-tag">Figma Prototype</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">UI/UX DESIGN</span>
+              <h3 class="card-title">BREATHE</h3>
+              <p class="card-desc">A mindful living and alpine meditation app designed with calm typography and..</p>
+            </div>
+          </article>
+
+          <!-- Card 9: PULSE OS -->
+          <article class="work-card hidden" data-category="uiux" data-id="pulse_os">
+            <div class="card-media">
+              <img src="assets/images/work_pulse.jpg" alt="Pulse OS Health Tracker" loading="lazy">
+              <span class="card-pill-tag">Design System</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">UI/UX DESIGN</span>
+              <h3 class="card-title">PULSE OS</h3>
+              <p class="card-desc">Haptic telemetry mobile interface designed for connected wearable sports trackers...</p>
+            </div>
+          </article>
+
+          <!-- Card 10: AETHER DASH -->
+          <article class="work-card hidden" data-category="uiux" data-id="aether_dash">
+            <div class="card-media">
+              <img src="assets/images/work_aether.jpg" alt="Aether Sound Lab Dashboard" loading="lazy">
+              <span class="card-pill-tag">SaaS Platform</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">PRODUCT UI</span>
+              <h3 class="card-title">AETHER DASH</h3>
+              <p class="card-desc">Spatial audio management interface with real-time parametric equalizer visualizers...</p>
+            </div>
+          </article>
+
+          <!-- GRAPHIC DESIGN (5 Projects) -->
+          <!-- Card 11: MOVIE TIME -->
+          <article class="work-card hidden" data-category="graphic" data-id="movietime">
+            <div class="card-media">
+              <img src="assets/images/work_movietime.jpg" alt="Movie Time Cinematic Poster Series" loading="lazy">
+              <span class="card-pill-tag">Risograph Print</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">GRAPHIC DESIGN</span>
+              <h3 class="card-title">MOVIE TIME</h3>
+              <p class="card-desc">Retro-inspired cinematic poster series honoring classic storytelling with textured...</p>
+            </div>
+          </article>
+
+          <!-- Card 12: VINYL GROOVES -->
+          <article class="work-card hidden" data-category="graphic" data-id="vinyl_grooves">
+            <div class="card-media">
+              <img src="assets/images/work_vinyl_poster.jpg" alt="Vinyl Grooves Geometric Packaging" loading="lazy">
+              <span class="card-pill-tag">Album Packaging</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">GRAPHIC DESIGN</span>
+              <h3 class="card-title">VINYL GROOVES</h3>
+              <p class="card-desc">Minimalist typography and geometric piano-key layout celebrating vinyl culture...</p>
+            </div>
+          </article>
+
+          <!-- Card 13: SURREAL AUDIO -->
+          <article class="work-card hidden" data-category="graphic" data-id="surreal_sound">
+            <div class="card-media">
+              <img src="assets/images/work_surreal_audio.jpg" alt="Surreal Audio Record Artwork" loading="lazy">
+              <span class="card-pill-tag">Editorial Print</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">BRAND IDENTITY</span>
+              <h3 class="card-title">SURREAL AUDIO</h3>
+              <p class="card-desc">Conceptual album cover artwork merging analog disc pressings with vintage tailoring...</p>
+            </div>
+          </article>
+
+          <!-- Card 14: CINEMA NOIR -->
+          <article class="work-card hidden" data-category="graphic" data-id="cinema_noir">
+            <div class="card-media">
+              <img src="assets/images/work_cinema_reel.jpg" alt="Cinema Noir Film Festival" loading="lazy">
+              <span class="card-pill-tag">Screen Print</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">POSTER DESIGN</span>
+              <h3 class="card-title">CINEMA NOIR</h3>
+              <p class="card-desc">Dynamic 35mm film reel identity celebrating indie cinema festivals and motion picture heritage...</p>
+            </div>
+          </article>
+
+          <!-- Card 15: HEROIC HORIZONS -->
+          <article class="work-card hidden" data-category="graphic" data-id="heroic_horizons">
+            <div class="card-media">
+              <img src="assets/images/work_avengers_poster.jpg" alt="Heroic Horizons Blockbuster Poster" loading="lazy">
+              <span class="card-pill-tag">Cinematic Layout</span>
+            </div>
+            <div class="card-body">
+              <span class="card-category-label">POSTER ART</span>
+              <h3 class="card-title">HEROIC HORIZONS</h3>
+              <p class="card-desc">Complex multi-figure blockbuster composition with dramatic lighting and distressed typography...</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROTOTYPING SECTION -->
+    <section class="prototyping-section" id="prototyping">
+      <!-- Animated Interactive Parallax Cloudscape / Background -->
+      <div class="section-parallax-container" id="protoBgContainer" aria-hidden="true">
+        <div class="section-parallax-layer" id="protoBgLayer"></div>
+        <div class="section-parallax-overlay proto-parallax-overlay"></div>
+      </div>
+
+      <div class="section-container">
+        <div class="proto-header">
+          <h2 class="section-title text-white">PROTOTYPING</h2>
+          <p class="section-subtitle text-cream">Things I've drafted, 3D printed, CNC machined, and iterated with hands-on curiosity.</p>
+        </div>
+
+        <!-- 4 Polaroid Photo Cards with Masking Tape -->
+        <div class="polaroid-grid">
+          <!-- Polaroid 1: Drafting -->
+          <div class="polaroid-card tilt-left" data-proto="drafting">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_drafting.jpg" alt="Technical drafting &amp; pencil dimensions" loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 01 &bull; IDEATION</span>
+              <h4 class="proto-caption-title">Technical drafting &amp; pencil dimensions</h4>
+            </div>
+          </div>
+
+          <!-- Polaroid 2: 3D Print -->
+          <div class="polaroid-card tilt-right" data-proto="3dprint">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_3dprint.jpg" alt="White resin mechanical joint test" loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 02 &bull; RAPID PROTOTYPING</span>
+              <h4 class="proto-caption-title">White resin mechanical joint test</h4>
+            </div>
+          </div>
+
+          <!-- Polaroid 3: CNC Machining -->
+          <div class="polaroid-card tilt-slight-left" data-proto="cnc">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_cnc.jpg" alt="Spindle machining billet components" loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 03 &bull; PRECISION MILLING</span>
+              <h4 class="proto-caption-title">Spindle machining billet components</h4>
+            </div>
+          </div>
+
+          <!-- Polaroid 4: Illustration -->
+          <div class="polaroid-card tilt-slight-right" data-proto="illustration">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_illustration.jpg" alt="Sketch, Model, Make, Test, Repeat." loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 04 &bull; SCALE VERIFICATION</span>
+              <h4 class="proto-caption-title">Sketch, Model, Make, Test, Repeat.</h4>
+            </div>
+          </div>
+
+          <!-- Polaroid 5: Extrusion -->
+          <div class="polaroid-card tilt-left extra-card" data-proto="extrusion">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_extrusion.jpg" alt="Precision nozzle extrusion testing" loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 05 &bull; ADDITIVE FABRICATION</span>
+              <h4 class="proto-caption-title">Precision nozzle extrusion testing</h4>
+            </div>
+          </div>
+
+          <!-- Polaroid 6: Assembly -->
+          <div class="polaroid-card tilt-right extra-card" data-proto="assembly">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_assembly.jpg" alt="Hands-on bench assembly &amp; fit check" loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 06 &bull; PHYSICAL ASSEMBLY</span>
+              <h4 class="proto-caption-title">Hands-on bench assembly &amp; fit check</h4>
+            </div>
+          </div>
+
+          <!-- Polaroid 7: CAD -->
+          <div class="polaroid-card tilt-slight-left extra-card" data-proto="cad">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_cad.jpg" alt="3D mechanical chassis surface model" loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 07 &bull; PARAMETRIC CAD</span>
+              <h4 class="proto-caption-title">3D mechanical chassis surface model</h4>
+            </div>
+          </div>
+
+          <!-- Polaroid 8: Scale Study -->
+          <div class="polaroid-card tilt-slight-right extra-card" data-proto="scale">
+            <div class="masking-tape"></div>
+            <div class="polaroid-photo">
+              <img src="assets/images/proto_scale.jpg" alt="Ergonomic miniature study models" loading="lazy">
+            </div>
+            <div class="polaroid-caption">
+              <span class="proto-tag">STEP 08 &bull; SCALE STUDY</span>
+              <h4 class="proto-caption-title">Ergonomic miniature study models</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Bottom Bar -->
+        <div class="section-action-bar">
+          <p class="proto-quote">"Workshop hands are curious hands."</p>
+          <button class="btn btn-proto-view-all" id="viewPrototypesBtn">
+            <span>View All</span>
+            <span class="btn-arrow">&rarr;</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scalloped Wave Divider: Maroon to White -->
+    <div class="scallop-divider wave-to-white-bg" aria-hidden="true"></div>
+
+    <!-- GALLERY SECTION -->
+    <section class="gallery-section" id="gallery">
+      <div class="section-container">
+        <div class="gallery-header">
+          <h2 class="section-title text-maroon">GALLERY</h2>
+          <p class="section-subtitle">Photography and visual experiments from travel and studio.</p>
+        </div>
+
+        <!-- 4-Column Masonry/Bento Grid -->
+        <div class="gallery-grid">
+          <!-- Column 1 -->
+          <div class="gallery-col">
+            <!-- Col 1 Top: Forest -->
+            <div class="gallery-card card-tall" data-caption="Alpine Pine Forest — Find Beauty in Details" data-src="assets/images/gallery_forest.jpg">
+              <img src="assets/images/gallery_forest.jpg" alt="Alpine pine forest mountain landscape" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 1 Bottom: Astro night sky -->
+            <div class="gallery-card card-short" data-caption="Milky Way over Frozen Alpine Lake (Astro 2024)" data-src="assets/images/gallery_astro.png">
+              <img src="assets/images/gallery_astro.png" alt="Milky Way starry night above snow covered mountain lake" loading="lazy">
+              <span class="gallery-badge">Astro 2024</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 1 Extra 1: Peaks with Star Trails -->
+            <div class="gallery-card card-tall extra-gallery-card" data-caption="Alpine Night Summit &amp; Star Trails" data-src="assets/images/gallery_peaks.jpg">
+              <img src="assets/images/gallery_peaks.jpg" alt="Snowy mountain summit under star trails at night" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 1 Extra 2: Rolling Alpine Hills -->
+            <div class="gallery-card card-short extra-gallery-card" data-caption="Sunlit Alpine Ridge &amp; Evergreen Hills" data-src="assets/images/gallery_hills.jpg">
+              <img src="assets/images/gallery_hills.jpg" alt="Sunlit rolling green mountain ridges" loading="lazy">
+              <span class="gallery-badge">Alpine Vista</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2 -->
+          <div class="gallery-col">
+            <!-- Col 2 Top: Lizard Eye Macro -->
+            <div class="gallery-card card-short" data-caption="Macro Reptile Eye Study" data-src="assets/images/gallery_lizard_eye.png">
+              <img src="assets/images/gallery_lizard_eye.png" alt="Macro close-up of emerald green lizard eye" loading="lazy">
+              <span class="gallery-badge">Emerald Macro</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 2 Bottom: Snake Scales -->
+            <div class="gallery-card card-tall" data-caption="Green Reptile Scales — Find Beauty in Details" data-src="assets/images/gallery_snake_scales.jpg">
+              <img src="assets/images/gallery_snake_scales.jpg" alt="Macro iridescent green scales pattern" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 2 Extra 1: Blue Blossom Macro -->
+            <div class="gallery-card card-short extra-gallery-card" data-caption="Cobalt Botanical Flower Blossom" data-src="assets/images/gallery_flower.jpg">
+              <img src="assets/images/gallery_flower.jpg" alt="Vivid cobalt blue botanical flower blossom macro" loading="lazy">
+              <span class="gallery-badge">Botanic Macro</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 2 Extra 2: Stream Lily Pads Macro -->
+            <div class="gallery-card card-tall extra-gallery-card" data-caption="Sunlit Stream Pebbles &amp; Lily Pads" data-src="assets/images/gallery_pond_macro.jpg">
+              <img src="assets/images/gallery_pond_macro.jpg" alt="Sunlit lily pads and river pebbles in crystal clear stream" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3 -->
+          <div class="gallery-col">
+            <!-- Col 3 Top: Water Stream -->
+            <div class="gallery-card card-tall" data-caption="Water Lilies in Forest Stream — Find Beauty in Details" data-src="assets/images/gallery_stream.jpg">
+              <img src="assets/images/gallery_stream.jpg" alt="Sunlit lily pads and dew drops in forest stream" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 3 Bottom: Studio Camera Bench -->
+            <div class="gallery-card card-short" data-caption="Studio Workbench &amp; Analog Cameras" data-src="assets/images/gallery_studio_camera.png">
+              <img src="assets/images/gallery_studio_camera.png" alt="Vintage camera and lenses on wooden studio desk" loading="lazy">
+              <span class="gallery-badge">Studio Work</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 3 Extra 1: Cyanotype & Vintage Camera Collage -->
+            <div class="gallery-card card-tall extra-gallery-card" data-caption="Cyanotype Printmaking &amp; Vintage Camera" data-src="assets/images/gallery_cyanotype.jpg">
+              <img src="assets/images/gallery_cyanotype.jpg" alt="Cyanotype art collage with vintage rangefinder camera" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 3 Extra 2: Analog Vinyl Portrait -->
+            <div class="gallery-card card-short extra-gallery-card" data-caption="Vintage Vinyl &amp; Analog Audio" data-src="assets/images/gallery_vinyl.jpg">
+              <img src="assets/images/gallery_vinyl.jpg" alt="Surreal vintage vinyl head in woolen tweed jacket" loading="lazy">
+              <span class="gallery-badge">Analog Sound</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 4 -->
+          <div class="gallery-col">
+            <!-- Col 4 Top: Lily Pond Reflections -->
+            <div class="gallery-card card-short" data-caption="Serene Lotus Water Pond" data-src="assets/images/gallery_lily_pond.png">
+              <img src="assets/images/gallery_lily_pond.png" alt="Lotus flowers and lily pads on water surface" loading="lazy">
+              <span class="gallery-badge">Flora &amp; Reflections</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 4 Bottom: Twilight Blue Mountain Peak -->
+            <div class="gallery-card card-tall" data-caption="Twilight Snow Peak — Find Beauty in Details" data-src="assets/images/gallery_blue_mountain.jpg">
+              <img src="assets/images/gallery_blue_mountain.jpg" alt="Twilight deep blue starry mountain summit" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 4 Extra 1: 3D Model Bottles Prototype -->
+            <div class="gallery-card card-short extra-gallery-card" data-caption="Parametric Surface CAD Wireframe Study" data-src="assets/images/gallery_bottles.jpg">
+              <img src="assets/images/gallery_bottles.jpg" alt="3D CAD wireframe study of modular bottle design" loading="lazy">
+              <span class="gallery-badge">Industrial CAD</span>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+
+            <!-- Col 4 Extra 2: Moraine Lake Reflections -->
+            <div class="gallery-card card-tall extra-gallery-card" data-caption="Glacial Moraine Lake Reflections" data-src="assets/images/gallery_moraine_lake.png">
+              <img src="assets/images/gallery_moraine_lake.png" alt="Turquoise alpine glacial Moraine lake surrounded by Rocky Mountain peaks" loading="lazy">
+              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
+              <div class="gallery-hover-scrim">
+                <span class="zoom-icon">&#x2922;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery Bottom Bar -->
+        <div class="section-action-bar text-dark-action">
+          <span class="action-question text-dark">Want to explore more captures &amp; visual experiments?</span>
+          <button class="btn btn-pill-maroon-sm" id="galleryViewAllBtn">
+            <span>View All</span>
+            <span class="btn-arrow">&rarr;</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scalloped Wave Divider (White on top, Maroon/Clouds below) -->
+    <div class="scallop-divider wave-to-maroon-bg" aria-hidden="true"></div>
+
+    <!-- LET'S CONNECT SECTION -->
+    <section class="connect-section" id="connect">
+      <!-- Animated Interactive Parallax Cloudscape / Background -->
+      <div class="section-parallax-container" id="connectBgContainer" aria-hidden="true">
+        <div class="section-parallax-layer" id="connectBgLayer"></div>
+        <div class="section-parallax-overlay connect-parallax-overlay"></div>
+      </div>
+
+      <div class="section-container">
+        <div class="connect-grid">
+          <!-- Left Column: Contact info & CTA buttons -->
+          <div class="connect-content">
+            <h2 class="connect-title">LET'S CONNECT</h2>
+            <p class="connect-desc">Have a project hardware concept, digital interface, or just want to say hi? I'd love to hear from you.</p>
+
+            <div class="connect-actions">
+              <button class="btn btn-white" id="shootEmailBtn">
+                <span>Send an Email</span>
+                <span class="btn-arrow">&rarr;</span>
+              </button>
+              
+              <a href="#resume" class="btn btn-outline" id="downloadResumeBtn">
+                <span>Download Resume</span>
+                <span class="btn-download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                </span>
+              </a>
+            </div>
+
+            <!-- Social Circle Icons -->
+            <div class="social-links-row" aria-label="Social Media Links">
+              <!-- Instagram -->
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </a>
+
+              <!-- LinkedIn -->
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+              </a>
+
+              <!-- Behance -->
+              <a href="https://behance.net" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="Behance">
+                <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor">
+                  <path d="M16.969 16.927a2.561 2.561 0 0 0 1.901.677 2.501 2.501 0 0 0 1.531-.475c.362-.235.636-.584.779-.99h2.585a5.091 5.091 0 0 1-1.9 2.896 5.292 5.292 0 0 1-3.091.88 5.839 5.839 0 0 1-2.284-.433 4.871 4.871 0 0 1-1.723-1.211 5.657 5.657 0 0 1-1.08-1.874 7.057 7.057 0 0 1-.383-2.393c-.005-.8.129-1.595.396-2.349a5.313 5.313 0 0 1 5.088-3.604 4.87 4.87 0 0 1 2.376.563c.661.362 1.231.87 1.668 1.485a6.2 6.2 0 0 1 .943 2.133c.194.821.263 1.666.205 2.508h-7.699c-.063.79.184 1.574.688 2.187ZM6.947 4.084a8.065 8.065 0 0 1 1.928.198 4.29 4.29 0 0 1 1.49.638c.418.303.748.711.958 1.182.241.579.357 1.203.341 1.83a3.506 3.506 0 0 1-.506 1.961 3.726 3.726 0 0 1-1.503 1.287 3.588 3.588 0 0 1 2.027 1.437c.464.747.697 1.615.67 2.494a4.593 4.593 0 0 1-.423 2.032 3.945 3.945 0 0 1-1.163 1.413 5.114 5.114 0 0 1-1.683.807 7.135 7.135 0 0 1-1.928.259H0V4.084h6.947Zm-.235 12.9c.308.004.616-.029.916-.099a2.18 2.18 0 0 0 .766-.332c.228-.158.411-.371.534-.619.142-.317.208-.663.191-1.009a2.08 2.08 0 0 0-.642-1.715 2.618 2.618 0 0 0-1.696-.505h-3.54v4.279h3.471Zm13.635-5.967a2.13 2.13 0 0 0-1.654-.619 2.336 2.336 0 0 0-1.163.259 2.474 2.474 0 0 0-.738.62 2.359 2.359 0 0 0-.396.792c-.074.239-.12.485-.137.734h4.769a3.239 3.239 0 0 0-.679-1.785l-.002-.001Zm-13.813-.648a2.254 2.254 0 0 0 1.423-.433c.399-.355.607-.88.56-1.413a1.916 1.916 0 0 0-.178-.891 1.298 1.298 0 0 0-.495-.533 1.851 1.851 0 0 0-.711-.274 3.966 3.966 0 0 0-.835-.073H3.241v3.631h3.293v-.014ZM21.62 5.122h-5.976v1.527h5.976V5.122Z"/>
+                </svg>
+              </a>
+
+              <!-- Dribbble -->
+              <a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="Dribbble">
+                <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor">
+                  <path d="M12 24C5.385 24 0 18.615 0 12S5.385 0 12 0s12 5.385 12 12-5.385 12-12 12zm10.12-10.358c-.35-.11-3.17-.953-6.384-.438 1.34 3.684 1.887 6.684 1.992 7.308 2.3-1.555 3.936-4.02 4.395-6.87zm-6.115 7.808c-.153-.9-.75-4.032-2.19-7.77l-.066.02c-5.79 2.015-7.86 6.025-8.04 6.4 1.73 1.358 3.92 2.166 6.29 2.166 1.42 0 2.77-.29 4-.814zm-11.62-2.58c.232-.4 3.045-5.055 8.332-6.765.135-.045.27-.084.405-.12-.26-.585-.54-1.167-.832-1.74C7.17 11.775 2.206 11.71 1.756 11.7l-.004.312c0 2.633.998 5.037 2.634 6.855zm-2.42-8.955c.46.008 4.683.026 9.477-1.248-1.698-3.018-3.53-5.558-3.8-5.928-2.868 1.35-5.01 3.99-5.676 7.17zM9.6 2.052c.282.38 2.145 2.914 3.822 6 3.645-1.365 5.19-3.44 5.373-3.702-1.81-1.61-4.19-2.586-6.795-2.586-.825 0-1.63.1-2.4.285zm10.335 3.483c-.218.29-1.935 2.493-5.724 4.04.24.49.47.985.68 1.486.08.18.15.36.22.53 3.41-.43 6.8.26 7.14.33-.02-2.42-.88-4.64-2.31-6.38z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Column: Character Graphic (Aligned on Thin Line) -->
+          <div class="connect-visual">
+            <div class="avatar-container connect-avatar-container">
+              <img src="assets/images/connect_character.png" alt="Pawan K. Kushwaha illustration portrait" class="hero-character-img connect-character-img">
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <footer class="site-footer">
+          <div class="footer-inner">
+            <span class="footer-copy">&copy; 2026 Pawan Kumar Kushwaha</span>
+            <span class="footer-tagline">Design with curiosity.</span>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== MODALS & DRAWERS ==================== -->
+
+  <!-- 1. Interactive Project Detail Modal -->
+  <div class="modal-overlay" id="projectModal" aria-hidden="true">
+    <div class="modal-content project-modal-box">
+      <button class="modal-close-btn" id="closeProjectModal" aria-label="Close project modal">&times;</button>
+      <div class="modal-scroll-body">
+        <div class="modal-hero-img-wrap">
+          <img src="" alt="" id="modalProjectImg" class="modal-project-img">
+          <span class="modal-pill-tag" id="modalProjectTag">Hardware Design</span>
+        </div>
+        <div class="modal-text-content">
+          <span class="modal-category" id="modalProjectCategory">CONSUMER ELECTRONICS</span>
+          <h2 class="modal-title" id="modalProjectTitle">Project Title</h2>
+          <p class="modal-description" id="modalProjectDesc">Project detailed description.</p>
+          
+          <div class="project-specs-grid">
+            <div class="spec-item">
+              <span class="spec-label">Timeline</span>
+              <span class="spec-value" id="modalProjectTimeline">4 Months (2024)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Role</span>
+              <span class="spec-value" id="modalProjectRole">Lead Industrial Designer</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Tools Used</span>
+              <span class="spec-value" id="modalProjectTools">Fusion 360, Keyshot, Figma</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Deliverables</span>
+              <span class="spec-value" id="modalProjectDeliverable">Working Prototype &amp; DFM CAD</span>
+            </div>
+          </div>
+
+          <div class="modal-footer-actions">
+            <a href="#connect" class="btn btn-maroon-small" id="modalInquireBtn">Inquire About This Project &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Fullscreen Gallery Lightbox -->
+  <div class="lightbox-overlay" id="galleryLightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close Lightbox">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous image">&#10094;</button>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next image">&#10095;</button>
+    
+    <div class="lightbox-center">
+      <div class="lightbox-img-wrapper">
+        <img src="" alt="" id="lightboxImg" class="lightbox-img">
+      </div>
+      <div class="lightbox-meta">
+        <p class="lightbox-caption" id="lightboxCaption">Photo title and location</p>
+        <span class="lightbox-counter" id="lightboxCounter">1 / 8</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Interactive Contact Drawer / Modal -->
+  <div class="modal-overlay" id="contactModal" aria-hidden="true">
+    <div class="modal-content contact-modal-box">
+      <button class="modal-close-btn" id="closeContactModal" aria-label="Close contact modal">&times;</button>
+      <div class="contact-modal-body">
+        <h3 class="contact-modal-title">Get In Touch</h3>
+        <p class="contact-modal-sub">Drop a line for hardware collaborations, industrial CAD inquiries, or full-time opportunities.</p>
+        
+        <form class="contact-form" id="contactForm" onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <label for="contactName">Your Name</label>
+            <input type="text" id="contactName" placeholder="Elon Musk" required>
+          </div>
+          <div class="form-group">
+            <label for="contactEmail">Email Address</label>
+            <input type="email" id="contactEmail" placeholder="hello@company.com" required>
+          </div>
+          <div class="form-group">
+            <label for="contactMessage">Project Details / Message</label>
+            <textarea id="contactMessage" rows="4" placeholder="Hi Pawan, let's build something remarkable..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-maroon-full" id="sendMessageBtn">
+            <span>Send Message</span>
+            <span class="btn-arrow">&rarr;</span>
+          </button>
+        </form>
+        
+        <div class="direct-contact-note">
+          <span>Or email directly:</span>
+          <a href="mailto:pawankushwaha.design@gmail.com" class="direct-email-link">pawankushwaha.design@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Prototypes Gallery Modal -->
+  <div class="modal-overlay" id="prototypesModal" aria-hidden="true">
+    <div class="modal-content proto-modal-box">
+      <button class="modal-close-btn" id="closePrototypesModal" aria-label="Close prototypes modal">&times;</button>
+      <div class="proto-modal-body">
+        <h3 class="contact-modal-title">Hands-on Prototyping Workshop</h3>
+        <p class="contact-modal-sub">A peek into the machining, additive manufacturing, and physical testing workflows.</p>
+        
+        <div class="proto-steps-list">
+          <div class="proto-step-item">
+            <div class="step-num">01</div>
+            <div>
+              <h5>Rapid Ideation &amp; Drafting</h5>
+              <p>Hand-drawn orthographic sketches on layout paper to establish human ergonomics and critical tolerance envelopes.</p>
+            </div>
+          </div>
+          <div class="proto-step-item">
+            <div class="step-num">02</div>
+            <div>
+              <h5>High-Precision SLA Resin Printing</h5>
+              <p>Rigid 50-micron resin prints for mechanical snapping tests, interlocking gears, and optical clear light pipes.</p>
+            </div>
+          </div>
+          <div class="proto-step-item">
+            <div class="step-num">03</div>
+            <div>
+              <h5>5-Axis CNC Aluminum Machining</h5>
+              <p>Billet aerospace-grade 6061 aluminum milled on high-speed CNC with bead-blasted satin anodized finishing.</p>
+            </div>
+          </div>
+          <div class="proto-step-item">
+            <div class="step-num">04</div>
+            <div>
+              <h5>Custom Character &amp; Brand Art</h5>
+              <p>Vector illustrations and mascot styling designed to accompany hardware unboxing and brand digital presences.</p>
+            </div>
+          </div>
+          <div class="proto-step-item">
+            <div class="step-num">05</div>
+            <div>
+              <h5>Additive Fabrication &amp; Micro Extrusion</h5>
+              <p>Direct drive toolhead micro-extrusion calibration for high-tolerance mechanical gears and internal snap joints.</p>
+            </div>
+          </div>
+          <div class="proto-step-item">
+            <div class="step-num">06</div>
+            <div>
+              <h5>Hands-on Bench Assembly</h5>
+              <p>Physical fitting and tactile testing of modular parts, weighted balance, and user contact points.</p>
+            </div>
+          </div>
+          <div class="proto-step-item">
+            <div class="step-num">07</div>
+            <div>
+              <h5>Parametric 3D Surface CAD</h5>
+              <p>High-curvature class-A surface generation in CAD ensuring seamless draft angles and parting lines.</p>
+            </div>
+          </div>
+          <div class="proto-step-item">
+            <div class="step-num">08</div>
+            <div>
+              <h5>Ergonomic Scale Studies</h5>
+              <p>Rapid physical scale models to evaluate proportion, spatial footprint, and user interaction before full tooling.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pure Optical Glass / Lens Cursor (Small, No Frame/Handle) -->
+  <div class="magnifier-cursor" id="magnifierCursor" aria-hidden="true">
+    <div class="magnifier-assembly">
+      <div class="magnifier-lens">
+        <div class="magnifier-zoom-content" id="magnifierZoomContent"></div>
+        <div class="magnifier-glass-glare"></div>
+        <div class="magnifier-glass-highlight"></div>
+        <div class="magnifier-glass-sub-highlight"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subtle Floating Toggle Button for Magnifier Lens -->
+  <button class="magnifier-toggle-btn" id="magnifierToggleBtn" aria-label="Toggle Magnifying Lens Cursor" title="Toggle Magnifier Lens (Press 'M')">
+    <span class="toggle-icon"></span>
+    <span class="toggle-text">Lens: <strong id="magnifierStatusText">ON</strong></span>
+  </button>
+
+  <script src="data-manager.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

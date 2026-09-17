@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Details | Pawan K. Kushwaha</title>
+  <meta name="description" content="Detailed project showcase and case study by Pawan K. Kushwaha.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Google Fonts: Bebas Neue (Condensed Headings), Caveat (Signature Script), Plus Jakarta Sans (Clean Body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Anti-Flicker Pre-Hydration: Instantly applies saved backgrounds & theme colors before first paint -->
+  <script>
+    (function() {
+      try {
+        var raw = localStorage.getItem('portfolio_master_data');
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        if (!d || !d.customization) return;
+        var c = d.customization;
+        var root = document.documentElement;
+
+        if (c.colors) {
+          if (c.colors.primary) root.style.setProperty('--primary-theme-color', c.colors.primary);
+          if (c.colors.headerBg) root.style.setProperty('--header-bg-color', c.colors.headerBg);
+          if (c.colors.boldText) root.style.setProperty('--bold-heading-color', c.colors.boldText);
+          if (c.colors.buttons) root.style.setProperty('--btn-theme-color', c.colors.buttons);
+          if (c.colors.maroon) root.style.setProperty('--color-maroon', c.colors.maroon);
+          if (c.colors.maroonDark) root.style.setProperty('--color-maroon-dark', c.colors.maroonDark);
+        }
+
+        if (c.backgrounds && c.backgrounds.connect) {
+          var b = c.backgrounds.connect;
+          var isConnCol = b.type === 'color' || (!b.image && b.color);
+          var connCol = b.color || '#55161C';
+          root.style.setProperty('--connect-bg-color', connCol);
+          root.style.setProperty('--connect-bg-image', (!isConnCol && b.image) ? "url('" + b.image + "')" : 'none');
+          if (b.overlayOpacity !== undefined) {
+            var cOp = b.overlayOpacity > 1 ? b.overlayOpacity / 100 : b.overlayOpacity;
+            root.style.setProperty('--connect-overlay-opacity', cOp);
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body class="project-page-body">
+
+  <!-- Sticky Navbar (Same as Home Page) -->
+  <header class="site-header" id="siteHeader">
+    <div class="nav-container">
+      <a href="index.html" class="logo-script" aria-label="Pawan Kushwaha Home">Pawan.</a>
+      
+      <nav class="desktop-nav" aria-label="Main Navigation">
+        <a href="index.html#work" class="nav-link">Work</a>
+        <a href="index.html#prototyping" class="nav-link">Prototyping</a>
+        <a href="index.html#gallery" class="nav-link">Gallery</a>
+        <a href="#connect" class="nav-link">Connect</a>
+      </nav>
+
+      <button class="mobile-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        <svg class="hamburger-svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" class="nav-bar nav-bar-1"></line>
+          <line x1="3" y1="12" x2="21" y2="12" class="nav-bar nav-bar-2"></line>
+          <line x1="3" y1="18" x2="21" y2="18" class="nav-bar nav-bar-3"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="mobile-drawer" id="mobileDrawer">
+      <nav class="mobile-nav-links">
+        <a href="index.html#work" class="mobile-nav-link">Work</a>
+        <a href="index.html#prototyping" class="mobile-nav-link">Prototyping</a>
+        <a href="index.html#gallery" class="mobile-nav-link">Gallery</a>
+        <a href="#connect" class="mobile-nav-link">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Project Main Content Container -->
+  <main class="project-detail-main">
+    <div class="project-page-container">
+      
+      <!-- Sub-Navigation Action Bar -->
+      <div class="project-subnav-bar">
+        <!-- Back to Work Button -->
+        <a href="index.html#work" class="back-work-btn" id="backToWorkBtn">
+          <span class="arrow">&larr;</span>
+          <span>Back to Work</span>
+        </a>
+
+        <!-- Overview & Process Switcher Pills -->
+        <div class="project-view-pills" role="tablist" aria-label="Project View Modes">
+          <button class="view-pill active" id="btnOverview" role="tab" aria-selected="true">Overview</button>
+          <button class="view-pill" id="btnProcess" role="tab" aria-selected="false">Process</button>
+        </div>
+      </div>
+
+      <!-- Main Project Title (Uppercase Bebas Neue) -->
+      <h1 class="project-headline" id="projectHeadline">WELLNESS JOURNEY - Interactive Floor Game Design</h1>
+
+      <!-- Stacked Visual Showcase Grid (3 Rounded Full-Width Images) -->
+      <div class="project-showcase-stack" id="projectShowcaseStack">
+        <div class="project-img-frame">
+          <img src="assets/images/showcase_wellness_1.png" alt="Wellness Journey - Interactive Starscape Floor Projection" class="project-showcase-img" id="showcaseImg1">
+        </div>
+        <div class="project-img-frame">
+          <img src="assets/images/showcase_wellness_2.png" alt="Wellness Journey - Biomimetic Sensor Details" class="project-showcase-img" id="showcaseImg2">
+        </div>
+        <div class="project-img-frame">
+          <img src="assets/images/showcase_wellness_3.png" alt="Wellness Journey - Biophilic Environmental Visuals" class="project-showcase-img" id="showcaseImg3">
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Scalloped Wave Divider (White on top, Maroon below) -->
+  <div class="scallop-divider wave-to-maroon-bg" aria-hidden="true"></div>
+
+  <!-- LET'S CONNECT SECTION (Identical to Home Page) -->
+  <section class="connect-section" id="connect">
+    <!-- Animated Interactive Parallax Cloudscape / Background -->
+    <div class="section-parallax-container" id="connectBgContainer" aria-hidden="true">
+      <div class="section-parallax-layer" id="connectBgLayer"></div>
+      <div class="section-parallax-overlay connect-parallax-overlay"></div>
+    </div>
+
+    <div class="section-container">
+      <div class="connect-grid">
+        <!-- Left Column: Contact info & CTA buttons -->
+        <div class="connect-content">
+          <h2 class="connect-title">LET'S CONNECT</h2>
+          <p class="connect-desc">Have a project, hardware concept, digital interface, or just want to say hi? I'd love to hear from you.</p>
+
+          <div class="connect-actions">
+            <button class="btn btn-white" id="shootEmailBtn">
+              <span>Send an Email</span>
+              <span class="btn-arrow">&rarr;</span>
+            </button>
+            
+            <a href="mailto:pawankushwaha@example.com?subject=Resume%20Request" class="btn btn-outline" id="downloadResumeBtn">
+              <span>Download Resume</span>
+              <span class="btn-download-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </span>
+            </a>
+          </div>
+
+          <!-- Social Circle Icons -->
+          <div class="social-links-row" aria-label="Social Media Links">
+            <!-- Instagram -->
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+
+            <!-- LinkedIn -->
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+            </a>
+
+            <!-- Behance -->
+            <a href="https://behance.net" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="Behance">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor">
+                <path d="M16.969 16.927a2.561 2.561 0 0 0 1.901.677 2.501 2.501 0 0 0 1.531-.475c.362-.235.636-.584.779-.99h2.585a5.091 5.091 0 0 1-1.9 2.896 5.292 5.292 0 0 1-3.091.88 5.839 5.839 0 0 1-2.284-.433 4.871 4.871 0 0 1-1.723-1.211 5.657 5.657 0 0 1-1.08-1.874 7.057 7.057 0 0 1-.383-2.393c-.005-.8.129-1.595.396-2.349a5.313 5.313 0 0 1 5.088-3.604 4.87 4.87 0 0 1 2.376.563c.661.362 1.231.87 1.668 1.485a6.2 6.2 0 0 1 .943 2.133c.194.821.263 1.666.205 2.508h-7.699c-.063.79.184 1.574.688 2.187ZM6.947 4.084a8.065 8.065 0 0 1 1.928.198 4.29 4.29 0 0 1 1.49.638c.418.303.748.711.958 1.182.241.579.357 1.203.341 1.83a3.506 3.506 0 0 1-.506 1.961 3.726 3.726 0 0 1-1.503 1.287 3.588 3.588 0 0 1 2.027 1.437c.464.747.697 1.615.67 2.494a4.593 4.593 0 0 1-.423 2.032 3.945 3.945 0 0 1-1.163 1.413 5.114 5.114 0 0 1-1.683.807 7.135 7.135 0 0 1-1.928.259H0V4.084h6.947Zm-.235 12.9c.308.004.616-.029.916-.099a2.18 2.18 0 0 0 .766-.332c.228-.158.411-.371.534-.619.142-.317.208-.663.191-1.009a2.08 2.08 0 0 0-.642-1.715 2.618 2.618 0 0 0-1.696-.505h-3.54v4.279h3.471Zm13.635-5.967a2.13 2.13 0 0 0-1.654-.619 2.336 2.336 0 0 0-1.163.259 2.474 2.474 0 0 0-.738.62 2.359 2.359 0 0 0-.396.792c-.074.239-.12.485-.137.734h4.769a3.239 3.239 0 0 0-.679-1.785l-.002-.001Zm-13.813-.648a2.254 2.254 0 0 0 1.423-.433c.399-.355.607-.88.56-1.413a1.916 1.916 0 0 0-.178-.891 1.298 1.298 0 0 0-.495-.533 1.851 1.851 0 0 0-.711-.274 3.966 3.966 0 0 0-.835-.073H3.241v3.631h3.293v-.014ZM21.62 5.122h-5.976v1.527h5.976V5.122Z"/>
+              </svg>
+            </a>
+
+            <!-- Dribbble -->
+            <a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="social-circle-btn" aria-label="Dribbble">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor">
+                <path d="M12 24C5.385 24 0 18.615 0 12S5.385 0 12 0s12 5.385 12 12-5.385 12-12 12zm10.12-10.358c-.35-.11-3.17-.953-6.384-.438 1.34 3.684 1.887 6.684 1.992 7.308 2.3-1.555 3.936-4.02 4.395-6.87zm-6.115 7.808c-.153-.9-.75-4.032-2.19-7.77l-.066.02c-5.79 2.015-7.86 6.025-8.04 6.4 1.73 1.358 3.92 2.166 6.29 2.166 1.42 0 2.77-.29 4-.814zm-11.62-2.58c.232-.4 3.045-5.055 8.332-6.765.135-.045.27-.084.405-.12-.26-.585-.54-1.167-.832-1.74C7.17 11.775 2.206 11.71 1.756 11.7l-.004.312c0 2.633.998 5.037 2.634 6.855zm-2.42-8.955c.46.008 4.683.026 9.477-1.248-1.698-3.018-3.53-5.558-3.8-5.928-2.868 1.35-5.01 3.99-5.676 7.17zM9.6 2.052c.282.38 2.145 2.914 3.822 6 3.645-1.365 5.19-3.44 5.373-3.702-1.81-1.61-4.19-2.586-6.795-2.586-.825 0-1.63.1-2.4.285zm10.335 3.483c-.218.29-1.935 2.493-5.724 4.04.24.49.47.985.68 1.486.08.18.15.36.22.53 3.41-.43 6.8.26 7.14.33-.02-2.42-.88-4.64-2.31-6.38z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column: Character Graphic (Aligned Flush on Bottom Thin Line) -->
+        <div class="connect-visual">
+          <div class="avatar-container connect-avatar-container">
+            <img src="assets/images/connect_character.png" alt="Pawan K. Kushwaha illustration portrait" class="hero-character-img connect-character-img">
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom Bar -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <span class="footer-copy">&copy; 2026 Pawan Kumar Kushwaha</span>
+          <span class="footer-tagline">Design with curiosity.</span>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+  <!-- Interactive Contact / Email Modal -->
+  <div class="modal-overlay" id="contactModal" aria-hidden="true">
+    <div class="modal-content contact-modal-box">
+      <button class="modal-close-btn" id="closeContactModal" aria-label="Close contact dialog">&times;</button>
+      <div class="contact-modal-body">
+        <h3 class="contact-modal-title">Get in Touch</h3>
+        <p class="contact-modal-desc">Direct email inquiry with pre-filled fields or direct clipboard copy.</p>
+        
+        <div class="email-direct-box">
+          <span class="email-address-text" id="targetEmailText">pawankushwaha@example.com</span>
+          <button class="btn-copy-email" id="copyEmailBtn" aria-label="Copy email address to clipboard">
+            <span id="copyEmailLabel">Copy</span>
+          </button>
+        </div>
+
+        <form class="quick-inquiry-form" id="quickInquiryForm" onsubmit="event.preventDefault(); alert('Thank you! Your message has been prepared in your mail client.'); window.location.href='mailto:pawankushwaha@example.com?subject=' + encodeURIComponent(document.getElementById('inqSubject').value) + '&body=' + encodeURIComponent(document.getElementById('inqBody').value);">
+          <div class="form-group">
+            <label for="inqSubject">Subject</label>
+            <input type="text" id="inqSubject" class="form-input" placeholder="Hardware concept / Project collaboration" required>
+          </div>
+          <div class="form-group">
+            <label for="inqBody">Message</label>
+            <textarea id="inqBody" class="form-textarea" rows="3" placeholder="Hi Pawan, let's connect regarding..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-pill-maroon-sm btn-full-submit">
+            <span>Send Message</span>
+            <span class="btn-arrow">&rarr;</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pure Optical Glass / Lens Cursor (Small, No Frame/Handle) -->
+  <div class="magnifier-cursor" id="magnifierCursor" aria-hidden="true">
+    <div class="magnifier-assembly">
+      <div class="magnifier-lens">
+        <div class="magnifier-zoom-content" id="magnifierZoomContent"></div>
+        <div class="magnifier-glass-glare"></div>
+        <div class="magnifier-glass-highlight"></div>
+        <div class="magnifier-glass-sub-highlight"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subtle Floating Toggle Button for Magnifier Lens -->
+  <button class="magnifier-toggle-btn" id="magnifierToggleBtn" aria-label="Toggle Magnifying Lens Cursor" title="Toggle Magnifier Lens (Press 'M')">
+    <span class="toggle-icon"></span>
+    <span class="toggle-text">Lens: <strong id="magnifierStatusText">ON</strong></span>
+  </button>
+
+  <!-- Page Interaction Script -->
+  <script src="data-manager.js"></script>
+  <script src="project.js"></script>
+</body>
+</html>

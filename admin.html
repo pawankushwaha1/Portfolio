@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center | Pawan K. Kushwaha</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- ==================== 1. OWNER AUTHENTICATION GATE ==================== -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card">
+      <div class="auth-lock-icon">🔒</div>
+      <div class="auth-logo">Pawan.</div>
+      <h1 class="auth-title">OWNER CONTROL CENTER</h1>
+      <p class="auth-subtitle">Restricted to portfolio owner. Enter your master password to manage and update the website.</p>
+      
+      <form class="auth-form" id="authForm" onsubmit="event.preventDefault();">
+        <div class="auth-input-group">
+          <input type="password" id="authPasswordInput" class="auth-input" placeholder="Enter master password..." autocomplete="current-password" required autofocus>
+          <div class="auth-error-msg" id="authErrorMsg">Invalid password. Please try again.</div>
+        </div>
+        <button type="submit" class="btn-auth-unlock" id="btnAuthUnlock">
+          <span>Unlock Admin Panel</span>
+          <span>&rarr;</span>
+        </button>
+      </form>
+      
+      <div class="auth-footer-hint">
+        <span>Default password: <strong>pawan@2025</strong> (Changeable anytime in Security settings)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 2. ADMIN PANEL WORKSPACE ==================== -->
+  <div class="admin-app" id="adminApp">
+    <!-- Top Navigation Bar -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <a href="index.html" class="topbar-logo" target="_blank" title="Preview Live Website">Pawan.</a>
+        <span class="topbar-badge">ADMIN CONTROL CENTER</span>
+      </div>
+      <div class="topbar-right">
+        <div class="owner-pill">
+          <span class="owner-dot"></span>
+          <span>Owner Logged In</span>
+        </div>
+        <a href="index.html" target="_blank" class="btn-view-site">
+          <span>View Website</span>
+          <span>↗</span>
+        </a>
+        <button class="btn-logout" id="btnLogout">Log Out</button>
+      </div>
+    </header>
+
+    <!-- App Body Shell -->
+    <div class="admin-shell">
+      <!-- Left Sidebar Navigation -->
+      <aside class="admin-sidebar">
+        <button class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="profile">
+          <span class="nav-icon">👤</span>
+          <span class="nav-label">Profile &amp; Hero</span>
+        </button>
+        <button class="nav-item" data-tab="about">
+          <span class="nav-icon">📖</span>
+          <span class="nav-label">About Page</span>
+          <span class="nav-badge" id="sidebarAboutCount">3</span>
+        </button>
+        <button class="nav-item" data-tab="customization">
+          <span class="nav-icon">🎨</span>
+          <span class="nav-label">Appearance &amp; Styles</span>
+        </button>
+        <button class="nav-item" data-tab="projects">
+          <span class="nav-icon">💼</span>
+          <span class="nav-label">Selected Work</span>
+          <span class="nav-badge" id="sidebarProjectCount">15</span>
+        </button>
+        <button class="nav-item" data-tab="prototyping">
+          <span class="nav-icon">🛠️</span>
+          <span class="nav-label">Prototyping</span>
+          <span class="nav-badge" id="sidebarProtoCount">8</span>
+        </button>
+        <button class="nav-item" data-tab="gallery">
+          <span class="nav-icon">🖼️</span>
+          <span class="nav-label">Gallery</span>
+          <span class="nav-badge" id="sidebarGalleryCount">16</span>
+        </button>
+        <button class="nav-item" data-tab="connect">
+          <span class="nav-icon">📬</span>
+          <span class="nav-label">Connect &amp; Footer</span>
+        </button>
+        
+        <div class="sidebar-divider"></div>
+        
+        <button class="nav-item" data-tab="security">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Security</span>
+        </button>
+        <button class="nav-item" data-tab="backup">
+          <span class="nav-icon">💾</span>
+          <span class="nav-label">Backup &amp; Export</span>
+        </button>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="admin-workspace">
+        
+        <!-- TAB 1: DASHBOARD -->
+        <section class="tab-panel active" id="tab-dashboard">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">PORTFOLIO OVERVIEW</h2>
+              <p class="panel-desc">Manage, update, and fine-tune your portfolio content in real-time.</p>
+            </div>
+            <div class="panel-actions">
+              <a href="index.html" target="_blank" class="btn-primary">Preview Website &rarr;</a>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Total Projects</span>
+              <span class="stat-value" id="statProjects">15</span>
+              <span class="stat-desc">Across 3 Design Disciplines</span>
+            </div>
+            <div class="stat-card gold">
+              <span class="stat-label">Prototyping Steps</span>
+              <span class="stat-value" id="statPrototypes">8</span>
+              <span class="stat-desc">Hands-on Polaroid Cards</span>
+            </div>
+            <div class="stat-card green">
+              <span class="stat-label">Gallery Captures</span>
+              <span class="stat-value" id="statGallery">16</span>
+              <span class="stat-desc">In 4 Bento Grid Columns</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">About Milestones</span>
+              <span class="stat-value" id="statMilestones">3</span>
+              <span class="stat-desc">Career Journey &amp; Values</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Live Sync Status</span>
+              <span class="stat-value" style="font-size: 28px; color: var(--color-green);">ACTIVE</span>
+              <span class="stat-desc">Auto-synced with browser</span>
+            </div>
+          </div>
+
+          <div class="quick-actions-grid">
+            <div class="action-card">
+              <div>
+                <h4>ADD NEW PROJECT</h4>
+                <p>Create a fresh case study card with full overview and process image galleries.</p>
+              </div>
+              <button class="btn-gold" id="btnQuickAddProject">+ New Project</button>
+            </div>
+            <div class="action-card">
+              <div>
+                <h4>EDIT ABOUT PAGE</h4>
+                <p>Customize bio story, 4 key metrics, design values, skills &amp; career milestones.</p>
+              </div>
+              <button class="btn-outline-admin" id="btnQuickAbout">Edit About 📖</button>
+            </div>
+            <div class="action-card">
+              <div>
+                <h4>UPDATE HERO &amp; MUSIC</h4>
+                <p>Modify your headline, status badge, character portrait, or background track.</p>
+              </div>
+              <button class="btn-outline-admin" id="btnQuickProfile">Edit Hero &rarr;</button>
+            </div>
+            <div class="action-card">
+              <div>
+                <h4>CUSTOMIZE STYLES &amp; LENS</h4>
+                <p>Adjust colors, hero title size, profile layering (front/back), and lens cursor optics.</p>
+              </div>
+              <button class="btn-outline-admin" id="btnQuickCustomization">Open Customizer 🎨</button>
+            </div>
+            <div class="action-card">
+              <div>
+                <h4>BACKUP SITE DATA</h4>
+                <p>Export a clean JSON copy of all website content for safekeeping or deployment.</p>
+              </div>
+              <button class="btn-outline-admin" id="btnQuickExport">Download Backup 💾</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: PROFILE & HERO SETTINGS -->
+        <section class="tab-panel" id="tab-profile">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">HERO &amp; PROFILE SETTINGS</h2>
+              <p class="panel-desc">Customize your name, role, tagline, location, availability badge, and audio player.</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-primary" id="btnSaveProfile">Save Changes 💾</button>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Personal Branding</h3>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Full Display Name</label>
+                <input type="text" id="profName" class="form-input" placeholder="PAWAN K. KUSHWAHA">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Professional Role</label>
+                <input type="text" id="profRole" class="form-input" placeholder="PRODUCT DESIGNER">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hero Title Line 1</label>
+                <input type="text" id="profTitleLine1" class="form-input" placeholder="PAWAN K.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hero Title Line 2</label>
+                <input type="text" id="profTitleLine2" class="form-input" placeholder="KUSHWAHA">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tagline (Under Role)</label>
+                <input type="text" id="profTagline" class="form-input" placeholder="Design. Make. Explore.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Location</label>
+                <input type="text" id="profLocation" class="form-input" placeholder="Chandigarh, India">
+              </div>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Availability &amp; Status</h3>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Status Text</label>
+                <input type="text" id="profStatusText" class="form-input" placeholder="Available for opportunities">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Status Dot Color</label>
+                <select id="profStatusType" class="form-select">
+                  <option value="gold">Gold / Amber (Available)</option>
+                  <option value="green">Green (Open for Work)</option>
+                  <option value="red">Red (Busy / In Contract)</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Character / Portrait Image Path or URL</label>
+                <div class="img-picker-row">
+                  <img id="profAvatarPreview" src="assets/images/connect_character.png" alt="Preview" class="img-thumbnail-preview">
+                  <input type="text" id="profAvatar" class="form-input" placeholder="assets/images/connect_character.png">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Vinyl Music Player</h3>
+            </div>
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label">Widget Caption</label>
+                <input type="text" id="profMusicCaption" class="form-input" placeholder="CURRENTLY LISTENING">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Track Name</label>
+                <input type="text" id="profMusicTrack" class="form-input" placeholder="Cinematic Ambient & Lo-Fi Beats">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Audio File URL / Path</label>
+                <input type="text" id="profMusicSrc" class="form-input" placeholder="assets/audio/ambient_lofi.wav">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2.5: ABOUT PAGE MANAGEMENT -->
+        <section class="tab-panel" id="tab-about">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">ABOUT PAGE MANAGEMENT</h2>
+              <p class="panel-desc">Customize your hero introduction, key metrics, design philosophies, technical toolkit, and career milestones.</p>
+            </div>
+            <div class="panel-actions">
+              <a href="about.html" target="_blank" class="btn-outline-admin">Preview About Page ↗</a>
+              <button class="btn-primary" id="btnSaveAbout">Save About Page 💾</button>
+            </div>
+          </div>
+
+          <!-- CARD 1: HERO STORY & VISUAL -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Hero Introduction &amp; Story</h3>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group span-2">
+                <label class="form-label">Category Badge (Uppercase Pill)</label>
+                <input type="text" id="aboutHeroBadge" class="form-input" placeholder="PRODUCT DESIGN • PROTOTYPING • HUMAN-CENTERED">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Headline Title (Big Condensed Font)</label>
+                <input type="text" id="aboutHeroTitle" class="form-input" placeholder="TURNING TANGIBLE IDEAS INTO PURPOSEFUL PRODUCTS.">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Hero Lead Paragraph (Greeting &amp; Position)</label>
+                <textarea id="aboutHeroLead" class="form-textarea" rows="3" placeholder="Hi, I’m Pawan K. Kushwaha. I am a product and industrial designer..."></textarea>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Secondary Story Paragraph (Philosophy &amp; Focus)</label>
+                <textarea id="aboutHeroBio" class="form-textarea" rows="3" placeholder="Whether carving early foam forms, running CNC toolpaths..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Floating Pill Text</label>
+                <input type="text" id="aboutHeroPill" class="form-input" placeholder="Design. Make. Explore.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Character Visual Image Path / URL</label>
+                <div class="img-picker-row">
+                  <img id="aboutHeroImgPreview" src="assets/images/connect_character.png" alt="Preview" class="img-thumbnail-preview">
+                  <div class="input-with-action" style="flex: 1;">
+                    <input type="text" id="aboutHeroImg" class="form-input" placeholder="assets/images/connect_character.png">
+                    <label class="btn-sm-upload" title="Upload local image">
+                      📁<input type="file" id="fileAboutHeroUpload" accept="image/*" style="display:none;">
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 2: QUICK METRICS / STATS -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Quick Highlights &amp; Metrics (4 Items)</h3>
+              <p class="card-box-desc">Displayed directly under your hero story on the About page.</p>
+            </div>
+            <div class="form-grid-2">
+              <!-- Stat 1 -->
+              <div class="metric-admin-card">
+                <span class="metric-admin-label">Stat #1</span>
+                <div class="form-group" style="margin-bottom: 8px;">
+                  <label class="form-label">Metric Value (e.g. 4+)</label>
+                  <input type="text" id="aboutStatNum1" class="form-input" placeholder="4+">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Metric Label</label>
+                  <input type="text" id="aboutStatLabel1" class="form-input" placeholder="Years of Design &amp; Fabrication">
+                </div>
+              </div>
+
+              <!-- Stat 2 -->
+              <div class="metric-admin-card">
+                <span class="metric-admin-label">Stat #2</span>
+                <div class="form-group" style="margin-bottom: 8px;">
+                  <label class="form-label">Metric Value (e.g. 15+)</label>
+                  <input type="text" id="aboutStatNum2" class="form-input" placeholder="15+">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Metric Label</label>
+                  <input type="text" id="aboutStatLabel2" class="form-input" placeholder="Working Functional Prototypes">
+                </div>
+              </div>
+
+              <!-- Stat 3 -->
+              <div class="metric-admin-card">
+                <span class="metric-admin-label">Stat #3</span>
+                <div class="form-group" style="margin-bottom: 8px;">
+                  <label class="form-label">Metric Value (e.g. 10+)</label>
+                  <input type="text" id="aboutStatNum3" class="form-input" placeholder="10+">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Metric Label</label>
+                  <input type="text" id="aboutStatLabel3" class="form-input" placeholder="Screenprint &amp; Fine Art Editions">
+                </div>
+              </div>
+
+              <!-- Stat 4 -->
+              <div class="metric-admin-card">
+                <span class="metric-admin-label">Stat #4</span>
+                <div class="form-group" style="margin-bottom: 8px;">
+                  <label class="form-label">Metric Value (e.g. 100%)</label>
+                  <input type="text" id="aboutStatNum4" class="form-input" placeholder="100%">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Metric Label</label>
+                  <input type="text" id="aboutStatLabel4" class="form-input" placeholder="Hands-On Curiosity &amp; Detail">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 3: CORE PHILOSOPHY & PRINCIPLES -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Core Philosophy &amp; Design Values</h3>
+              <p class="card-box-desc">The 3 guiding principles that shape your approach to physical and digital design.</p>
+            </div>
+            
+            <div class="philosophy-admin-stack">
+              <!-- Principle 1 -->
+              <div class="philosophy-admin-card">
+                <div class="form-grid-2" style="margin-bottom: 10px;">
+                  <div class="form-group">
+                    <label class="form-label">Principle Tag #1</label>
+                    <input type="text" id="aboutPhilNum1" class="form-input" placeholder="01 / TANGIBLE FIRST">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Principle Title</label>
+                    <input type="text" id="aboutPhilTitle1" class="form-input" placeholder="Making to Understand">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Description</label>
+                  <textarea id="aboutPhilDesc1" class="form-textarea" rows="2" placeholder="Physical prototypes reveal nuances..."></textarea>
+                </div>
+              </div>
+
+              <!-- Principle 2 -->
+              <div class="philosophy-admin-card">
+                <div class="form-grid-2" style="margin-bottom: 10px;">
+                  <div class="form-group">
+                    <label class="form-label">Principle Tag #2</label>
+                    <input type="text" id="aboutPhilNum2" class="form-input" placeholder="02 / PRODUCTION INTEGRITY">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Principle Title</label>
+                    <input type="text" id="aboutPhilTitle2" class="form-input" placeholder="Design for Manufacturing (DFM)">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Description</label>
+                  <textarea id="aboutPhilDesc2" class="form-textarea" rows="2" placeholder="Great design doesn't end at visualization..."></textarea>
+                </div>
+              </div>
+
+              <!-- Principle 3 -->
+              <div class="philosophy-admin-card">
+                <div class="form-grid-2" style="margin-bottom: 10px;">
+                  <div class="form-group">
+                    <label class="form-label">Principle Tag #3</label>
+                    <input type="text" id="aboutPhilNum3" class="form-input" placeholder="03 / HARMONIOUS SYSTEMS">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Principle Title</label>
+                    <input type="text" id="aboutPhilTitle3" class="form-input" placeholder="Cohesive Digital Ecosystems">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Description</label>
+                  <textarea id="aboutPhilDesc3" class="form-textarea" rows="2" placeholder="Physical products thrive when their digital touchpoints..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 4: CAPABILITIES & TOOLKIT -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Capabilities &amp; Toolkit</h3>
+              <p class="card-box-desc">End-to-end skillsets across hardware industrial design and digital user experience.</p>
+            </div>
+            <div class="form-grid-2">
+              <!-- Physical Col -->
+              <div class="skill-admin-card">
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label class="form-label">Column 1 Header</label>
+                  <input type="text" id="aboutSkillsPhysicalTitle" class="form-input" placeholder="⚙️ Physical &amp; Industrial Design">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label class="form-label">Skill Items (One per line)</label>
+                  <textarea id="aboutSkillsPhysicalList" class="form-textarea" rows="5" placeholder="High-Surfacing 3D CAD &amp; Parametric Modeling&#10;Design for Manufacturing (DFM &amp; DFA)&#10;CNC 3-Axis &amp; 4-Axis Machining Preparation"></textarea>
+                  <span class="field-hint">Enter each bullet item on a separate line.</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tool Badges (Comma-separated)</label>
+                  <input type="text" id="aboutSkillsPhysicalPills" class="form-input" placeholder="Fusion 360, KeyShot, SolidWorks, Blender, 3D Printing, CNC Tooling">
+                </div>
+              </div>
+
+              <!-- Digital Col -->
+              <div class="skill-admin-card">
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label class="form-label">Column 2 Header</label>
+                  <input type="text" id="aboutSkillsDigitalTitle" class="form-input" placeholder="✨ Digital, UX &amp; Visual Crafts">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label class="form-label">Skill Items (One per line)</label>
+                  <textarea id="aboutSkillsDigitalList" class="form-textarea" rows="5" placeholder="Human-Centered UI/UX Architecture &amp; User Journeys&#10;Interactive Micro-Animations &amp; Component Systems&#10;Embedded Display Interfaces &amp; Telemetry Dashboards"></textarea>
+                  <span class="field-hint">Enter each bullet item on a separate line.</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tool Badges (Comma-separated)</label>
+                  <input type="text" id="aboutSkillsDigitalPills" class="form-input" placeholder="Figma, Adobe Illustrator, Photoshop, After Effects, Screenprint, Arduino">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 5: CAREER MILESTONES & TIMELINE -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3 class="card-box-title">Background &amp; Career Milestones</h3>
+                <p class="card-box-desc">Key career moments and achievements displayed on your timeline.</p>
+              </div>
+              <button type="button" class="btn-gold" id="btnOpenNewMilestoneModal">+ Add Milestone</button>
+            </div>
+            
+            <div id="milestonesAdminList" class="milestones-admin-list">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- TAB: APPEARANCE & CUSTOMIZATION -->
+        <section class="tab-panel" id="tab-customization">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">APPEARANCE &amp; CUSTOMIZATION</h2>
+              <p class="panel-desc">Adjust typography, hero headline text size, color palette, profile picture alignment &amp; layering, and optical lens cursor.</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-outline-admin" id="btnResetCustomization">Reset Defaults ↺</button>
+              <button class="btn-primary" id="btnSaveCustomization">Save Customization 💾</button>
+            </div>
+          </div>
+
+          <!-- CARD 1: HERO TYPOGRAPHY & 'PAWAN K. KUSHWAHA' TEXT SIZE -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3 class="card-box-title">Hero Section Headline &amp; Typography</h3>
+                <p class="card-box-desc">Control the font size, line height, letter spacing, and titles of 'PAWAN K. KUSHWAHA'.</p>
+              </div>
+            </div>
+
+            <!-- Live Headline Preview Box -->
+            <div class="custom-hero-preview" id="heroTextPreview">
+              <div class="custom-hero-preview-label">Live Typography Preview</div>
+              <div class="custom-hero-preview-title" id="previewHeroTitle">
+                <span id="previewTitleLine1">PAWAN K.</span>
+                <span id="previewTitleLine2">KUSHWAHA</span>
+              </div>
+              <div class="custom-hero-preview-role" id="previewHeroRole">PRODUCT DESIGNER</div>
+              <div class="custom-hero-preview-tagline" id="previewHeroTagline">Design. Make. Explore.</div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">'PAWAN K. KUSHWAHA' Font Size</label>
+                  <span class="range-badge" id="badgeHeroTitleSize">8.0 rem</span>
+                </div>
+                <input type="range" id="custHeroTitleSize" class="form-range" min="4.0" max="11.0" step="0.1" value="8.0">
+                <span class="field-hint">Default 8.0 rem (Desktop display title). Scales smoothly with viewport.</span>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Headline Line Height</label>
+                  <span class="range-badge" id="badgeHeroLineHeight">0.88</span>
+                </div>
+                <input type="range" id="custHeroLineHeight" class="form-range" min="0.70" max="1.30" step="0.02" value="0.88">
+                <span class="field-hint">Controls vertical tightness between Line 1 and Line 2.</span>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Headline Letter Spacing</label>
+                  <span class="range-badge" id="badgeHeroLetterSpacing">0.015 em</span>
+                </div>
+                <input type="range" id="custHeroLetterSpacing" class="form-range" min="-0.02" max="0.12" step="0.005" value="0.015">
+                <span class="field-hint">Adjust kerning between uppercase characters.</span>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Role Font Size</label>
+                  <span class="range-badge" id="badgeHeroRoleSize">0.88 rem</span>
+                </div>
+                <input type="range" id="custHeroRoleSize" class="form-range" min="0.60" max="1.40" step="0.02" value="0.88">
+                <span class="field-hint">Uppercase subtitle ('PRODUCT DESIGNER').</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Hero Title Line 1 Text</label>
+                <input type="text" id="custHeroLine1" class="form-input" placeholder="PAWAN K.">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Hero Title Line 2 Text</label>
+                <input type="text" id="custHeroLine2" class="form-input" placeholder="KUSHWAHA">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Professional Role Text</label>
+                <input type="text" id="custHeroRole" class="form-input" placeholder="PRODUCT DESIGNER">
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Tagline Script Font Size</label>
+                  <span class="range-badge" id="badgeHeroTaglineSize">2.4 rem</span>
+                </div>
+                <input type="range" id="custHeroTaglineSize" class="form-range" min="1.5" max="3.5" step="0.05" value="2.4">
+                <span class="field-hint">Handwritten cursive accent ('Design. Make. Explore.').</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 2: PROFILE PICTURE ADJUSTMENT, ALIGNMENT & LAYER ORDER -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3 class="card-box-title">Profile Picture Alignment &amp; Layer Hierarchy</h3>
+                <p class="card-box-desc">Adjust size scale, horizontal/vertical offsets, and bring in front or behind text &amp; waves.</p>
+              </div>
+              <button type="button" class="btn-sm-outline" id="btnResetProfileAdjust">Reset Position ↺</button>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Image Scale / Zoom</label>
+                  <span class="range-badge" id="badgeProfileScale">100%</span>
+                </div>
+                <input type="range" id="custProfileScale" class="form-range" min="50" max="150" step="1" value="100">
+                <span class="field-hint">Enlarge or shrink the hero character illustration.</span>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Horizontal Offset (X)</label>
+                  <span class="range-badge" id="badgeProfileOffsetX">0 px</span>
+                </div>
+                <input type="range" id="custProfileOffsetX" class="form-range" min="-150" max="150" step="2" value="0">
+                <span class="field-hint">Negative moves left, positive moves right.</span>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Vertical Offset (Y)</label>
+                  <span class="range-badge" id="badgeProfileOffsetY">0 px</span>
+                </div>
+                <input type="range" id="custProfileOffsetY" class="form-range" min="-150" max="150" step="2" value="0">
+                <span class="field-hint">Negative moves up, positive moves down.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Horizontal Alignment</label>
+                <div class="segmented-control" id="profileAlignGroup">
+                  <button type="button" class="segment-btn" data-align="flex-start">Left</button>
+                  <button type="button" class="segment-btn active" data-align="center">Center</button>
+                  <button type="button" class="segment-btn" data-align="flex-end">Right</button>
+                </div>
+                <span class="field-hint">Alignment within hero right column.</span>
+              </div>
+
+              <div class="form-group span-2">
+                <label class="form-label">Layer Ordering (Z-Index Hierarchy)</label>
+                <div class="layer-selector-grid">
+                  <label class="layer-radio-card active" id="layerCardBack">
+                    <input type="radio" name="profileLayer" value="back" checked>
+                    <div class="layer-radio-content">
+                      <div class="layer-radio-icon">🔲</div>
+                      <div class="layer-radio-text">
+                        <strong>Bring to Back</strong>
+                        <span>Character portrait sits behind hero title headline (z-index: 1)</span>
+                      </div>
+                    </div>
+                  </label>
+                  <label class="layer-radio-card" id="layerCardFront">
+                    <input type="radio" name="profileLayer" value="front">
+                    <div class="layer-radio-content">
+                      <div class="layer-radio-icon">🔳</div>
+                      <div class="layer-radio-text">
+                        <strong>Bring to Front</strong>
+                        <span>Character portrait sits in front of hero headline &amp; text (z-index: 5)</span>
+                      </div>
+                    </div>
+                  </label>
+                  <label class="layer-radio-card" id="layerCardWave">
+                    <input type="radio" name="profileLayer" value="wave-front">
+                    <div class="layer-radio-content">
+                      <div class="layer-radio-icon">🔝</div>
+                      <div class="layer-radio-text">
+                        <strong>Over Scallop Wave</strong>
+                        <span>Character portrait overlaps above headline and bottom wave divider (z-index: 15)</span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 3: SECTION BACKGROUNDS & PARALLAX ENGINE -->
+          <div class="card-box" id="cardSectionBackgrounds">
+            <div class="card-box-header">
+              <div>
+                <h3 class="card-box-title">Section Backgrounds &amp; Parallax Engine</h3>
+                <p class="card-box-desc">Customize backgrounds and interactive cursor parallax across Hero, Prototyping, and Let's Connect sections.</p>
+              </div>
+              <button type="button" class="btn-sm-outline" id="btnResetBackgrounds">Reset All Backgrounds ↺</button>
+            </div>
+
+            <!-- Quick Background Presets: Dual Sets (Images & Solid Colors) -->
+            <div class="form-group mb-4">
+              <!-- SET 1: 1-CLICK GLOBAL IMAGE PRESETS -->
+              <div class="preset-set-box">
+                <div class="preset-group-header">
+                  <div class="preset-title-flex">
+                    <span class="preset-set-badge">SET 1</span>
+                    <label class="form-label font-bold mb-0">🖼️ 1-Click Global Image Presets</label>
+                  </div>
+                  <span class="preset-desc-hint">Click any photo preset to apply it across Hero, Prototyping &amp; Connect simultaneously</span>
+                </div>
+                <div class="bg-preset-grid">
+                  <button type="button" class="bg-preset-card active" data-preset-type="image" data-bg-src="assets/background.png" data-bg-name="Sunset Anime Clouds">
+                    <div class="bg-preset-thumb" style="background-image: url('assets/background.png');"></div>
+                    <span>Sunset Clouds (Default)</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="image" data-bg-src="assets/images/gallery_peaks.jpg" data-bg-name="Starry Night Peaks">
+                    <div class="bg-preset-thumb" style="background-image: url('assets/images/gallery_peaks.jpg');"></div>
+                    <span>Starry Peaks</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="image" data-bg-src="assets/images/gallery_blue_mountain.jpg" data-bg-name="Twilight Mountain">
+                    <div class="bg-preset-thumb" style="background-image: url('assets/images/gallery_blue_mountain.jpg');"></div>
+                    <span>Twilight Mountain</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="image" data-bg-src="assets/images/gallery_astro.png" data-bg-name="Milky Way Astro">
+                    <div class="bg-preset-thumb" style="background-image: url('assets/images/gallery_astro.png');"></div>
+                    <span>Milky Way Astro</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="image" data-bg-src="assets/images/gallery_forest.jpg" data-bg-name="Alpine Forest">
+                    <div class="bg-preset-thumb" style="background-image: url('assets/images/gallery_forest.jpg');"></div>
+                    <span>Alpine Forest</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="image" data-bg-src="assets/images/connect_moraine_lake.png" data-bg-name="Moraine Lake">
+                    <div class="bg-preset-thumb" style="background-image: url('assets/images/connect_moraine_lake.png');"></div>
+                    <span>Moraine Lake</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" id="cardCustomImagePreset" data-preset-type="custom-image" data-bg-name="Custom Image">
+                    <div class="bg-preset-thumb custom-image-thumb" id="thumbCustomImagePreset">
+                      <span class="custom-thumb-icon">📁</span>
+                    </div>
+                    <span id="labelCustomImagePreset">Custom Image</span>
+                  </button>
+                </div>
+
+                <!-- Custom Image Bar -->
+                <div class="custom-image-picker-bar">
+                  <div class="custom-image-picker-left">
+                    <span class="custom-image-label">🖼️ Custom Image:</span>
+                    <input type="text" id="globalCustomImageUrl" class="form-input form-input-sm custom-image-url-input" placeholder="Paste image URL (https://...) or upload local file...">
+                    <label class="btn-sm-upload" title="Choose local image file from your computer">
+                      📁 Upload File
+                      <input type="file" id="fileGlobalCustomImage" accept="image/*" style="display:none;">
+                    </label>
+                  </div>
+                  <button type="button" class="btn-sm-primary" id="btnApplyGlobalCustomImage">
+                    <span>Apply Image to All 3 Sections</span>
+                    <span>&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- SET 2: 1-CLICK GLOBAL SOLID COLOR PRESETS -->
+              <div class="preset-set-box mt-3">
+                <div class="preset-group-header">
+                  <div class="preset-title-flex">
+                    <span class="preset-set-badge color-badge">SET 2</span>
+                    <label class="form-label font-bold mb-0">🎨 1-Click Global Solid Color Presets</label>
+                  </div>
+                  <span class="preset-desc-hint">Click any solid color to set a clean minimalist backdrop across all 3 sections</span>
+                </div>
+                <div class="bg-preset-grid">
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#55161C" data-bg-name="Deep Brand Maroon">
+                    <div class="bg-preset-thumb" style="background-color: #55161C;"></div>
+                    <span>Deep Maroon</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#642B2B" data-bg-name="Warm Rust Maroon">
+                    <div class="bg-preset-thumb" style="background-color: #642B2B;"></div>
+                    <span>Warm Maroon</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#121212" data-bg-name="Obsidian Dark">
+                    <div class="bg-preset-thumb" style="background-color: #121212;"></div>
+                    <span>Obsidian Dark</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#0F172A" data-bg-name="Midnight Slate Navy">
+                    <div class="bg-preset-thumb" style="background-color: #0F172A;"></div>
+                    <span>Midnight Navy</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#1B3B2B" data-bg-name="Forest Emerald">
+                    <div class="bg-preset-thumb" style="background-color: #1B3B2B;"></div>
+                    <span>Forest Emerald</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#2D132C" data-bg-name="Royal Plum">
+                    <div class="bg-preset-thumb" style="background-color: #2D132C;"></div>
+                    <span>Royal Plum</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#2A1E17" data-bg-name="Warm Espresso">
+                    <div class="bg-preset-thumb" style="background-color: #2A1E17;"></div>
+                    <span>Warm Espresso</span>
+                  </button>
+                  <button type="button" class="bg-preset-card" data-preset-type="color" data-bg-color="#EFECE6" data-bg-name="Sand / Soft Cream">
+                    <div class="bg-preset-thumb" style="background-color: #EFECE6; border: 1px solid #D5C8B8;"></div>
+                    <span>Sand / Cream</span>
+                  </button>
+                </div>
+
+                <!-- Custom Solid Color Bar -->
+                <div class="custom-solid-picker-bar">
+                  <div class="custom-solid-picker-left">
+                    <span class="custom-solid-label">🎨 Custom Solid Color:</span>
+                    <input type="color" id="globalCustomSolidColor" value="#55161C" class="custom-solid-color-input" title="Select custom hex color">
+                    <input type="text" id="globalCustomSolidHex" value="#55161C" class="form-input form-input-sm custom-solid-hex-input" placeholder="#55161C">
+                  </div>
+                  <button type="button" class="btn-sm-primary" id="btnApplyGlobalCustomColor">
+                    <span>Apply Color to All 3 Sections</span>
+                    <span>&rarr;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3 Columns for 3 Sections: Hero, Prototyping, Let's Connect -->
+            <div class="section-bg-columns-grid">
+              
+              <!-- 1. HERO SECTION BACKGROUND -->
+              <div class="section-bg-card">
+                <div class="section-bg-card-header">
+                  <h4>1. HERO SECTION</h4>
+                  <span class="badge-tag">Top Display</span>
+                </div>
+                <div class="bg-preview-box" id="prevHeroBg" style="background-image: url('assets/background.png');">
+                  <span class="bg-preview-label" id="labelPrevHeroBg">Active Background</span>
+                </div>
+
+                <!-- Mode Switcher: Image vs Solid Color -->
+                <div class="bg-type-switcher" data-sec="Hero">
+                  <button type="button" class="btn-bg-type active" data-type="image" data-sec="Hero">🖼️ Image</button>
+                  <button type="button" class="btn-bg-type" data-type="color" data-sec="Hero">🎨 Solid Color</button>
+                </div>
+                <input type="hidden" id="custHeroBgType" value="image">
+
+                <!-- Image Inputs -->
+                <div class="form-group" id="wrapHeroBgImage">
+                  <label class="form-label-sm">Image Source / Path</label>
+                  <div class="input-with-action">
+                    <input type="text" id="custHeroBgImage" class="form-input form-input-sm" value="assets/background.png" placeholder="assets/background.png">
+                    <label class="btn-sm-upload" title="Choose local image file">
+                      <span>📁</span> <span>Upload</span>
+                      <input type="file" id="fileHeroBg" accept="image/*" style="display:none;">
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Solid Color Inputs -->
+                <div class="form-group" id="wrapHeroBgColor" style="display:none;">
+                  <label class="form-label-sm">Solid Color Background</label>
+                  <div class="section-color-row">
+                    <input type="color" id="custHeroBgColor" class="section-color-input" value="#55161C">
+                    <input type="text" id="custHeroBgColorHex" class="form-input form-input-sm color-hex-input" value="#55161C">
+                  </div>
+                  <div class="section-swatches-row">
+                    <button type="button" class="mini-swatch" style="background:#55161C;" data-color="#55161C" data-sec="Hero" title="Deep Maroon"></button>
+                    <button type="button" class="mini-swatch" style="background:#642B2B;" data-color="#642B2B" data-sec="Hero" title="Warm Maroon"></button>
+                    <button type="button" class="mini-swatch" style="background:#121212;" data-color="#121212" data-sec="Hero" title="Obsidian Dark"></button>
+                    <button type="button" class="mini-swatch" style="background:#0F172A;" data-color="#0F172A" data-sec="Hero" title="Midnight Navy"></button>
+                    <button type="button" class="mini-swatch" style="background:#1B3B2B;" data-color="#1B3B2B" data-sec="Hero" title="Emerald"></button>
+                    <button type="button" class="mini-swatch" style="background:#2D132C;" data-color="#2D132C" data-sec="Hero" title="Royal Plum"></button>
+                    <button type="button" class="mini-swatch" style="background:#EFECE6; border:1px solid #ccc;" data-color="#EFECE6" data-sec="Hero" title="Sand Cream"></button>
+                  </div>
+                </div>
+
+                <div class="toggle-row-compact">
+                  <span class="toggle-label-sm">Interactive Cursor Parallax</span>
+                  <label class="switch-toggle switch-toggle-sm">
+                    <input type="checkbox" id="custHeroBgParallax" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+                <div class="form-group mt-2">
+                  <div class="slider-header-flex">
+                    <label class="form-label-sm">Parallax Intensity</label>
+                    <span class="range-badge-sm" id="badgeHeroBgSpeed">1.0x</span>
+                  </div>
+                  <input type="range" id="custHeroBgSpeed" class="form-range form-range-sm" min="0.3" max="2.0" step="0.1" value="1.0">
+                </div>
+              </div>
+
+              <!-- 2. PROTOTYPING SECTION BACKGROUND -->
+              <div class="section-bg-card">
+                <div class="section-bg-card-header">
+                  <h4>2. PROTOTYPING SECTION</h4>
+                  <span class="badge-tag">Polaroids</span>
+                </div>
+                <div class="bg-preview-box" id="prevProtoBg" style="background-image: url('assets/background.png');">
+                  <span class="bg-preview-label" id="labelPrevProtoBg">Active Background</span>
+                </div>
+
+                <!-- Mode Switcher: Image vs Solid Color -->
+                <div class="bg-type-switcher" data-sec="Proto">
+                  <button type="button" class="btn-bg-type active" data-type="image" data-sec="Proto">🖼️ Image</button>
+                  <button type="button" class="btn-bg-type" data-type="color" data-sec="Proto">🎨 Solid Color</button>
+                </div>
+                <input type="hidden" id="custProtoBgType" value="image">
+
+                <!-- Image Inputs -->
+                <div class="form-group" id="wrapProtoBgImage">
+                  <label class="form-label-sm">Image Source / Path</label>
+                  <div class="input-with-action">
+                    <input type="text" id="custProtoBgImage" class="form-input form-input-sm" value="assets/background.png" placeholder="assets/background.png">
+                    <label class="btn-sm-upload" title="Choose local image file">
+                      <span>📁</span> <span>Upload</span>
+                      <input type="file" id="fileProtoBg" accept="image/*" style="display:none;">
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Solid Color Inputs -->
+                <div class="form-group" id="wrapProtoBgColor" style="display:none;">
+                  <label class="form-label-sm">Solid Color Background</label>
+                  <div class="section-color-row">
+                    <input type="color" id="custProtoBgColor" class="section-color-input" value="#55161C">
+                    <input type="text" id="custProtoBgColorHex" class="form-input form-input-sm color-hex-input" value="#55161C">
+                  </div>
+                  <div class="section-swatches-row">
+                    <button type="button" class="mini-swatch" style="background:#55161C;" data-color="#55161C" data-sec="Proto" title="Deep Maroon"></button>
+                    <button type="button" class="mini-swatch" style="background:#642B2B;" data-color="#642B2B" data-sec="Proto" title="Warm Maroon"></button>
+                    <button type="button" class="mini-swatch" style="background:#121212;" data-color="#121212" data-sec="Proto" title="Obsidian Dark"></button>
+                    <button type="button" class="mini-swatch" style="background:#0F172A;" data-color="#0F172A" data-sec="Proto" title="Midnight Navy"></button>
+                    <button type="button" class="mini-swatch" style="background:#1B3B2B;" data-color="#1B3B2B" data-sec="Proto" title="Emerald"></button>
+                    <button type="button" class="mini-swatch" style="background:#2D132C;" data-color="#2D132C" data-sec="Proto" title="Royal Plum"></button>
+                    <button type="button" class="mini-swatch" style="background:#EFECE6; border:1px solid #ccc;" data-color="#EFECE6" data-sec="Proto" title="Sand Cream"></button>
+                  </div>
+                </div>
+
+                <div class="toggle-row-compact">
+                  <span class="toggle-label-sm">Interactive Cursor Parallax</span>
+                  <label class="switch-toggle switch-toggle-sm">
+                    <input type="checkbox" id="custProtoBgParallax" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+                <div class="form-group mt-2">
+                  <div class="slider-header-flex">
+                    <label class="form-label-sm">Dark Dimming Overlay</label>
+                    <span class="range-badge-sm" id="badgeProtoBgOverlay">35%</span>
+                  </div>
+                  <input type="range" id="custProtoBgOverlay" class="form-range form-range-sm" min="0" max="80" step="5" value="35">
+                </div>
+                <div class="form-group mt-2">
+                  <div class="slider-header-flex">
+                    <label class="form-label-sm">Parallax Intensity</label>
+                    <span class="range-badge-sm" id="badgeProtoBgSpeed">1.0x</span>
+                  </div>
+                  <input type="range" id="custProtoBgSpeed" class="form-range form-range-sm" min="0.3" max="2.0" step="0.1" value="1.0">
+                </div>
+              </div>
+
+              <!-- 3. LET'S CONNECT SECTION BACKGROUND -->
+              <div class="section-bg-card">
+                <div class="section-bg-card-header">
+                  <h4>3. LET'S CONNECT SECTION</h4>
+                  <span class="badge-tag">Contact &amp; Character</span>
+                </div>
+                <div class="bg-preview-box" id="prevConnectBg" style="background-image: url('assets/background.png');">
+                  <span class="bg-preview-label" id="labelPrevConnectBg">Active Background</span>
+                </div>
+
+                <!-- Mode Switcher: Image vs Solid Color -->
+                <div class="bg-type-switcher" data-sec="Connect">
+                  <button type="button" class="btn-bg-type active" data-type="image" data-sec="Connect">🖼️ Image</button>
+                  <button type="button" class="btn-bg-type" data-type="color" data-sec="Connect">🎨 Solid Color</button>
+                </div>
+                <input type="hidden" id="custConnectBgType" value="image">
+
+                <!-- Image Inputs -->
+                <div class="form-group" id="wrapConnectBgImage">
+                  <label class="form-label-sm">Image Source / Path</label>
+                  <div class="input-with-action">
+                    <input type="text" id="custConnectBgImage" class="form-input form-input-sm" value="assets/background.png" placeholder="assets/background.png">
+                    <label class="btn-sm-upload" title="Choose local image file">
+                      <span>📁</span> <span>Upload</span>
+                      <input type="file" id="fileConnectBg" accept="image/*" style="display:none;">
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Solid Color Inputs -->
+                <div class="form-group" id="wrapConnectBgColor" style="display:none;">
+                  <label class="form-label-sm">Solid Color Background</label>
+                  <div class="section-color-row">
+                    <input type="color" id="custConnectBgColor" class="section-color-input" value="#55161C">
+                    <input type="text" id="custConnectBgColorHex" class="form-input form-input-sm color-hex-input" value="#55161C">
+                  </div>
+                  <div class="section-swatches-row">
+                    <button type="button" class="mini-swatch" style="background:#55161C;" data-color="#55161C" data-sec="Connect" title="Deep Maroon"></button>
+                    <button type="button" class="mini-swatch" style="background:#642B2B;" data-color="#642B2B" data-sec="Connect" title="Warm Maroon"></button>
+                    <button type="button" class="mini-swatch" style="background:#121212;" data-color="#121212" data-sec="Connect" title="Obsidian Dark"></button>
+                    <button type="button" class="mini-swatch" style="background:#0F172A;" data-color="#0F172A" data-sec="Connect" title="Midnight Navy"></button>
+                    <button type="button" class="mini-swatch" style="background:#1B3B2B;" data-color="#1B3B2B" data-sec="Connect" title="Emerald"></button>
+                    <button type="button" class="mini-swatch" style="background:#2D132C;" data-color="#2D132C" data-sec="Connect" title="Royal Plum"></button>
+                    <button type="button" class="mini-swatch" style="background:#EFECE6; border:1px solid #ccc;" data-color="#EFECE6" data-sec="Connect" title="Sand Cream"></button>
+                  </div>
+                </div>
+
+                <div class="toggle-row-compact">
+                  <span class="toggle-label-sm">Interactive Cursor Parallax</span>
+                  <label class="switch-toggle switch-toggle-sm">
+                    <input type="checkbox" id="custConnectBgParallax" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+                <div class="form-group mt-2">
+                  <div class="slider-header-flex">
+                    <label class="form-label-sm">Dark Dimming Overlay</label>
+                    <span class="range-badge-sm" id="badgeConnectBgOverlay">25%</span>
+                  </div>
+                  <input type="range" id="custConnectBgOverlay" class="form-range form-range-sm" min="0" max="80" step="5" value="25">
+                </div>
+                <div class="form-group mt-2">
+                  <div class="slider-header-flex">
+                    <label class="form-label-sm">Parallax Intensity</label>
+                    <span class="range-badge-sm" id="badgeConnectBgSpeed">1.0x</span>
+                  </div>
+                  <input type="range" id="custConnectBgSpeed" class="form-range form-range-sm" min="0.3" max="2.0" step="0.1" value="1.0">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- CARD 4: BRAND COLOR PALETTE & THEME PRESETS -->
+          <div class="card-box" id="cardColorPalette">
+            <div class="card-box-header">
+              <div>
+                <h3 class="card-box-title">Color Palette &amp; Instant Theme Presets</h3>
+                <p class="card-box-desc">Choose a master theme color to change header background, bold text ("SELECTED WORK"), and buttons all at once, or apply 1-click curated design themes.</p>
+              </div>
+              <button type="button" class="btn-sm-outline" id="btnResetPalette">Reset Colors ↺</button>
+            </div>
+
+            <!-- 1-Click Theme Preset Chips -->
+            <div class="theme-presets-bar">
+              <span class="presets-title">Presets:</span>
+              <button type="button" class="preset-chip active" data-theme="classic">
+                <span class="preset-swatches">
+                  <span style="background: #642B2B;"></span>
+                  <span style="background: #4F1F1F;"></span>
+                  <span style="background: #E5A93C;"></span>
+                  <span style="background: #FAF9F6;"></span>
+                </span>
+                <span>Classic Wine &amp; Gold</span>
+              </button>
+              <button type="button" class="preset-chip" data-theme="obsidian">
+                <span class="preset-swatches">
+                  <span style="background: #141416;"></span>
+                  <span style="background: #0A0A0C;"></span>
+                  <span style="background: #F5A623;"></span>
+                  <span style="background: #F8F8FA;"></span>
+                </span>
+                <span>Obsidian Luxury</span>
+              </button>
+              <button type="button" class="preset-chip" data-theme="emerald">
+                <span class="preset-swatches">
+                  <span style="background: #183D2D;"></span>
+                  <span style="background: #0E261C;"></span>
+                  <span style="background: #D4AF37;"></span>
+                  <span style="background: #F4F8F5;"></span>
+                </span>
+                <span>Emerald Prestige</span>
+              </button>
+              <button type="button" class="preset-chip" data-theme="indigo">
+                <span class="preset-swatches">
+                  <span style="background: #1E293B;"></span>
+                  <span style="background: #0F172A;"></span>
+                  <span style="background: #E28743;"></span>
+                  <span style="background: #F8FAFC;"></span>
+                </span>
+                <span>Royal Indigo</span>
+              </button>
+              <button type="button" class="preset-chip" data-theme="espresso">
+                <span class="preset-swatches">
+                  <span style="background: #3B2A1E;"></span>
+                  <span style="background: #261B13;"></span>
+                  <span style="background: #C89666;"></span>
+                  <span style="background: #FAF6F0;"></span>
+                </span>
+                <span>Espresso Minimal</span>
+              </button>
+              <button type="button" class="preset-chip" data-theme="crimson">
+                <span class="preset-swatches">
+                  <span style="background: #781818;"></span>
+                  <span style="background: #551010;"></span>
+                  <span style="background: #E5A93C;"></span>
+                  <span style="background: #FAF9F6;"></span>
+                </span>
+                <span>Crimson Ember</span>
+              </button>
+            </div>
+
+            <!-- Master 1-Color Controller Banner -->
+            <div class="master-theme-card">
+              <div class="master-theme-header">
+                <div>
+                  <h4 class="master-theme-title">🎯 Master Theme Color (1-Color Controller)</h4>
+                  <p class="master-theme-desc">Changing this single color automatically updates the <strong>Header Background Color</strong>, <strong>White Background Bold Text</strong> (e.g., <em>SELECTED WORK</em>), and <strong>Buttons Color</strong> across your portfolio simultaneously.</p>
+                </div>
+                <div class="master-theme-picker-box">
+                  <input type="color" id="custColorPrimary" class="color-input-circle master-circle" value="#642B2B">
+                  <input type="text" id="custColorPrimaryHex" class="form-input hex-input master-hex" value="#642B2B" maxlength="7">
+                </div>
+              </div>
+              
+              <!-- Live Visual Preview of the 3 Affected Elements -->
+              <div class="master-sync-preview-grid">
+                <div class="sync-preview-item" id="previewHeaderItem">
+                  <span class="sync-preview-label">1. Header Background</span>
+                  <div class="mini-header-preview" id="syncHeaderSample">
+                    <span class="mini-logo">Pawan.</span>
+                    <span class="mini-nav">Work • Prototyping</span>
+                  </div>
+                </div>
+                <div class="sync-preview-item" id="previewBoldTextItem">
+                  <span class="sync-preview-label">2. Bold Text on White Canvas</span>
+                  <div class="mini-text-preview">
+                    <span class="mini-bold-title" id="syncBoldTextSample">SELECTED WORK</span>
+                  </div>
+                </div>
+                <div class="sync-preview-item" id="previewButtonsItem">
+                  <span class="sync-preview-label">3. Buttons &amp; Filter Pills</span>
+                  <div class="mini-btn-preview">
+                    <span class="mini-sample-btn" id="syncBtnSample">ALL (4) ✓</span>
+                    <span class="mini-sample-btn-sec" id="syncBtnSecSample">Back to Work</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="color-palette-grid">
+              <div class="color-picker-card">
+                <label class="color-picker-label">Header Background Color</label>
+                <div class="color-picker-row">
+                  <input type="color" id="custColorHeaderBg" class="color-input-circle" value="#4F1F1F">
+                  <input type="text" id="custColorHeaderBgHex" class="form-input hex-input" value="#4F1F1F" maxlength="7">
+                </div>
+                <span class="field-hint">Sticky navbar background, mobile drawer fill</span>
+              </div>
+
+              <div class="color-picker-card">
+                <label class="color-picker-label">White Background Bold Text</label>
+                <div class="color-picker-row">
+                  <input type="color" id="custColorBoldText" class="color-input-circle" value="#5C2828">
+                  <input type="text" id="custColorBoldTextHex" class="form-input hex-input" value="#5C2828" maxlength="7">
+                </div>
+                <span class="field-hint">Titles like "SELECTED WORK", headings on light canvas</span>
+              </div>
+
+              <div class="color-picker-card">
+                <label class="color-picker-label">Buttons &amp; Filter Pills Color</label>
+                <div class="color-picker-row">
+                  <input type="color" id="custColorButtons" class="color-input-circle" value="#5C2828">
+                  <input type="text" id="custColorButtonsHex" class="form-input hex-input" value="#5C2828" maxlength="7">
+                </div>
+                <span class="field-hint">Work filters, back buttons, modal CTAs</span>
+              </div>
+
+              <div class="color-picker-card">
+                <label class="color-picker-label">Accent Gold (Status Dot)</label>
+                <div class="color-picker-row">
+                  <input type="color" id="custColorGold" class="color-input-circle" value="#E5A93C">
+                  <input type="text" id="custColorGoldHex" class="form-input hex-input" value="#E5A93C" maxlength="7">
+                </div>
+                <span class="field-hint">Pulsing availability indicator, highlight accents</span>
+              </div>
+
+              <div class="color-picker-card">
+                <label class="color-picker-label">Body Text (Dark Gray)</label>
+                <div class="color-picker-row">
+                  <input type="color" id="custColorTextDark" class="color-input-circle" value="#1F1F1F">
+                  <input type="text" id="custColorTextDarkHex" class="form-input hex-input" value="#1F1F1F" maxlength="7">
+                </div>
+                <span class="field-hint">Paragraph descriptions and body typography</span>
+              </div>
+
+              <!-- Hidden inputs for backward compatibility -->
+              <input type="hidden" id="custColorMaroon" value="#642B2B">
+              <input type="hidden" id="custColorMaroonHex" value="#642B2B">
+              <input type="hidden" id="custColorMaroonDark" value="#4F1F1F">
+              <input type="hidden" id="custColorMaroonDarkHex" value="#4F1F1F">
+              <input type="hidden" id="custColorCream" value="#FAF9F6">
+              <input type="hidden" id="custColorCreamHex" value="#FAF9F6">
+            </div>
+          </div>
+
+          <!-- CARD 4: MAGNIFYING LENS OPTICS & CONTROLS -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3 class="card-box-title">Optical Magnifying Glass Controls</h3>
+                <p class="card-box-desc">Control lens cursor presence, floating on/off pill button, diameter size, and zoom magnification scale.</p>
+              </div>
+              <button type="button" class="btn-sm-outline" id="btnResetLens">Reset Lens ↺</button>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="toggle-card">
+                <div class="toggle-card-info">
+                  <strong>Enable Magnifying Lens Cursor</strong>
+                  <span>Allow users to explore the website with the realistic optical magnifying glass.</span>
+                </div>
+                <label class="switch-toggle">
+                  <input type="checkbox" id="custLensEnabled" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="toggle-card">
+                <div class="toggle-card-info">
+                  <strong>Show Floating Lens Toggle Pill on Website</strong>
+                  <span>Display the bottom floating pill button ('LENS: ON/OFF [M]') on the site.</span>
+                </div>
+                <label class="switch-toggle">
+                  <input type="checkbox" id="custLensShowToggleBtn" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Lens Diameter / Size</label>
+                  <span class="range-badge" id="badgeLensSize">70 px</span>
+                </div>
+                <input type="range" id="custLensSize" class="form-range" min="40" max="140" step="2" value="70">
+                <span class="field-hint">Compact pure glass lens size (Default 70px). Adjust from mini (40px) to wide (140px).</span>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header-flex">
+                  <label class="form-label">Magnification Zoom Scale</label>
+                  <span class="range-badge" id="badgeLensScale">1.65x</span>
+                </div>
+                <input type="range" id="custLensScale" class="form-range" min="1.2" max="3.0" step="0.05" value="1.65">
+                <span class="field-hint">Optical zoom power (Default 1.65x). Higher values enlarge fine text and CAD details more.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 5: SECTION HEADLINES & SUBTITLES -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3 class="card-box-title">Section Headlines &amp; Subtitles</h3>
+                <p class="card-box-desc">Customize titles and subtitles across all portfolio content sections.</p>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Selected Work: Section Title</label>
+                <input type="text" id="custWorkTitle" class="form-input" placeholder="SELECTED WORK">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Selected Work: Subtitle</label>
+                <input type="text" id="custWorkSubtitle" class="form-input" placeholder="Ideas transformed into meaningful, functional experiences.">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Prototyping: Section Title</label>
+                <input type="text" id="custProtoTitle" class="form-input" placeholder="PROTOTYPING WORKSHOP">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Prototyping: Philosophy Quote</label>
+                <input type="text" id="custProtoQuote" class="form-input" placeholder="Design is not just what it looks like and feels like. Design is how it works.">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Gallery: Section Title</label>
+                <input type="text" id="custGalleryTitle" class="form-input" placeholder="FIELD NOTES &amp; FRAMES">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Gallery: Subtitle</label>
+                <input type="text" id="custGallerySubtitle" class="form-input" placeholder="Visual journal of travels, prototypes, and material inspirations.">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Connect: Section Title</label>
+                <input type="text" id="custConnectTitle" class="form-input" placeholder="LET'S BUILD SOMETHING EXTRAORDINARY">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Connect: Subtitle</label>
+                <input type="text" id="custConnectSubtitle" class="form-input" placeholder="Have a design challenge or exciting project in mind? Let's connect.">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: SELECTED WORK & PROJECTS -->
+        <section class="tab-panel" id="tab-projects">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">SELECTED WORK &amp; CASE STUDIES</h2>
+              <p class="panel-desc">Manage project cards, category filters, and detailed case studies.</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-gold" id="btnOpenNewProjectModal">+ Add New Project</button>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">All Projects</h3>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <input type="text" id="projectSearchInput" class="form-input" placeholder="Search projects by title, slug, or tag..." style="width: 250px; padding: 6px 12px; font-size: 13px;">
+                <select id="projectCategoryFilter" class="form-select" style="width: auto; padding: 6px 12px;">
+                  <option value="all">All Categories</option>
+                  <option value="product">Product Design</option>
+                  <option value="uiux">UI/UX Design</option>
+                  <option value="graphic">Graphic Design</option>
+                </select>
+              </div>
+            </div>
+
+            <table class="items-list-table">
+              <thead>
+                <tr>
+                  <th style="width: 70px; text-align: center;">Order</th>
+                  <th style="width: 70px;">Media</th>
+                  <th>Project Title</th>
+                  <th>Category</th>
+                  <th>Tag</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="projectsTableBody">
+                <!-- Injected dynamically via admin.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- TAB 4: PROTOTYPING WORKSHOP -->
+        <section class="tab-panel" id="tab-prototyping">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">PROTOTYPING WORKSHOP</h2>
+              <p class="panel-desc">Curate your physical prototyping steps, polaroids, and workshop quote.</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-gold" id="btnOpenNewProtoModal">+ Add Step</button>
+              <button class="btn-primary" id="btnSaveProtoQuote">Save Quote 💾</button>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Workshop Quote Banner</h3>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quote Text</label>
+              <input type="text" id="protoQuoteInput" class="form-input" placeholder='"Workshop hands are curious hands."'>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Polaroid Cards (Initial &amp; "View All")</h3>
+            </div>
+            <div class="proto-admin-grid" id="protoGrid">
+              <!-- Injected dynamically via admin.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 5: GALLERY -->
+        <section class="tab-panel" id="tab-gallery">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">GALLERY &amp; PHOTOGRAPHY</h2>
+              <p class="panel-desc">Organize macro shots, alpine landscapes, and visual experiments in the 4-column bento grid.</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-gold" id="btnOpenNewGalleryModal">+ Add Photo</button>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Gallery Items</h3>
+              <div style="display: flex; gap: 10px;">
+                <select id="galleryColFilter" class="form-select" style="width: auto; padding: 6px 12px;">
+                  <option value="all">All Columns</option>
+                  <option value="1">Column 1</option>
+                  <option value="2">Column 2</option>
+                  <option value="3">Column 3</option>
+                  <option value="4">Column 4</option>
+                </select>
+              </div>
+            </div>
+            <div class="gallery-admin-grid" id="galleryGrid">
+              <!-- Injected dynamically via admin.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 6: CONNECT & FOOTER -->
+        <section class="tab-panel" id="tab-connect">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">CONNECT, SOCIAL &amp; FOOTER</h2>
+              <p class="panel-desc">Manage your contact email, resume link, social channels, and footer copy.</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-primary" id="btnSaveConnect">Save Changes 💾</button>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Contact Information</h3>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Section Title</label>
+                <input type="text" id="connTitle" class="form-input" placeholder="LET'S CONNECT">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Direct Email Address</label>
+                <input type="email" id="connEmail" class="form-input" placeholder="pawankushwaha.design@gmail.com">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Connect Intro Pitch</label>
+                <textarea id="connDesc" class="form-textarea" placeholder="Have a project hardware concept..."></textarea>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Resume Download Link / Path</label>
+                <input type="text" id="connResumeUrl" class="form-input" placeholder="assets/Pawan_Kushwaha_Resume.pdf">
+              </div>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Social Media Channels</h3>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Instagram URL</label>
+                <input type="url" id="connSocialInstagram" class="form-input" placeholder="https://instagram.com/...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">LinkedIn URL</label>
+                <input type="url" id="connSocialLinkedin" class="form-input" placeholder="https://linkedin.com/in/...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Behance URL</label>
+                <input type="url" id="connSocialBehance" class="form-input" placeholder="https://behance.net/...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Dribbble URL</label>
+                <input type="url" id="connSocialDribbble" class="form-input" placeholder="https://dribbble.com/...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">GitHub URL</label>
+                <input type="url" id="connSocialGithub" class="form-input" placeholder="https://github.com/...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Twitter / X URL</label>
+                <input type="url" id="connSocialTwitter" class="form-input" placeholder="https://twitter.com/...">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">YouTube URL</label>
+                <input type="url" id="connSocialYoutube" class="form-input" placeholder="https://youtube.com/...">
+              </div>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Footer Bar</h3>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Copyright Notice</label>
+                <input type="text" id="footerCopy" class="form-input" placeholder="© 2025 Pawan K. Kushwaha. All rights reserved.">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Footer Tagline</label>
+                <input type="text" id="footerTagline" class="form-input" placeholder="Designed & Built with Precision & Code">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 7: SECURITY -->
+        <section class="tab-panel" id="tab-security">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">SECURITY &amp; PASSWORD</h2>
+              <p class="panel-desc">Change your owner master password to keep the Admin Panel secure.</p>
+            </div>
+          </div>
+
+          <div class="card-box" style="max-width: 600px;">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Change Master Password</h3>
+            </div>
+            <form id="changePassForm" onsubmit="event.preventDefault();">
+              <div class="form-group">
+                <label class="form-label">Current Master Password</label>
+                <input type="password" id="currentPassInput" class="form-input" required autocomplete="current-password">
+              </div>
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input type="password" id="newPassInput" class="form-input" required minlength="4" autocomplete="new-password">
+                <span class="form-hint">Must be at least 4 characters long.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input type="password" id="confirmPassInput" class="form-input" required minlength="4" autocomplete="new-password">
+              </div>
+              <div class="auth-error-msg" id="passErrorMsg" style="margin-bottom: 12px;"></div>
+              <button type="submit" class="btn-primary" id="btnUpdatePassword">Update Master Password</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- TAB 8: BACKUP & EXPORT -->
+        <section class="tab-panel" id="tab-backup">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">DATA BACKUP &amp; RESTORE</h2>
+              <p class="panel-desc">Export your website configuration, restore from a backup, or reset to original defaults.</p>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Export &amp; Download</h3>
+            </div>
+            <p style="margin-bottom: 16px; font-size: 14.5px; color: var(--color-text-muted);">
+              Export a complete snapshot of all portfolio projects, photos, polaroid workshop steps, and contact links into a single JSON file.
+            </p>
+            <button class="btn-gold" id="btnExportJSON">Download Complete Site Backup (JSON) 💾</button>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <h3 class="card-box-title">Restore from Backup</h3>
+            </div>
+            <p style="margin-bottom: 16px; font-size: 14.5px; color: var(--color-text-muted);">
+              Upload a previously exported JSON backup file to instantly restore your entire website content.
+            </p>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;">
+            <button class="btn-outline-admin" id="btnTriggerImport">Select Backup File (.json) 📁</button>
+          </div>
+
+          <div class="card-box" style="border-color: #F5C6C6; background: #FFFDFD;">
+            <div class="card-box-header">
+              <h3 class="card-box-title" style="color: var(--color-red);">Reset to Factory Default</h3>
+            </div>
+            <p style="margin-bottom: 16px; font-size: 14.5px; color: var(--color-text-muted);">
+              Restore all website content back to the original portfolio defaults. This will erase custom unsaved local modifications.
+            </p>
+            <button class="btn-danger" id="btnResetDefaults">Reset Everything to Factory Default ⚠️</button>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== 3. MODALS ==================== -->
+
+  <!-- A. Project Add / Edit Modal -->
+  <div class="admin-modal-overlay" id="modalProject">
+    <div class="admin-modal-box">
+      <div class="admin-modal-header">
+        <h3 id="modalProjectHeading">Add New Project</h3>
+        <button class="admin-modal-close" data-close="modalProject">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="projectEditForm" onsubmit="event.preventDefault();">
+          <input type="hidden" id="editProjectId">
+          
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Project ID / Slug (Unique)</label>
+              <input type="text" id="fieldProjSlug" class="form-input" placeholder="e.g. luma, analog" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="fieldProjCategory" class="form-select" required>
+                <option value="product">Product Design</option>
+                <option value="uiux">UI/UX Design</option>
+                <option value="graphic">Graphic Design</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Short Title (Card Header)</label>
+              <input type="text" id="fieldProjShortTitle" class="form-input" placeholder="LUMA" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Full Title (Detail Page Headline)</label>
+              <input type="text" id="fieldProjTitle" class="form-input" placeholder="LUMA — Minimalist Modular Desk Lamp" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Badge Tag</label>
+              <input type="text" id="fieldProjTag" class="form-input" placeholder="CAD → 3D Print" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Card Thumbnail Image</label>
+              <div class="img-picker-row">
+                <img id="fieldProjThumbPreview" src="assets/images/work_luma.jpg" class="img-thumbnail-preview" alt="Preview">
+                <div class="input-with-action" style="flex: 1;">
+                  <input type="text" id="fieldProjImage" class="form-input" placeholder="assets/images/work_luma.jpg" required>
+                  <label class="btn-sm-upload" title="Upload local image">
+                    📁<input type="file" id="fileProjThumbUpload" accept="image/*" style="display:none;">
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group span-2">
+              <label class="form-label">Card Short Summary</label>
+              <input type="text" id="fieldProjShortDesc" class="form-input" placeholder="A minimalist modular desk lamp exploring diffused warm lighting..." required>
+            </div>
+            <div class="form-group span-2">
+              <label class="form-label">Case Study Full Description</label>
+              <textarea id="fieldProjDesc" class="form-textarea" placeholder="Detailed project overview and problem statement..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Timeline</label>
+              <input type="text" id="fieldProjTimeline" class="form-input" placeholder="4 Months (2024)">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <input type="text" id="fieldProjRole" class="form-input" placeholder="Lead Industrial Designer">
+            </div>
+            <div class="form-group span-2">
+              <label class="form-label">Tools Used</label>
+              <input type="text" id="fieldProjTools" class="form-input" placeholder="Fusion 360, KeyShot, CNC Milling">
+            </div>
+            <div class="form-group span-2">
+              <label class="form-label">Deliverables</label>
+              <input type="text" id="fieldProjDeliverables" class="form-input" placeholder="DFM CAD Packages, Working Functional Prototype">
+            </div>
+          </div>
+
+          <!-- Dynamic Showcase & Process Images Section -->
+          <div class="dynamic-images-block">
+            <!-- Case Study Overview Images -->
+            <div class="dynamic-images-header">
+              <div class="dynamic-images-title-group">
+                <h4 class="dynamic-images-title">Case Study Overview Images</h4>
+                <span class="dynamic-images-count-badge" id="overviewCountBadge">0 Images</span>
+              </div>
+              <button type="button" class="btn-add-img" id="btnAddOverviewImg">
+                <span>+</span> Add Overview Image
+              </button>
+            </div>
+            <div id="overviewImagesContainer" class="dynamic-images-list">
+              <!-- Dynamically populated via JS -->
+            </div>
+
+            <!-- Case Study Process Images -->
+            <div class="dynamic-images-header" style="margin-top: 18px;">
+              <div class="dynamic-images-title-group">
+                <h4 class="dynamic-images-title">Case Study Process Images</h4>
+                <span class="dynamic-images-count-badge" id="processCountBadge">0 Images</span>
+              </div>
+              <button type="button" class="btn-add-img" id="btnAddProcessImg">
+                <span>+</span> Add Process Image
+              </button>
+            </div>
+            <div id="processImagesContainer" class="dynamic-images-list">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn-outline-admin" data-close="modalProject">Cancel</button>
+        <button class="btn-primary" id="btnSaveProjectRecord">Save Project 💾</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. Prototyping Step Modal -->
+  <div class="admin-modal-overlay" id="modalProto">
+    <div class="admin-modal-box" style="max-width: 550px;">
+      <div class="admin-modal-header">
+        <h3 id="modalProtoHeading">Edit Prototyping Step</h3>
+        <button class="admin-modal-close" data-close="modalProto">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="protoEditForm" onsubmit="event.preventDefault();">
+          <input type="hidden" id="editProtoId">
+          <div class="form-group">
+            <label class="form-label">Step Tag</label>
+            <input type="text" id="fieldProtoTag" class="form-input" placeholder="STEP 01 • IDEATION" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Caption Title</label>
+            <input type="text" id="fieldProtoTitle" class="form-input" placeholder="Technical drafting & pencil dimensions" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Image Path or URL</label>
+            <div class="img-picker-row">
+              <img id="fieldProtoPreview" src="assets/images/proto_drafting.jpg" class="img-thumbnail-preview" alt="Preview">
+              <div class="input-with-action" style="flex: 1;">
+                <input type="text" id="fieldProtoSrc" class="form-input" placeholder="assets/images/proto_drafting.jpg" required>
+                <label class="btn-sm-upload" title="Upload local image">
+                  📁<input type="file" id="fileProtoUpload" accept="image/*" style="display:none;">
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tilt Style</label>
+            <select id="fieldProtoTilt" class="form-select">
+              <option value="tilt-left">Tilt Left (-2deg)</option>
+              <option value="tilt-right">Tilt Right (+2deg)</option>
+              <option value="tilt-slight-left">Slight Left (-1deg)</option>
+              <option value="tilt-slight-right">Slight Right (+1deg)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="fieldProtoIsExtra">
+              <span>Show only when "View All" is expanded</span>
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn-outline-admin" data-close="modalProto">Cancel</button>
+        <button class="btn-primary" id="btnSaveProtoRecord">Save Step 💾</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- C. Gallery Item Modal -->
+  <div class="admin-modal-overlay" id="modalGallery">
+    <div class="admin-modal-box" style="max-width: 550px;">
+      <div class="admin-modal-header">
+        <h3 id="modalGalleryHeading">Edit Gallery Photo</h3>
+        <button class="admin-modal-close" data-close="modalGallery">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="galleryEditForm" onsubmit="event.preventDefault();">
+          <input type="hidden" id="editGalleryId">
+          <div class="form-group">
+            <label class="form-label">Photo Source URL / Path</label>
+            <div class="img-picker-row">
+              <img id="fieldGalleryPreview" src="assets/images/gallery_forest.jpg" class="img-thumbnail-preview" alt="Preview">
+              <div class="input-with-action" style="flex: 1;">
+                <input type="text" id="fieldGallerySrc" class="form-input" placeholder="assets/images/gallery_forest.jpg" required>
+                <label class="btn-sm-upload" title="Upload local image">
+                  📁<input type="file" id="fileGalleryUpload" accept="image/*" style="display:none;">
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Caption / Location</label>
+            <input type="text" id="fieldGalleryCaption" class="form-input" placeholder="Alpine Pine Forest — Find Beauty in Details" required>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Column Placement</label>
+              <select id="fieldGalleryCol" class="form-select" required>
+                <option value="1">Column 1</option>
+                <option value="2">Column 2</option>
+                <option value="3">Column 3</option>
+                <option value="4">Column 4</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Card Size</label>
+              <select id="fieldGalleryType" class="form-select" required>
+                <option value="card-tall">Tall (Portrait)</option>
+                <option value="card-short">Short (Landscape)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Overlay Tag (Badge or Script)</label>
+            <input type="text" id="fieldGalleryBadge" class="form-input" placeholder="e.g. Astro 2024 or Find Beauty in Details">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="fieldGalleryIsScript">
+              <span>Render as handwritten cursive script ("Caveat") overlay</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="fieldGalleryIsExtra">
+              <span>Show only when "View All" is expanded</span>
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn-outline-admin" data-close="modalGallery">Cancel</button>
+        <button class="btn-primary" id="btnSaveGalleryRecord">Save Photo 💾</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- D. Milestone Modal (About Page) -->
+  <div class="admin-modal-overlay" id="modalMilestone">
+    <div class="admin-modal-box" style="max-width: 550px;">
+      <div class="admin-modal-header">
+        <h3 id="modalMilestoneHeading">Add Career Milestone</h3>
+        <button class="admin-modal-close" data-close="modalMilestone">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="milestoneEditForm" onsubmit="event.preventDefault();">
+          <input type="hidden" id="editMilestoneId">
+          <div class="form-group">
+            <label class="form-label">Year Range / Period</label>
+            <input type="text" id="fieldMilestoneYear" class="form-input" placeholder="2024 — PRESENT" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role / Milestone Title</label>
+            <input type="text" id="fieldMilestoneRole" class="form-input" placeholder="Independent Industrial & Product Designer" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="fieldMilestoneDesc" class="form-textarea" rows="4" placeholder="Partnering with founders and design studios..." required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn-outline-admin" data-close="modalMilestone">Cancel</button>
+        <button class="btn-primary" id="btnSaveMilestoneRecord">Save Milestone 💾</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Central Data Store & Admin Script -->
+  <script src="data-manager.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
