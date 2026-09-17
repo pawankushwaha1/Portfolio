@@ -1,0 +1,146 @@
+[
+  {
+    "id": "g1",
+    "col": 1,
+    "type": "card-tall",
+    "src": "assets/images/gallery_forest.jpg",
+    "caption": "Alpine Pine Forest — Find Beauty in Details",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": false
+  },
+  {
+    "id": "g2",
+    "col": 1,
+    "type": "card-short",
+    "src": "assets/images/gallery_astro.png",
+    "caption": "Milky Way over Frozen Alpine Lake (Astro 2024)",
+    "badge": "Astro 2024",
+    "isExtra": false
+  },
+  {
+    "id": "g3",
+    "col": 1,
+    "type": "card-tall",
+    "src": "assets/images/gallery_peaks.jpg",
+    "caption": "Alpine Night Summit & Star Trails",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": true
+  },
+  {
+    "id": "g4",
+    "col": 1,
+    "type": "card-short",
+    "src": "assets/images/gallery_hills.jpg",
+    "caption": "Sunlit Alpine Ridge & Evergreen Hills",
+    "badge": "Alpine Vista",
+    "isExtra": true
+  },
+  {
+    "id": "g5",
+    "col": 2,
+    "type": "card-short",
+    "src": "assets/images/gallery_lizard_eye.png",
+    "caption": "Macro Reptile Eye Study",
+    "badge": "Emerald Macro",
+    "isExtra": false
+  },
+  {
+    "id": "g6",
+    "col": 2,
+    "type": "card-tall",
+    "src": "assets/images/gallery_snake_scales.jpg",
+    "caption": "Green Reptile Scales — Find Beauty in Details",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": false
+  },
+  {
+    "id": "g7",
+    "col": 2,
+    "type": "card-short",
+    "src": "assets/images/gallery_flower.jpg",
+    "caption": "Cobalt Botanical Flower Blossom",
+    "badge": "Botanic Macro",
+    "isExtra": true
+  },
+  {
+    "id": "g8",
+    "col": 2,
+    "type": "card-tall",
+    "src": "assets/images/gallery_pond_macro.jpg",
+    "caption": "Sunlit Stream Pebbles & Lily Pads",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": true
+  },
+  {
+    "id": "g9",
+    "col": 3,
+    "type": "card-tall",
+    "src": "assets/images/gallery_stream.jpg",
+    "caption": "Water Lilies in Forest Stream — Find Beauty in Details",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": false
+  },
+  {
+    "id": "g10",
+    "col": 3,
+    "type": "card-short",
+    "src": "assets/images/gallery_studio_camera.png",
+    "caption": "Studio Workbench & Analog Cameras",
+    "badge": "Studio Work",
+    "isExtra": false
+  },
+  {
+    "id": "g11",
+    "col": 3,
+    "type": "card-tall",
+    "src": "assets/images/gallery_cyanotype.jpg",
+    "caption": "Cyanotype Printmaking & Vintage Camera",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": true
+  },
+  {
+    "id": "g12",
+    "col": 3,
+    "type": "card-short",
+    "src": "assets/images/gallery_vinyl.jpg",
+    "caption": "Vintage Vinyl & Analog Audio",
+    "badge": "Analog Sound",
+    "isExtra": true
+  },
+  {
+    "id": "g13",
+    "col": 4,
+    "type": "card-short",
+    "src": "assets/images/gallery_lily_pond.png",
+    "caption": "Serene Lotus Water Pond",
+    "badge": "Flora & Reflections",
+    "isExtra": false
+  },
+  {
+    "id": "g14",
+    "col": 4,
+    "type": "card-tall",
+    "src": "assets/images/gallery_blue_mountain.jpg",
+    "caption": "Twilight Snow Peak — Find Beauty in Details",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": false
+  },
+  {
+    "id": "g15",
+    "col": 4,
+    "type": "card-short",
+    "src": "assets/images/gallery_bottles.jpg",
+    "caption": "Parametric Surface CAD Wireframe Study",
+    "badge": "Industrial CAD",
+    "isExtra": true
+  },
+  {
+    "id": "g16",
+    "col": 4,
+    "type": "card-tall",
+    "src": "assets/images/gallery_moraine_lake.png",
+    "caption": "Glacial Moraine Lake Reflections",
+    "scriptOverlay": "Find Beauty\nin Details.",
+    "isExtra": true
+  }
+]

@@ -1,0 +1,647 @@
+[
+  {
+    "id": "luma",
+    "category": "product",
+    "categoryLabel": "PRODUCT DESIGN",
+    "shortTitle": "LUMA",
+    "title": "LUMA — Minimalist Modular Desk Lamp",
+    "tag": "CAD → 3D Print",
+    "image": "assets/images/work_luma.jpg",
+    "shortDesc": "A minimalist modular desk lamp exploring diffused warm lighting and ergonomic pivot..",
+    "description": "LUMA is an exploration in reductive industrial design and thermal management. A minimalist modular desk lamp exploring diffused warm lighting and ergonomic pivot points. Machined from billet 6061 aluminum with an integrated capacitive touch slider in the base, LUMA offers continuous dimming and circadian color-temperature tuning.",
+    "timeline": "4 Months (2024)",
+    "role": "Lead Industrial Designer & Prototyper",
+    "tools": "Autodesk Fusion 360, Keyshot, SLA 3D Printing, CNC Milling",
+    "deliverable": "DFM CAD Packages, Working Functional Prototype, Bill of Materials",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_luma.jpg",
+        "alt": "LUMA Acoustic Table Lamp Final Assembly"
+      },
+      {
+        "src": "assets/images/work_gantri.jpg",
+        "alt": "LUMA Diffuser Light Spill and Material Finishes"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "CAD Mechanical Tolerances & LED Thermal Path"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Thermal Heat-Sink Finite Element Analysis"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Acoustic Felt Damping Chamber Schematics"
+      },
+      {
+        "src": "assets/images/proto_cnc.jpg",
+        "alt": "Precision CNC Machined Aluminum Base"
+      }
+    ]
+  },
+  {
+    "id": "analog",
+    "category": "product",
+    "categoryLabel": "INDUSTRIAL DESIGN",
+    "shortTitle": "ANALOG",
+    "title": "ANALOG — Tactile Digital Camera",
+    "tag": "Concept CAD",
+    "image": "assets/images/work_analog.jpg",
+    "shortDesc": "A tactile digital camera concept prioritizing mechanical feedback with physical click...",
+    "description": "A tactile digital camera concept prioritizing mechanical feedback with physical click wheels and vintage ergonomics. In an era of frictionless touchscreens, ANALOG restores the tactile joy of photography through knurled aluminum control dials, mechanical shutter release clickers, and an organic status display inspired by 1970s rangefinders.",
+    "timeline": "3 Months (2024)",
+    "role": "Hardware UI/UX & Ergonomics Engineer",
+    "tools": "SolidWorks, KeyShot 11, Foam Prototyping, Arduino Micro",
+    "deliverable": "Ergonomic Rig Studies, Working PCB Enclosure, Production Ready CAD",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_analog.jpg",
+        "alt": "ANALOG Precision CNC Volume Controller"
+      },
+      {
+        "src": "assets/images/proto_cnc.jpg",
+        "alt": "Precision Multi-Axis CNC Milling Process"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Rotary Encoder Mechanical Tolerance Blueprint"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_cnc.jpg",
+        "alt": "5-Axis CNC Toolpath Milling Setup"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Stepped Magnetic Detent Tolerance Blueprint"
+      },
+      {
+        "src": "assets/images/proto_assembly.jpg",
+        "alt": "Bearing Alignment and Shaft Press-Fit"
+      }
+    ]
+  },
+  {
+    "id": "gantri",
+    "category": "product",
+    "categoryLabel": "PRODUCT DESIGN",
+    "shortTitle": "GANTRI LAMP",
+    "title": "GANTRI LAMP — Additive Zero-Waste Desktop Luminaire",
+    "tag": "Additive DFM",
+    "image": "assets/images/work_gantri.jpg",
+    "shortDesc": "Modular desktop luminaire engineered for scalable zero-waste additive manufacturing...",
+    "description": "Developed in close collaboration with Gantri, exploring sustainable plant-based polymers and zero-waste additive manufacturing. Features balanced weighted geometry, hidden wiring channels, and parametric diffusion ribs that cast a gentle, glare-free working light.",
+    "timeline": "3 Months (2024)",
+    "role": "Industrial Design & Additive DFM Specialist",
+    "tools": "Rhino 3D, Grasshopper, KeyShot, FDM Production Tooling",
+    "deliverable": "Toolpath Calibrations, Production CAD, Assembly Instructions",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_gantri.jpg",
+        "alt": "Gantri Luminaire Warm Illumination"
+      },
+      {
+        "src": "assets/images/proto_3dprint.jpg",
+        "alt": "3D Printing Additive Layer Deposition"
+      },
+      {
+        "src": "assets/images/work_luma.jpg",
+        "alt": "Sculptural Geometry in Minimalist Interior"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_3dprint.jpg",
+        "alt": "Additive Toolpath Slicing and Nozzle Temperature Control"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Parametric Curvature & Wall Thickness Optimization"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Cord Relief and Base Weighting Specifications"
+      }
+    ]
+  },
+  {
+    "id": "kinetic_chair",
+    "category": "product",
+    "categoryLabel": "FURNITURE DESIGN",
+    "shortTitle": "KINETIC CHAIR",
+    "title": "KINETIC CHAIR — Ergonomic Bent Plywood Study",
+    "tag": "Scale Prototyping",
+    "image": "assets/images/work_chair.jpg",
+    "shortDesc": "Ergonomic study chairs exploring lightweight bent plywood geometry and spine curvature...",
+    "description": "An architectural exploration into human spine kinematics and lightweight cantilevered seating. Developed through 1:5 scale paperboard maquettes, laser-cut veneer laminations, and 1:1 CNC-bent ergonomic testing bucks.",
+    "timeline": "4 Months (2023 - 2024)",
+    "role": "Furniture & Ergonomics Designer",
+    "tools": "AutoCAD, SolidWorks, CNC Router, Vacuum Press Lamination",
+    "deliverable": "1:5 Scale Study Models, 1:1 Full Scale Prototype, Structural FEA",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_chair.jpg",
+        "alt": "Kinetic Ergonomic Articulating Task Chair"
+      },
+      {
+        "src": "assets/images/proto_assembly.jpg",
+        "alt": "Spine Articulation Joint Hardware Prototyping"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Finite Element Analysis Stress Modeling"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_assembly.jpg",
+        "alt": "Ball-and-Socket Vertebral Joint Assembly"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Dynamic Lumbar Load Finite Element Simulation"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Gas-Lift Cylinder & Dual-Pivot Linkage Blueprints"
+      }
+    ]
+  },
+  {
+    "id": "modu_bottles",
+    "category": "product",
+    "categoryLabel": "INDUSTRIAL DESIGN",
+    "shortTitle": "MODU BOTTLE",
+    "title": "MODU BOTTLE — Interlocking Sustainable Hydration System",
+    "tag": "Blow Molding CAD",
+    "image": "assets/images/work_bottles.jpg",
+    "shortDesc": "Parametric ribbed interlocking water bottle system reducing resin usage by 24%...",
+    "description": "A parametric interlocking bottle architecture engineered to optimize shipping volumetric density by 28% and eliminate secondary packaging. Molded with thin-wall structural ribbing that reduces virgin polymer consumption while providing superior drop resistance.",
+    "timeline": "2 Months (2024)",
+    "role": "Packaging & Sustainable ID Consultant",
+    "tools": "PTC Creo, KeyShot Studio, SLA Scale Testing, Moldflow Analysis",
+    "deliverable": "Blow Mold Tooling CAD, Parting Line Specs, Material Savings Study",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_bottles.jpg",
+        "alt": "Modu Vacuum Insulated Bottle Geometry"
+      },
+      {
+        "src": "assets/images/gallery_bottles.jpg",
+        "alt": "Matte Powder-Coat Finishes in Studio Light"
+      },
+      {
+        "src": "assets/images/proto_extrusion.jpg",
+        "alt": "Extrusion Tooling & Threaded Cap Prototyping"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_extrusion.jpg",
+        "alt": "Deep-Draw Stainless Steel Tooling & Thread Precision"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Double-Wall Vacuum Insulation Seal Tolerances"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Modular Magnetic Flavor Pod Docking CAD"
+      }
+    ]
+  },
+  {
+    "id": "chassis_m1",
+    "category": "product",
+    "categoryLabel": "HARDWARE DESIGN",
+    "shortTitle": "CHASSIS M1",
+    "title": "CHASSIS M1 — Machined Mechanical Camera Body",
+    "tag": "Class-A Surfacing",
+    "image": "assets/images/work_chassis.jpg",
+    "shortDesc": "Precision machined rangefinder body with knurled physical dials and modular battery sled...",
+    "description": "A precision billet 6061-T6 aluminum rangefinder body engineered with continuous G2 curvature and tactile knurled control interfaces. Houses internal optical sensor modules and a quick-swap mechanical battery sled.",
+    "timeline": "5 Months (2024)",
+    "role": "Principal Hardware Systems Designer",
+    "tools": "Autodesk Alias, Fusion 360, 5-Axis CNC Milling, Anodizing Lab",
+    "deliverable": "Class-A Surface STEP Files, GD&T Drawings, Working Anodized Chassis",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_chassis.jpg",
+        "alt": "Chassis M1 Machined Aluminum Mini-ITX Case"
+      },
+      {
+        "src": "assets/images/proto_cnc.jpg",
+        "alt": "Beveled Chamfer CNC Milling and Sandblasting"
+      },
+      {
+        "src": "assets/images/proto_scale.jpg",
+        "alt": "Component Tolerance and Airflow Validation"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_cnc.jpg",
+        "alt": "Extruded 6061 Billet Machining Operation"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "SFX Power Supply & GPU PCIe 4.0 Riser Blueprint"
+      },
+      {
+        "src": "assets/images/proto_assembly.jpg",
+        "alt": "Sandblasted Matte Hard-Anodized Surface Finish"
+      }
+    ]
+  },
+  {
+    "id": "apex_gears",
+    "category": "product",
+    "categoryLabel": "MECHANICAL DESIGN",
+    "shortTitle": "APEX GEARS",
+    "title": "APEX GEARS — High-Durability Micro Planetary Geartrain",
+    "tag": "Additive Tooling",
+    "image": "assets/images/work_gears.jpg",
+    "shortDesc": "High-durability micro planetary gear systems tested for repeatable low-volume production...",
+    "description": "Engineered micro-extrusion additive toolpaths for high-tolerance involute gears. Built for low-volume precision mechatronic actuators requiring zero backlash and long-cycle friction durability.",
+    "timeline": "3 Months (2024)",
+    "role": "Mechatronic Fabrication Engineer",
+    "tools": "SolidWorks Motion, GearTeq, Direct-Drive Micro Extruder",
+    "deliverable": "Gear Involute DFM, Backlash Analysis Report, Functional Actuator",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_gears.jpg",
+        "alt": "Apex Mountain Gear Mechanism & Carbon Lever"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Indexing Pawl Tooth Engagement Engineering Draft"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "High-Impact Stress Finite Element Simulation"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Ratchet Cam Indexing Step Profile Blueprint"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Carbon Prepreg Compression Mold Cavity Analysis"
+      },
+      {
+        "src": "assets/images/proto_assembly.jpg",
+        "alt": "Sealed Ceramic Bearing Clean-Room Assembly"
+      }
+    ]
+  },
+  {
+    "id": "breathe",
+    "category": "uiux",
+    "categoryLabel": "UI/UX DESIGN",
+    "shortTitle": "BREATHE",
+    "title": "BREATHE — Mindful Living & Alpine Meditation App",
+    "tag": "Figma Prototype",
+    "image": "assets/images/work_breathe.png",
+    "shortDesc": "A mindful living and alpine meditation app designed with calm typography and..",
+    "description": "A mindful living and alpine meditation app designed with calm typography and serene pacing. BREATHE synchronizes breathing cadences with subtle linear resonant haptic pulses. By pairing a pebble-sized pocket stone with an iOS companion, users regulate stress without gazing at glowing screens.",
+    "timeline": "5 Months (2023 - 2024)",
+    "role": "Product Designer & Interaction Architect",
+    "tools": "Figma, Principle, Swift / CoreHaptics, Soft-Touch Silicone Overmolding",
+    "deliverable": "Complete Design System, BLE Communication Specs, High-Fi Prototype",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_breathe.png",
+        "alt": "Breathe Meditation Mobile Application Experience"
+      },
+      {
+        "src": "assets/images/work_pulse.jpg",
+        "alt": "Biometric Heart Rate & Respiratory Biofeedback"
+      },
+      {
+        "src": "assets/images/work_aether.jpg",
+        "alt": "Ambient Soundscape Mixing & Haptic Feedback"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "User Journey Wireframes & Breath Timing Cadence"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Wearable Haptic Transducer Housing Layout"
+      },
+      {
+        "src": "assets/images/proto_assembly.jpg",
+        "alt": "Usability Testing Rig & Heart-Rate Telemetry Log"
+      }
+    ]
+  },
+  {
+    "id": "pulse_os",
+    "category": "uiux",
+    "categoryLabel": "UI/UX DESIGN",
+    "shortTitle": "PULSE OS",
+    "title": "PULSE OS — Connected Sports Telemetry Design System",
+    "tag": "Design System",
+    "image": "assets/images/work_pulse.jpg",
+    "shortDesc": "Haptic telemetry mobile interface designed for connected wearable sports trackers...",
+    "description": "A high-performance dark-mode health telemetry companion designed for endurance athletes. Synthesizes continuous VO2 max telemetry, biometric HRV spikes, and real-time pacing recommendations into ultra-readable micro-visualizations.",
+    "timeline": "4 Months (2024)",
+    "role": "Lead UI/UX Architect",
+    "tools": "Figma, Tokens Studio, Framer, React Native Prototype",
+    "deliverable": "Multi-Platform Design System, Micro-Interactions, Usability Study",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_pulse.jpg",
+        "alt": "Pulse OS Telemetry Dashboard & Performance Tracking"
+      },
+      {
+        "src": "assets/images/work_breathe.png",
+        "alt": "Personalized Recovery & Bio-Rhythm Analytics"
+      },
+      {
+        "src": "assets/images/work_aether.jpg",
+        "alt": "Multi-Sensor Data Stream Telemetry Graphs"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Optical Sensor Window Refraction Modeling"
+      },
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "AMOLED Glance-State Typography & Grid Layout"
+      },
+      {
+        "src": "assets/images/proto_cnc.jpg",
+        "alt": "Titanium Bezel Drop-Impact Test Prototyping"
+      }
+    ]
+  },
+  {
+    "id": "aether_dash",
+    "category": "uiux",
+    "categoryLabel": "PRODUCT UI",
+    "shortTitle": "AETHER DASH",
+    "title": "AETHER DASH — Spatial Audio Studio Controller",
+    "tag": "SaaS Platform",
+    "image": "assets/images/work_aether.jpg",
+    "shortDesc": "Spatial audio management interface with real-time parametric equalizer visualizers...",
+    "description": "A multi-touch tablet and desktop spatial audio workstation interface. Empowers audio engineers to position 3D object-based sound coordinates in real-time with responsive 3D sphere gyros, multi-band FFT equalizers, and haptic slider rails.",
+    "timeline": "3 Months (2024)",
+    "role": "Senior Product Designer & Sound Interaction Lead",
+    "tools": "Figma, Web Audio API, Three.js, TailwindCSS",
+    "deliverable": "Interactive Web Prototype, Accessibility Spec, Component Library",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_aether.jpg",
+        "alt": "Aether Dash Spatial Audio DAW Interface"
+      },
+      {
+        "src": "assets/images/work_pulse.jpg",
+        "alt": "Oscilloscope Telemetry & Parametric Visualizer"
+      },
+      {
+        "src": "assets/images/work_breathe.png",
+        "alt": "Multi-Channel Surround Placement Matrix"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Spatial Coordinate Panner Architecture Wireframe"
+      },
+      {
+        "src": "assets/images/proto_cad.jpg",
+        "alt": "Dedicated Hardware Mixing Surface Mockup"
+      },
+      {
+        "src": "assets/images/proto_cnc.jpg",
+        "alt": "Motorized Fader Enclosure Billet Fabrication"
+      }
+    ]
+  },
+  {
+    "id": "movietime",
+    "category": "graphic",
+    "categoryLabel": "GRAPHIC DESIGN",
+    "shortTitle": "MOVIE TIME",
+    "title": "MOVIE TIME — Retro-Inspired Cinematic Poster Series",
+    "tag": "Risograph Print",
+    "image": "assets/images/work_movietime.jpg",
+    "shortDesc": "Retro-inspired cinematic poster series honoring classic storytelling with textured...",
+    "description": "Retro-inspired cinematic poster series honoring classic storytelling with textured risograph print aesthetics, vivid color harmonies, and timeless graphic composition. Curated cinema discovery platform with interactive community reviews and personalized recommendations.",
+    "timeline": "3 Months (2023)",
+    "role": "Full-Stack Product Designer",
+    "tools": "Figma, React, TailwindCSS, TMDB API, Framer Motion",
+    "deliverable": "Responsive Web Application, User Journey Maps, Micro-Interactions",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_movietime.jpg",
+        "alt": "Movie Time Gallery Exhibition of Screenprints"
+      },
+      {
+        "src": "assets/images/work_cinema_reel.jpg",
+        "alt": "Kinetic Film Strip Typography & Halftone Texture"
+      },
+      {
+        "src": "assets/images/work_avengers_poster.jpg",
+        "alt": "Blockbuster Multi-Figure Composite Screenprint"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Halftone Color Separation & Spot Plate Alignment"
+      },
+      {
+        "src": "assets/images/proto_illustration.jpg",
+        "alt": "Hand-Inked Rough Typography Studies"
+      },
+      {
+        "src": "assets/images/gallery_cyanotype.jpg",
+        "alt": "Experimental UV Exposure on Heavyweight Cotton Stock"
+      }
+    ]
+  },
+  {
+    "id": "vinyl_grooves",
+    "category": "graphic",
+    "categoryLabel": "GRAPHIC DESIGN",
+    "shortTitle": "VINYL GROOVES",
+    "title": "VINYL GROOVES — Geometric Music Identity & Album Packaging",
+    "tag": "Album Packaging",
+    "image": "assets/images/work_vinyl_poster.jpg",
+    "shortDesc": "Minimalist typography and geometric piano-key layout celebrating vinyl culture...",
+    "description": "A striking minimalist record packaging identity exploring the intersection of radial analog grooves and linear piano keys. Features die-cut center sleeves, matte debossed letterpress typography, and custom gatefold art.",
+    "timeline": "2 Months (2023)",
+    "role": "Graphic Designer & Art Director",
+    "tools": "Adobe Illustrator, Photoshop, InDesign, Spot UV Screen Printing",
+    "deliverable": "12-Inch Gatefold Sleeve, Disc Label Typography, Press Kit",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_vinyl_poster.jpg",
+        "alt": "Vinyl Grooves Piano-Key Geometric Gatefold"
+      },
+      {
+        "src": "assets/images/work_surreal_audio.jpg",
+        "alt": "Surreal Sound Center-Label Vintage Pressing"
+      },
+      {
+        "src": "assets/images/gallery_vinyl.jpg",
+        "alt": "Macro 180g Vinyl Micro-Grooves & Spindle Detail"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Dieline Geometry & Foil-Stamp Embossing Specs"
+      },
+      {
+        "src": "assets/images/proto_illustration.jpg",
+        "alt": "Constructivist Radial Composition Sketches"
+      },
+      {
+        "src": "assets/images/gallery_cyanotype.jpg",
+        "alt": "Matte Varnish Test Pressing Sample Evaluation"
+      }
+    ]
+  },
+  {
+    "id": "surreal_sound",
+    "category": "graphic",
+    "categoryLabel": "BRAND IDENTITY",
+    "shortTitle": "SURREAL AUDIO",
+    "title": "SURREAL AUDIO — Conceptual Analog Sound Identity",
+    "tag": "Editorial Print",
+    "image": "assets/images/work_surreal_audio.jpg",
+    "shortDesc": "Conceptual album cover artwork merging analog disc pressings with vintage tailoring...",
+    "description": "An editorial artwork series celebrating tactile vinyl culture and analog warmth. Blends surrealist collage with bespoke serif typography, honoring heritage recording studios and independent vinyl pressing plants.",
+    "timeline": "2 Months (2024)",
+    "role": "Brand Identity Designer",
+    "tools": "Adobe Photoshop, Scanography, Mixed Media Collage",
+    "deliverable": "Brand Identity Guidelines, Vinyl Jacket Series, Poster Run",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_surreal_audio.jpg",
+        "alt": "Surreal Sound Conceptual Center Label"
+      },
+      {
+        "src": "assets/images/work_vinyl_poster.jpg",
+        "alt": "Monochrome Gatefold Inner Sleeve Packaging"
+      },
+      {
+        "src": "assets/images/gallery_vinyl.jpg",
+        "alt": "High-Fidelity Audiophile Grooves Under Studio Light"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Center Label Diameter & Spindle Die Cut Blueprint"
+      },
+      {
+        "src": "assets/images/proto_illustration.jpg",
+        "alt": "Surrealist Eye & Acoustic Waveform Exploration"
+      },
+      {
+        "src": "assets/images/gallery_cyanotype.jpg",
+        "alt": "Monochrome Archival Print Proofing"
+      }
+    ]
+  },
+  {
+    "id": "cinema_noir",
+    "category": "graphic",
+    "categoryLabel": "POSTER DESIGN",
+    "shortTitle": "CINEMA NOIR",
+    "title": "CINEMA NOIR — 35mm Independent Film Festival Identity",
+    "tag": "Screen Print",
+    "image": "assets/images/work_cinema_reel.jpg",
+    "shortDesc": "Dynamic 35mm film reel identity celebrating indie cinema festivals and motion picture heritage...",
+    "description": "Dynamic typographic and motion branding for an international independent cinema festival. Utilizes kinetic 35mm celluloid film loops, silver-foil stamped program guides, and high-contrast duotone silkscreen posters.",
+    "timeline": "3 Months (2023)",
+    "role": "Visual Designer & Identity Lead",
+    "tools": "Illustrator, After Effects, Silkscreen Hand Printing",
+    "deliverable": "Festival Identity System, Screen-Printed Poster Suite, Trailer Motion",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_cinema_reel.jpg",
+        "alt": "Cinema Noir 35mm Celluloid Film Graphic"
+      },
+      {
+        "src": "assets/images/work_movietime.jpg",
+        "alt": "Festival Exhibition Hall Poster Installation"
+      },
+      {
+        "src": "assets/images/work_avengers_poster.jpg",
+        "alt": "Dramatic Character Lighting & Print Finishes"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Sprocket Hole Grid System & Kinetic Type Layout"
+      },
+      {
+        "src": "assets/images/proto_illustration.jpg",
+        "alt": "High-Contrast Chiaroscuro Storyboarding"
+      },
+      {
+        "src": "assets/images/gallery_cyanotype.jpg",
+        "alt": "Analog Film Bleed & Grain Texture Captures"
+      }
+    ]
+  },
+  {
+    "id": "heroic_horizons",
+    "category": "graphic",
+    "categoryLabel": "POSTER ART",
+    "shortTitle": "HEROIC HORIZONS",
+    "title": "HEROIC HORIZONS — Cinematic Blockbuster Art & Layout",
+    "tag": "Cinematic Layout",
+    "image": "assets/images/work_avengers_poster.jpg",
+    "shortDesc": "Complex multi-figure blockbuster composition with dramatic lighting and distressed typography...",
+    "description": "Complex multi-figure character orchestration and atmospheric lighting design celebrating modern cinematic epics. Explores dramatic depth hierarchies, particle destruction overlays, and distressed risograph type lockups.",
+    "timeline": "2 Months (2023)",
+    "role": "Key Art Illustrator & Compositor",
+    "tools": "Photoshop, Cinema 4D, Custom Brushes, Large Format Offset",
+    "deliverable": "Bus Shelter Key Art, Collector's Edition Foil Print, Promo Assets",
+    "showcaseImages": [
+      {
+        "src": "assets/images/work_avengers_poster.jpg",
+        "alt": "Heroic Horizons Blockbuster Screenprint"
+      },
+      {
+        "src": "assets/images/work_cinema_reel.jpg",
+        "alt": "Film Strip Framing & Typography"
+      },
+      {
+        "src": "assets/images/work_movietime.jpg",
+        "alt": "Gallery Exhibition Lighting & Print Textures"
+      }
+    ],
+    "processImages": [
+      {
+        "src": "assets/images/proto_drafting.jpg",
+        "alt": "Multi-Plate CMYK + Metallic Spot Ink Registration"
+      },
+      {
+        "src": "assets/images/proto_illustration.jpg",
+        "alt": "Anatomical Dynamic Posing & Lighting Roughs"
+      },
+      {
+        "src": "assets/images/gallery_cyanotype.jpg",
+        "alt": "Serigraph Screen Mesh Density & Squeegee Proofing"
+      }
+    ]
+  }
+]

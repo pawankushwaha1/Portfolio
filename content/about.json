@@ -1,0 +1,101 @@
+{
+  "hero": {
+    "badge": "PRODUCT DESIGN • PROTOTYPING • HUMAN-CENTERED",
+    "title": "TURNING TANGIBLE IDEAS INTO PURPOSEFUL PRODUCTS.",
+    "lead": "Hi, I’m Pawan K. Kushwaha. I am a product and industrial designer based in Chandigarh, India. I operate at the intersection of hands-on physical prototyping and digital systems—transforming complex engineering constraints into objects that feel balanced, intuitive, and remarkably satisfying to use.",
+    "bio": "Whether carving early foam forms, running CNC toolpaths, testing capacitive touch ergonomics, or crafting crisp UI micro-interactions, I obsess over the micro-details that make a product truly memorable.",
+    "floatingPill": "Design. Make. Explore.",
+    "characterImg": "assets/images/connect_character.png"
+  },
+  "stats": [
+    {
+      "number": "4+",
+      "label": "Years of Design & Fabrication"
+    },
+    {
+      "number": "15+",
+      "label": "Working Functional Prototypes"
+    },
+    {
+      "number": "10+",
+      "label": "Screenprint & Fine Art Editions"
+    },
+    {
+      "number": "100%",
+      "label": "Hands-On Curiosity & Detail"
+    }
+  ],
+  "philosophy": [
+    {
+      "num": "01 / TANGIBLE FIRST",
+      "title": "Making to Understand",
+      "desc": "Physical prototypes reveal nuances that CAD screens hide. I build rapid foam drafts, 3D prints, and rough rigs early to evaluate weight, balance, tactile feedback, and human ergonomics."
+    },
+    {
+      "num": "02 / PRODUCTION INTEGRITY",
+      "title": "Design for Manufacturing (DFM)",
+      "desc": "Great design doesn't end at visualization. I engineer parting lines, draft angles, fastener layouts, and tolerance allowances so that production parts match the original design intent flawlessly."
+    },
+    {
+      "num": "03 / HARMONIOUS SYSTEMS",
+      "title": "Cohesive Digital Ecosystems",
+      "desc": "Physical products thrive when their digital touchpoints feel natural. From AMOLED glance states to companion dashboards, every interaction feels unified, warm, and responsive."
+    }
+  ],
+  "skills": {
+    "physicalTitle": "Physical & Industrial Design",
+    "physicalList": [
+      "High-Surfacing 3D CAD & Parametric Modeling",
+      "Design for Manufacturing (DFM & DFA)",
+      "CNC 3-Axis & 4-Axis Machining Preparation",
+      "Rapid Additive Fabrication (FDM & SLA 3D Printing)",
+      "CMF Strategy (Color, Material, Finish & Texture Specs)",
+      "Ergonomic Anthropometric Study & Scale Validation"
+    ],
+    "physicalPills": [
+      "Fusion 360",
+      "KeyShot",
+      "SolidWorks",
+      "Blender",
+      "3D Printing",
+      "CNC Tooling"
+    ],
+    "digitalTitle": "Digital, UX & Visual Crafts",
+    "digitalList": [
+      "Human-Centered UI/UX Architecture & User Journeys",
+      "Interactive Micro-Animations & Component Systems",
+      "Embedded Display Interfaces & Telemetry Dashboards",
+      "Hand-Inked Rough Illustration & Storyboarding",
+      "Serigraph Screenprinting & Risograph Printmaking",
+      "Physical Sensor Prototyping (Arduino / ESP32)"
+    ],
+    "digitalPills": [
+      "Figma",
+      "Adobe Illustrator",
+      "Photoshop",
+      "After Effects",
+      "Screenprint",
+      "Arduino"
+    ]
+  },
+  "milestones": [
+    {
+      "id": "m1",
+      "year": "2024 — PRESENT",
+      "role": "Independent Industrial & Product Designer",
+      "desc": "Partnering with founders and design studios on full-cycle physical hardware development—from concept sketches and engineering CAD to functional working prototypes and CMF validation."
+    },
+    {
+      "id": "m2",
+      "year": "2023 — 2024",
+      "role": "Lead Hardware Concept Designer — LUMA Lamp & Modular Accessories",
+      "desc": "Engineered the LUMA minimalist modular desk lamp, exploring capacitive touch sensing, diffused warm ambient illumination, and sustainable modular disassembly."
+    },
+    {
+      "id": "m3",
+      "year": "2022 — 2023",
+      "role": "Experimental Printmaker & Tactile Artifact Designer",
+      "desc": "Explored traditional photographic cyanotypes, gatefold album dielines, and multi-plate screenprint registration. Exhibited limited runs celebrating film and music culture."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "physicalTitle": "Physical & Industrial Design",
+  "physicalList": [
+    "High-Surfacing 3D CAD & Parametric Modeling",
+    "Design for Manufacturing (DFM & DFA)",
+    "CNC 3-Axis & 4-Axis Machining Preparation",
+    "Rapid Additive Fabrication (FDM & SLA 3D Printing)",
+    "CMF Strategy (Color, Material, Finish & Texture Specs)",
+    "Ergonomic Anthropometric Study & Scale Validation"
+  ],
+  "physicalPills": [
+    "Fusion 360",
+    "KeyShot",
+    "SolidWorks",
+    "Blender",
+    "3D Printing",
+    "CNC Tooling"
+  ],
+  "digitalTitle": "Digital, UX & Visual Crafts",
+  "digitalList": [
+    "Human-Centered UI/UX Architecture & User Journeys",
+    "Interactive Micro-Animations & Component Systems",
+    "Embedded Display Interfaces & Telemetry Dashboards",
+    "Hand-Inked Rough Illustration & Storyboarding",
+    "Serigraph Screenprinting & Risograph Printmaking",
+    "Physical Sensor Prototyping (Arduino / ESP32)"
+  ],
+  "digitalPills": [
+    "Figma",
+    "Adobe Illustrator",
+    "Photoshop",
+    "After Effects",
+    "Screenprint",
+    "Arduino"
+  ]
+}

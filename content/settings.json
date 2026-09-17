@@ -1,0 +1,137 @@
+{
+  "profile": {
+    "name": "PAWAN K. KUSHWAHA",
+    "titleLine1": "PAWAN K.",
+    "titleLine2": "KUSHWAHA",
+    "role": "PRODUCT DESIGNER",
+    "tagline": "Design. Make. Explore.",
+    "location": "Chandigarh, India",
+    "statusText": "Available for opportunities",
+    "statusType": "gold",
+    "avatar": "assets/images/hero_character.png",
+    "ctaWorkText": "View My Work",
+    "ctaStoryText": "About Me",
+    "ctaStoryUrl": "about.html",
+    "music": {
+      "caption": "CURRENTLY LISTENING",
+      "trackName": "Cinematic Ambient & Lo-Fi Beats",
+      "audioSrc": "assets/audio/ambient_lofi.wav"
+    }
+  },
+  "categories": [
+    {
+      "id": "product",
+      "name": "Product Design"
+    },
+    {
+      "id": "uiux",
+      "name": "UI/UX Design"
+    },
+    {
+      "id": "graphic",
+      "name": "Graphic Design"
+    }
+  ],
+  "connect": {
+    "title": "LET'S CONNECT",
+    "desc": "Have a project hardware concept, digital interface, or just want to say hi? I'd love to hear from you.",
+    "email": "pawankushwaha.design@gmail.com",
+    "resumeUrl": "assets/Pawan_Kushwaha_Resume.pdf",
+    "socials": {
+      "instagram": "https://instagram.com",
+      "linkedin": "https://linkedin.com",
+      "behance": "https://behance.net",
+      "dribbble": "https://dribbble.com",
+      "twitter": "https://twitter.com",
+      "youtube": "https://youtube.com",
+      "github": "https://github.com"
+    },
+    "badges": [
+      {
+        "text": "Open for Collabs",
+        "icon": "👋",
+        "delay": "0.2s"
+      },
+      {
+        "text": "Let's Build Something Great",
+        "icon": "⚡",
+        "delay": "2s"
+      }
+    ]
+  },
+  "footer": {
+    "copyright": "© 2026 Pawan Kumar Kushwaha",
+    "tagline": "Design with curiosity."
+  },
+  "customization": {
+    "hero": {
+      "titleSize": 8.8,
+      "lineHeight": 0.86,
+      "letterSpacing": 0.02,
+      "roleSize": 0.88,
+      "taglineSize": 2.4,
+      "titleLine1": "PAWAN K.",
+      "titleLine2": "KUSHWAHA"
+    },
+    "profileImg": {
+      "scale": 100,
+      "offsetX": 0,
+      "offsetY": 0,
+      "alignment": "center",
+      "layerOrder": "back"
+    },
+    "colors": {
+      "primary": "#642B2B",
+      "headerBg": "#4F1F1F",
+      "boldText": "#5C2828",
+      "buttons": "#5C2828",
+      "maroon": "#642B2B",
+      "maroonDark": "#4F1F1F",
+      "cream": "#FAF9F6",
+      "gold": "#E5A93C",
+      "textDark": "#1F1F1F"
+    },
+    "lens": {
+      "enabled": true,
+      "showToggleBtn": true,
+      "size": 70,
+      "scale": 1.65
+    },
+    "backgrounds": {
+      "hero": {
+        "type": "image",
+        "image": "assets/background.png",
+        "color": "#55161C",
+        "parallax": true,
+        "overlayOpacity": 0.15,
+        "speed": 1
+      },
+      "prototyping": {
+        "type": "image",
+        "image": "assets/background.png",
+        "color": "#55161C",
+        "parallax": true,
+        "overlayOpacity": 0.35,
+        "speed": 1
+      },
+      "connect": {
+        "type": "image",
+        "image": "assets/background.png",
+        "color": "#55161C",
+        "parallax": true,
+        "overlayOpacity": 0.25,
+        "speed": 1
+      }
+    },
+    "sections": {
+      "workTitle": "SELECTED WORK",
+      "workSubtitle": "Ideas transformed into meaningful, functional experiences.",
+      "protoTitle": "PROTOTYPING WORKSHOP",
+      "protoQuote": "Design is not just what it looks like and feels like. Design is how it works.",
+      "galleryTitle": "FIELD NOTES & FRAMES",
+      "gallerySubtitle": "Visual journal of travels, prototypes, and material inspirations.",
+      "connectTitle": "LET'S BUILD SOMETHING EXTRAORDINARY",
+      "connectSubtitle": "Have a design challenge or exciting project in mind? Let's connect."
+    }
+  }
+}

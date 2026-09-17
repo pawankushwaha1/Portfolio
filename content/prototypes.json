@@ -1,0 +1,74 @@
+[
+  {
+    "id": "drafting",
+    "step": "STEP 01",
+    "tag": "STEP 01 • IDEATION",
+    "title": "Technical drafting & pencil dimensions",
+    "src": "assets/images/proto_drafting.jpg",
+    "tilt": "tilt-left",
+    "isExtra": false
+  },
+  {
+    "id": "3dprint",
+    "step": "STEP 02",
+    "tag": "STEP 02 • RAPID PROTOTYPING",
+    "title": "White resin mechanical joint test",
+    "src": "assets/images/proto_3dprint.jpg",
+    "tilt": "tilt-right",
+    "isExtra": false
+  },
+  {
+    "id": "cnc",
+    "step": "STEP 03",
+    "tag": "STEP 03 • PRECISION MILLING",
+    "title": "Spindle machining billet components",
+    "src": "assets/images/proto_cnc.jpg",
+    "tilt": "tilt-slight-left",
+    "isExtra": false
+  },
+  {
+    "id": "illustration",
+    "step": "STEP 04",
+    "tag": "STEP 04 • SCALE VERIFICATION",
+    "title": "Sketch, Model, Make, Test, Repeat.",
+    "src": "assets/images/proto_illustration.jpg",
+    "tilt": "tilt-slight-right",
+    "isExtra": false
+  },
+  {
+    "id": "extrusion",
+    "step": "STEP 05",
+    "tag": "STEP 05 • ADDITIVE FABRICATION",
+    "title": "Precision nozzle extrusion testing",
+    "src": "assets/images/proto_extrusion.jpg",
+    "tilt": "tilt-left",
+    "isExtra": true
+  },
+  {
+    "id": "assembly",
+    "step": "STEP 06",
+    "tag": "STEP 06 • PHYSICAL ASSEMBLY",
+    "title": "Hands-on bench assembly & fit check",
+    "src": "assets/images/proto_assembly.jpg",
+    "tilt": "tilt-right",
+    "isExtra": true
+  },
+  {
+    "id": "cad",
+    "step": "STEP 07",
+    "tag": "STEP 07 • PARAMETRIC CAD",
+    "title": "3D mechanical chassis surface model",
+    "src": "assets/images/proto_cad.jpg",
+    "tilt": "tilt-slight-left",
+    "isExtra": true
+  },
+  {
+    "id": "scale",
+    "step": "STEP 08",
+    "tag": "STEP 08 • SCALE STUDY",
+    "title": "Ergonomic miniature study models",
+    "src": "assets/images/proto_scale.jpg",
+    "tilt": "tilt-slight-right",
+    "isExtra": true
+  }
+]
