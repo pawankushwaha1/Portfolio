@@ -4,6 +4,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.PortfolioData && typeof window.PortfolioData.loadRemoteData === 'function') {
+    window.PortfolioData.loadRemoteData();
+  }
   hydrateAboutPage();
   initAboutNavbar();
   initAboutParallax();

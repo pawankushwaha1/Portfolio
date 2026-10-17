@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&amp;display=swap');
+      .fav-text {
+        font-family: 'Caveat', cursive, sans-serif;
+        font-size: 46px;
+        font-weight: 700;
+        fill: #FFFFFF;
+      }
+      .fav-dot {
+        fill: #DE8344;
+      }
+    </style>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#6C1327"/>
+  <text x="14" y="47" class="fav-text">P<tspan class="fav-dot">.</tspan></text>
+</svg>

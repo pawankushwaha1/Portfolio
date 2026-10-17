@@ -9,38 +9,171 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Google Fonts: Bebas Neue (Condensed Headings), Caveat (Signature Script), Plus Jakarta Sans (Clean Body) -->
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <!-- Anti-Flicker Pre-Hydration: Instantly applies saved backgrounds & theme colors before first paint -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="alternate icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css?v=2026.10.13.about_tools">
+  <!-- Anti-Flicker Pre-Hydration: Instantly applies saved backgrounds, lens state & theme colors before first paint -->
   <script>
     (function() {
       try {
-        var raw = localStorage.getItem('portfolio_master_data');
-        if (!raw) return;
-        var d = JSON.parse(raw);
-        if (!d || !d.customization) return;
-        var c = d.customization;
         var root = document.documentElement;
 
+        // Device restriction pre-hydration: check if smartphone or mobile desktop mode
+        try {
+          var saved = localStorage.getItem('portfolio_custom_data') || localStorage.getItem('portfolio_master_data');
+          if (saved) {
+            var parsed = JSON.parse(saved);
+            if (parsed && parsed.customization && parsed.customization.mobileRestriction && parsed.customization.mobileRestriction.enabled === false) {
+              root.classList.add('mobile-allowed');
+              return;
+            }
+          }
+        } catch(e) {}
+        try {
+          var ua = (navigator.userAgent || '').toLowerCase();
+          var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+          var screenW = window.screen ? (window.screen.width || 0) : 0;
+          var screenH = window.screen ? (window.screen.height || 0) : 0;
+          var screenMin = (screenW > 0 && screenH > 0) ? Math.min(screenW, screenH) : 0;
+          var innerW = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || 0;
+          var innerH = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
+          var viewMin = (innerW > 0 && innerH > 0) ? Math.min(innerW, innerH) : 0;
+
+          var isIPad = (/macintosh/i.test(ua) && isTouch && screenMin >= 600) || /ipad/i.test(ua);
+          var isMobileUa = /iphone|ipod|blackberry|iemobile|opera mini|windows phone/i.test(ua) || 
+                           (/android/i.test(ua) && /mobile/i.test(ua));
+
+          var shouldRestrict = false;
+          if (!isIPad && !(isTouch && screenMin >= 600 && !isMobileUa)) {
+            if (isMobileUa || (isTouch && screenMin > 0 && screenMin < 560) || (viewMin > 0 && viewMin <= 480 && (isTouch || innerW > innerH)) || (innerW > 0 && innerW < 768)) {
+              shouldRestrict = true;
+            }
+          }
+          if (shouldRestrict) {
+            root.classList.add('device-restricted');
+          }
+        } catch(e) {}
+
+        if ('scrollRestoration' in history) {
+          history.scrollRestoration = 'manual';
+        }
+
+        // Check if returning to a specific project card from a project page
+        var isReloadNav = false;
+        try {
+          if (typeof performance !== 'undefined') {
+            var nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
+            if (nav && nav.length > 0 && nav[0].type === 'reload') isReloadNav = true;
+            else if (performance.navigation && performance.navigation.type === 1) isReloadNav = true;
+          }
+        } catch (e) {}
+
+        if (!isReloadNav) {
+          var retSlug = null;
+          try {
+            var params = new URLSearchParams(window.location.search);
+            retSlug = params.get('project') || params.get('card') || params.get('id');
+          } catch (e) {}
+
+          if (retSlug) {
+            root.classList.add('navigating-to-work');
+            root.style.scrollBehavior = 'auto';
+            setTimeout(function() {
+              root.classList.remove('navigating-to-work');
+            }, 800);
+          }
+        }
+
+        var lensVal = localStorage.getItem('portfolio_lens_enabled');
+        if (lensVal === 'false') {
+          root.classList.add('lens-off');
+          root.classList.remove('lens-active');
+        } else {
+          root.classList.add('lens-active');
+          root.classList.remove('lens-off');
+        }
+        // Synchronous fast-cache extraction for instant zero-delay hero cards on load/refresh
+        window.__FAST_HERO_CARDS = {};
+        window.__FAST_HERO_VIDEOS = {};
+        for (var fIdx = 1; fIdx <= 4; fIdx++) {
+          var fVal = localStorage.getItem('fast_hero_card_' + fIdx);
+          if (fVal && !fVal.startsWith('idb://') && !fVal.startsWith('blob:')) {
+            window.__FAST_HERO_CARDS[fIdx] = fVal;
+          }
+        }
+
+        var raw = localStorage.getItem('portfolio_custom_data') || localStorage.getItem('portfolio_master_data');
+        var d = null;
+        if (raw) {
+          try { d = JSON.parse(raw); } catch(e) {}
+        }
+
+        if (d && Array.isArray(d.heroCards)) {
+          d.heroCards.forEach(function(hc, idx) {
+            var cNum = idx + 1;
+            var isV = (hc.mediaType === 'video' && hc.video) || (hc.video && (!hc.mediaType || hc.mediaType !== 'image'));
+            if (isV && hc.video && !hc.video.startsWith('idb://')) {
+              window.__FAST_HERO_VIDEOS[cNum] = hc.video;
+            }
+            if (!window.__FAST_HERO_CARDS[cNum] && hc.image && !hc.image.startsWith('idb://') && !hc.image.startsWith('blob:')) {
+              window.__FAST_HERO_CARDS[cNum] = hc.image;
+            }
+          });
+        }
+
+        if (window.__FAST_HERO_CARDS[1] || window.__FAST_HERO_CARDS[2] || window.__FAST_HERO_CARDS[3] || window.__FAST_HERO_CARDS[4]) {
+          root.classList.add('has-fast-hero');
+        }
+
+        if (!d) return;
+
+        root.classList.add('has-custom-data');
+        setTimeout(function() {
+          root.classList.add('portfolio-hydrated');
+        }, 800);
+
+        if (!d.customization) return;
+        var c = d.customization;
+        if (lensVal === null && c.lens && c.lens.enabled === false) {
+          root.classList.add('lens-off');
+          root.classList.remove('lens-active');
+        }
+
         if (c.colors) {
-          if (c.colors.primary) root.style.setProperty('--primary-theme-color', c.colors.primary);
-          if (c.colors.headerBg) root.style.setProperty('--header-bg-color', c.colors.headerBg);
-          if (c.colors.boldText) root.style.setProperty('--bold-heading-color', c.colors.boldText);
-          if (c.colors.buttons) root.style.setProperty('--btn-theme-color', c.colors.buttons);
-          if (c.colors.maroon) root.style.setProperty('--color-maroon', c.colors.maroon);
-          if (c.colors.maroonDark) root.style.setProperty('--color-maroon-dark', c.colors.maroonDark);
+          var primary = c.colors.primary || c.colors.maroon || '#13294A';
+          var headerBg = c.colors.headerBg || c.colors.maroonDark || primary;
+          var boldText = c.colors.boldText || primary;
+          var buttons = c.colors.buttons || primary;
+          var cream = c.colors.cream || '#FAF9F6';
+          var gold = c.colors.gold || '#E5A93C';
+          var textDark = c.colors.textDark || '#1F1F1F';
+          root.style.setProperty('--primary-theme-color', primary);
+          root.style.setProperty('--header-bg-color', headerBg);
+          root.style.setProperty('--bold-heading-color', boldText);
+          root.style.setProperty('--btn-theme-color', buttons);
+          root.style.setProperty('--color-maroon', primary);
+          root.style.setProperty('--color-maroon-dark', headerBg);
+          root.style.setProperty('--color-cream', cream);
+          root.style.setProperty('--color-gold', gold);
+          root.style.setProperty('--color-text-dark', textDark);
+          root.style.setProperty('--hero-bg-color', headerBg);
+          root.style.setProperty('--proto-bg-color', headerBg);
+          root.style.setProperty('--connect-bg-color', headerBg);
         }
 
         if (c.backgrounds) {
           var b = c.backgrounds;
           if (b.hero) {
-            var isHeroCol = b.hero.type === 'color' || (!b.hero.image && b.hero.color);
-            var heroCol = b.hero.color || '#55161C';
+            b.hero.type = 'color';
+            b.hero.image = null;
+            var heroCol = b.hero.color || (c.colors && c.colors.headerBg) || '#13294A';
             root.style.setProperty('--hero-bg-color', heroCol);
-            root.style.setProperty('--hero-bg-image', (!isHeroCol && b.hero.image) ? "url('" + b.hero.image + "')" : 'none');
+            root.style.setProperty('--hero-bg-image', 'none');
           }
           if (b.prototyping) {
             var isProtoCol = b.prototyping.type === 'color' || (!b.prototyping.image && b.prototyping.color);
-            var protoCol = b.prototyping.color || '#55161C';
+            var protoCol = b.prototyping.color || (c.colors && c.colors.headerBg) || '#13294A';
             root.style.setProperty('--proto-bg-color', protoCol);
             root.style.setProperty('--proto-bg-image', (!isProtoCol && b.prototyping.image) ? "url('" + b.prototyping.image + "')" : 'none');
             if (b.prototyping.overlayOpacity !== undefined) {
@@ -49,21 +182,94 @@
             }
           }
           if (b.connect) {
-            var isConnCol = b.connect.type === 'color' || (!b.connect.image && b.connect.color);
-            var connCol = b.connect.color || '#55161C';
+            b.connect.type = 'color';
+            b.connect.image = null;
+            var connCol = b.connect.color || (c.colors && c.colors.headerBg) || '#13294A';
+            b.connect.color = connCol;
             root.style.setProperty('--connect-bg-color', connCol);
-            root.style.setProperty('--connect-bg-image', (!isConnCol && b.connect.image) ? "url('" + b.connect.image + "')" : 'none');
-            if (b.connect.overlayOpacity !== undefined) {
-              var cOp = b.connect.overlayOpacity > 1 ? b.connect.overlayOpacity / 100 : b.connect.overlayOpacity;
-              root.style.setProperty('--connect-overlay-opacity', cOp);
-            }
+            root.style.setProperty('--connect-bg-image', 'none');
           }
+        }
+        if (c.categoryFilters && c.categoryFilters.enabled === false) {
+          root.classList.add('no-category-filters');
         }
       } catch (e) {}
     })();
   </script>
+  <style id="antiFlickerStyle">
+    /* Instant return to Selected Work card: shield body until exact card scroll position is applied */
+    html.navigating-to-work body {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    /* Anti-flicker: hide default static assets when custom portfolio data exists until hydration completes */
+    html.has-custom-data:not(.portfolio-hydrated):not(.has-fast-hero) .hero-cards-cluster .hero-card-inner img,
+    html.has-custom-data:not(.portfolio-hydrated):not(.has-fast-hero) .hero-cards-cluster .hero-card-inner video,
+    html.has-custom-data:not(.portfolio-hydrated) #swShowcaseSlider,
+    html.has-custom-data:not(.portfolio-hydrated) .polaroid-grid,
+    html.has-custom-data:not(.portfolio-hydrated) .gallery-page-1,
+    html.has-custom-data:not(.portfolio-hydrated) .gallery-page-2 {
+      opacity: 0 !important;
+    }
+    html.has-fast-hero .hero-cards-cluster .hero-card-inner img {
+      opacity: 1 !important;
+    }
+    .hero-cards-cluster .hero-card-inner img,
+    .hero-cards-cluster .hero-card-inner video,
+    #swShowcaseSlider,
+    .polaroid-grid,
+    .gallery-page-1,
+    .gallery-page-2 {
+      transition: opacity 0.2s ease-out;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- ==================== DEVICE RESTRICTION MODAL ==================== -->
+  <div id="deviceRestrictionScreen" class="device-restriction-screen" role="dialog" aria-modal="true" aria-labelledby="restrictionTitle">
+    <div class="restriction-card">
+      <div class="restriction-brand">
+        <img src="assets/images/restriction_logo.png" alt="Pawan Product Designer" class="restriction-brand-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div style="display:none; flex-direction:column; align-items:center;">
+          <span class="logo-script restriction-brand-logo">Pawan.</span>
+          <div class="restriction-role">PRODUCT DESIGNER</div>
+        </div>
+      </div>
+
+      <div class="restriction-illustration" aria-hidden="true">
+        <img src="assets/images/restriction_character.png" alt="Pawan working at design desk illustration" class="restriction-character-img" id="restrictionCharacterImg" onerror="this.onerror=null; this.src='assets/images/hero_character.png';">
+      </div>
+
+      <div class="restriction-title-wrap">
+        <img src="assets/images/restriction_arrow.png" alt="" class="restriction-arrow-img" aria-hidden="true" onerror="this.style.display='none';">
+        <h1 id="restrictionTitle" class="restriction-title">
+          Best viewed on a<br>larger screen<span class="title-dot">.</span>
+        </h1>
+      </div>
+
+      <p class="restriction-desc">
+        For the full interactive portfolio,<br>open this link on a desktop or tablet.
+      </p>
+
+      <div class="restriction-action-box">
+        <button type="button" id="copyPortfolioLinkBtn" class="btn-copy-portfolio" aria-label="Copy portfolio link to clipboard">
+          <span class="btn-copy-icon">
+            <svg viewBox="0 0 24 24" fill="none" class="copy-svg" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="4" width="12" height="15" rx="2.5" stroke="currentColor" stroke-width="2.2"/>
+              <path d="M4 8.5V18C4 19.3807 5.11929 20.5 6.5 20.5H15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span id="copyPortfolioLinkText">Copy portfolio link</span>
+        </button>
+      </div>
+
+      <div class="restriction-contact-hint">
+        <span>Need to connect directly?</span>
+        <a href="mailto:pawankushwaha1@gmail.com" class="restriction-email-link">pawankushwaha1@gmail.com &rarr;</a>
+      </div>
+    </div>
+  </div>
 
   <!-- Sticky Navbar -->
   <header class="site-header" id="siteHeader">
@@ -77,13 +283,21 @@
         <a href="#connect" class="nav-link">Connect</a>
       </nav>
 
-      <button class="mobile-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
-        <svg class="hamburger-svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round">
-          <line x1="3" y1="6" x2="21" y2="6" class="nav-bar nav-bar-1"></line>
-          <line x1="3" y1="12" x2="21" y2="12" class="nav-bar nav-bar-2"></line>
-          <line x1="3" y1="18" x2="21" y2="18" class="nav-bar nav-bar-3"></line>
-        </svg>
-      </button>
+      <div class="header-right">
+        <a href="assets/PORTFOLIO.pdf" target="_blank" download="Pawan_Kushwaha_Portfolio.pdf" class="btn-header-resume" id="headerResumeBtn" aria-label="Download Resume">
+          <span>Resume</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17l9.2-9.2M17 17V7H7"/>
+          </svg>
+        </a>
+        <button class="mobile-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+          <svg class="hamburger-svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" class="nav-bar nav-bar-1"></line>
+            <line x1="3" y1="12" x2="21" y2="12" class="nav-bar nav-bar-2"></line>
+            <line x1="3" y1="18" x2="21" y2="18" class="nav-bar nav-bar-3"></line>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Mobile Drawer Navigation -->
@@ -98,649 +312,768 @@
   </header>
 
   <main id="mainContent">
-    <!-- HERO SECTION -->
-    <section class="hero-section" id="hero">
-      <!-- Animated Interactive Parallax Cloudscape Background -->
-      <div class="hero-clouds-container" id="heroCloudsContainer" aria-hidden="true">
-        <div class="hero-clouds-layer" id="heroCloudsLayer"></div>
-      </div>
-
-      <div class="hero-container">
-        <!-- Left Hero Content -->
-        <div class="hero-content">
-          <h1 class="hero-title">
-            <span class="title-line">PAWAN K.</span>
-            <span class="title-line">KUSHWAHA</span>
-          </h1>
-
-          <div class="hero-role">PRODUCT DESIGNER</div>
-
-          <div class="hero-tagline">Design. Make. Explore.</div>
-
-          <div class="hero-status-group">
-            <div class="hero-location">
-              <svg class="location-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
-              </svg>
-              <span>Chandigarh, India</span>
-            </div>
-            <div class="status-indicator">
-              <span class="status-dot status-dot-gold"></span>
-              <span class="status-text">Available for opportunities</span>
-            </div>
+    <!-- Site Stacking Curtain Wrapper & Stack -->
+    <div class="site-curtain-wrapper" id="siteCurtainWrapper">
+      <div class="site-curtain-stack" id="siteCurtainStack">
+        <!-- HERO SECTION (Premium Minimal Overlapping Design Cards Hero) -->
+        <section class="hero-section curtain-panel is-active hero-animated" id="hero" data-index="0">
+          <!-- Static Dark Navy Background (Static Canvas) -->
+          <div class="hero-clouds-container" id="heroCloudsContainer" aria-hidden="true">
+            <div class="hero-clouds-layer" id="heroCloudsLayer"></div>
           </div>
 
-          <div class="hero-cta-group">
-            <a href="#work" class="btn btn-white">
-              <span>View My Work</span>
-              <span class="btn-arrow">&rarr;</span>
-            </a>
-            <a href="about.html" class="btn btn-outline-hero" id="heroAboutBtn">About Me</a>
-          </div>
+          <div class="section-container hero-section-container hero-centered-container">
+            <!-- Overlapping Design Cards Cluster -->
+            <div class="hero-cards-cluster" id="heroCardsCluster" aria-label="Physical overlapping portfolio cards showcase">
+              <!-- Card 1: Guy Smiling Portrait (Rotated left, slightly behind) -->
+              <div class="hero-card hero-card-1" data-index="1">
+                <div class="hero-card-parallax">
+                  <div class="hero-card-inner">
+                    <img id="heroCardImg1" src="assets/images/hero_card_1.jpg" alt="Design portrait illustration" loading="eager">
+                    <script>
+                      (function(){
+                        try {
+                          var f = (window.__FAST_HERO_CARDS && window.__FAST_HERO_CARDS[1]) || localStorage.getItem('fast_hero_card_1');
+                          var v = (window.__FAST_HERO_VIDEOS && window.__FAST_HERO_VIDEOS[1]);
+                          var el = document.getElementById('heroCardImg1');
+                          if (v) {
+                            if (el) el.style.opacity = '0';
+                          } else if (f && !f.startsWith('idb://') && !f.startsWith('blob:')) {
+                            if (el) { el.src = f; el.style.opacity = '1'; }
+                          }
+                        } catch(e){}
+                      })();
+                    </script>
+                    <div class="hero-card-sheen" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
 
-          <!-- Music Player Widget: Currently Listening with Real Audio Play/Pause -->
-          <div class="music-player-widget" id="musicPlayerWidget" role="button" tabindex="0" aria-label="Play or pause music" title="Click to play / pause music">
-            <div class="vinyl-record-wrap">
-              <div class="vinyl-disc" id="vinylDisc">
-                <div class="vinyl-groove-rings"></div>
-                <div class="vinyl-center-label">
-                  <span class="vinyl-play-icon" id="vinylPlayIcon">&#9654;</span>
+              <!-- Card 2: Red Card (Rotated right, forward overlapping) -->
+              <div class="hero-card hero-card-2" data-index="2">
+                <div class="hero-card-parallax">
+                  <div class="hero-card-inner">
+                    <img id="heroCardImg2" src="assets/images/hero_card_2.jpg" alt="Creative character illustration on red" loading="eager">
+                    <script>
+                      (function(){
+                        try {
+                          var f = (window.__FAST_HERO_CARDS && window.__FAST_HERO_CARDS[2]) || localStorage.getItem('fast_hero_card_2');
+                          var v = (window.__FAST_HERO_VIDEOS && window.__FAST_HERO_VIDEOS[2]);
+                          var el = document.getElementById('heroCardImg2');
+                          if (v) {
+                            if (el) el.style.opacity = '0';
+                          } else if (f && !f.startsWith('idb://') && !f.startsWith('blob:')) {
+                            if (el) { el.src = f; el.style.opacity = '1'; }
+                          }
+                        } catch(e){}
+                      })();
+                    </script>
+                    <div class="hero-card-sheen" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Blue Flower (Centered, slightly higher, tilted) -->
+              <div class="hero-card hero-card-3" data-index="3">
+                <div class="hero-card-parallax">
+                  <div class="hero-card-inner">
+                    <img id="heroCardImg3" src="assets/images/hero_card_3.jpg" alt="Blue organic macro botanical study" loading="eager">
+                    <script>
+                      (function(){
+                        try {
+                          var f = (window.__FAST_HERO_CARDS && window.__FAST_HERO_CARDS[3]) || localStorage.getItem('fast_hero_card_3');
+                          var v = (window.__FAST_HERO_VIDEOS && window.__FAST_HERO_VIDEOS[3]);
+                          var el = document.getElementById('heroCardImg3');
+                          if (v) {
+                            if (el) el.style.opacity = '0';
+                          } else if (f && !f.startsWith('idb://') && !f.startsWith('blob:')) {
+                            if (el) { el.src = f; el.style.opacity = '1'; }
+                          }
+                        } catch(e){}
+                      })();
+                    </script>
+                    <div class="hero-card-sheen" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Character with Glasses (Rotated, right, overlapping) -->
+              <div class="hero-card hero-card-4" data-index="4">
+                <div class="hero-card-parallax">
+                  <div class="hero-card-inner">
+                    <img id="heroCardImg4" src="assets/images/hero_card_4.jpg" alt="Portrait illustration with glasses on soft pink" loading="eager">
+                    <script>
+                      (function(){
+                        try {
+                          var f = (window.__FAST_HERO_CARDS && window.__FAST_HERO_CARDS[4]) || localStorage.getItem('fast_hero_card_4');
+                          var v = (window.__FAST_HERO_VIDEOS && window.__FAST_HERO_VIDEOS[4]);
+                          var el = document.getElementById('heroCardImg4');
+                          if (v) {
+                            if (el) el.style.opacity = '0';
+                          } else if (f && !f.startsWith('idb://') && !f.startsWith('blob:')) {
+                            if (el) { el.src = f; el.style.opacity = '1'; }
+                          }
+                        } catch(e){}
+                      })();
+                    </script>
+                    <div class="hero-card-sheen" aria-hidden="true"></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="music-player-info">
-              <span class="music-caption">CURRENTLY LISTENING</span>
-              <span class="music-track-name">Cinematic Ambient &amp; Lo-Fi Beats</span>
-            </div>
-            <!-- Equalizer Soundwave Bars -->
-            <div class="equalizer-bars" id="equalizerBars" aria-hidden="true">
-              <span class="bar bar-1"></span>
-              <span class="bar bar-2"></span>
-              <span class="bar bar-3"></span>
-              <span class="bar bar-4"></span>
+
+            <!-- Hero Typography & CTAs (Subtle fade-up after cards settle) -->
+            <div class="hero-text-group" id="heroTextGroup">
+              <div class="hero-role-text">PRODUCT DESIGNER</div>
+
+              <h1 class="hero-title">
+                <span class="title-line">PAWAN K.</span> <span class="title-line">KUSHWAHA</span>
+              </h1>
+
+              <div class="hero-cta-group">
+                <a href="#work" class="btn btn-hero-white">
+                  <span>View My Work</span>
+                  <span class="btn-arrow">&rarr;</span>
+                </a>
+                <a href="mailto:pawankushwaha1@gmail.com" class="btn btn-hero-outline" id="heroEmailBtn">
+                  <span>Send an Email</span>
+                </a>
+              </div>
             </div>
           </div>
 
-          <!-- Hidden Native Audio for Seamless Playback -->
-          <audio id="heroBgAudio" src="assets/audio/ambient_lofi.wav" loop preload="auto"></audio>
-        </div>
+          <!-- Hidden Native Audio for Ambient Background Sound -->
+          <audio id="heroBgAudio" src="assets/audio/ambient_lofi.wav" loop preload="none"></audio>
+        </section>
 
-        <!-- Right Hero Graphic (Character Illustration matching Reference Design) -->
-        <div class="hero-graphic">
-          <div class="avatar-container hero-avatar-container">
-            <img src="assets/images/hero_character.png" alt="Pawan K. Kushwaha illustration portrait" class="hero-character-img">
+    <!-- ABOUT ME SECTION (Playful Editorial Designer Workspace) -->
+    <section class="about-section curtain-panel is-below" id="about" data-index="1" aria-label="About Me">
+      <div class="about-container">
+        <div class="about-grid">
+
+          <!-- LEFT COLUMN: Introduction & Typography -->
+          <div class="about-col about-col-intro">
+            <!-- Giant Poster Headline -->
+            <h2 class="about-main-headline">
+              <span class="about-head-line about-head-line-1">I DESIGN TO</span>
+              <span class="about-head-line about-head-line-2">
+                <span class="about-head-highlight">MAKE IDEAS</span>
+                <!-- Yellow Radiating Rays SVG -->
+                <svg class="about-drawn-rays" width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#FAB81E" stroke-width="2.8" stroke-linecap="round" aria-hidden="true">
+                  <line x1="8" y1="22" x2="16" y2="6" />
+                  <line x1="16" y1="20" x2="28" y2="12" />
+                  <line x1="22" y1="26" x2="29" y2="28" />
+                </svg>
+              </span>
+              <span class="about-head-line about-head-line-3">
+                <span class="about-tangible-text">TANGIBLE<span class="about-tangible-dot">.</span></span>
+                <!-- Yellow Hand-Drawn Triangle Loop Doodle SVG -->
+                <svg class="about-drawn-loop" width="48" height="32" viewBox="0 0 48 32" fill="none" stroke="#FAB81E" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M 4,28 L 12,5 L 22,19 C 26,24 18,20 8,24 C 3,26 14,21 32,17 L 44,14" />
+                </svg>
+              </span>
+            </h2>
+
+            <!-- Narrative Bio Text -->
+            <div class="about-bio-text">
+              <p>
+                I’m <strong>Pawan K. Kushwaha</strong>, a designer curious about how things work, how people interact with them, and how thoughtful design can make everyday experiences better.
+              </p>
+              <p>
+                From sketching and 3D modeling to prototyping and testing, I enjoy turning early ideas into practical solutions. I believe good design begins with understanding people and grows through curiosity, experimentation, and iteration.
+              </p>
+            </div>
+
+            <!-- Handwritten Statement with Yellow Stroke -->
+            <div class="about-handwritten-block">
+              <span class="about-handwritten-phrase">Design. Make. Explore.</span>
+              <svg class="about-drawn-highlight" width="220" height="12" viewBox="0 0 220 12" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 4,8 C 55,4 125,9 216,6" stroke="#FAB81E" stroke-width="5" stroke-linecap="round" />
+              </svg>
+            </div>
           </div>
+
+          <!-- CENTER COLUMN: Portrait Card & Design Tools -->
+          <div class="about-col about-col-portrait">
+            <div class="about-portrait-showcase">
+
+              <!-- Left Curved Parenthesis Doodle -->
+              <svg class="about-drawn-paren" width="22" height="42" viewBox="0 0 22 42" fill="none" stroke="#11253E" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+                <path d="M 16,4 C 4,14 4,28 16,38" />
+              </svg>
+
+              <!-- Top-Right Annotation: "Ideas Design Prototype Repeat." -->
+              <div class="about-annotation-repeat">
+                <!-- Curly Hand-Drawn Arrow SVG -->
+                <svg class="about-drawn-arrow-ideas" width="38" height="48" viewBox="0 0 38 48" fill="none" stroke="#11253E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M 4,28 C 4,14 18,8 24,18 C 28,26 16,30 14,22 C 12,14 22,8 30,10" />
+                  <path d="M 24,6 L 31,10 L 26,16" />
+                </svg>
+                <div class="about-repeat-text">
+                  <span>Ideas</span>
+                  <span>Design</span>
+                  <span>Prototype</span>
+                  <span class="about-repeat-word">Repeat.<span class="about-repeat-underline" aria-hidden="true"></span></span>
+                </div>
+              </div>
+
+              <!-- Right Radiating Rays Doodle -->
+              <svg class="about-drawn-side-rays" width="24" height="34" viewBox="0 0 24 34" fill="none" stroke="#11253E" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+                <line x1="2" y1="6" x2="20" y2="2" />
+                <line x1="2" y1="17" x2="22" y2="17" />
+                <line x1="2" y1="28" x2="20" y2="32" />
+              </svg>
+
+              <!-- Card Composition (Yellow backer + Red card) -->
+              <div class="about-cards-composition">
+                <!-- Yellow Backing Card -->
+                <div class="about-card-backer" aria-hidden="true"></div>
+
+                <!-- Red Portrait Card -->
+                <div class="about-card-red">
+                  <img src="assets/images/hero_card_2.jpg" alt="Illustrated character portrait of Pawan K. Kushwaha" class="about-portrait-img" loading="eager">
+
+                  <!-- Yellow Radiating Strokes Inside Red Card -->
+                  <svg class="about-card-rays" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#FAB81E" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+                    <line x1="10" y1="30" x2="26" y2="8" />
+                    <line x1="26" y1="30" x2="32" y2="18" />
+                  </svg>
+                </div>
+
+                <!-- Overlapping Cream Name Tag -->
+                <div class="about-nametag">
+                  <span class="about-nametag-line">Pawan K.</span>
+                  <span class="about-nametag-line">Kushwaha</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tools Row & Annotation -->
+            <div class="about-tools-container">
+              <div class="about-tools-row" aria-label="Design and engineering software used by Pawan">
+                <!-- Tool 1: Fusion 360 -->
+                <div class="about-tool-tile tool-fusion" title="Autodesk Fusion 360" aria-label="Autodesk Fusion 360">
+                  <span class="tool-f-letter">F</span>
+                  <span class="tool-f-sub">360</span>
+                </div>
+                <!-- Tool 2: Figma -->
+                <div class="about-tool-tile tool-figma" title="Figma" aria-label="Figma">
+                  <svg width="20" height="20" viewBox="0 0 38 57" fill="none" aria-hidden="true">
+                    <path d="M19 28.5C13.7533 28.5 9.5 24.2467 9.5 19C9.5 13.7533 13.7533 9.5 19 9.5H28.5V28.5H19Z" fill="#F24E1E"/>
+                    <path d="M28.5 0H19C13.7533 0 9.5 4.25329 9.5 9.5H19C24.2467 9.5 28.5 5.24671 28.5 0Z" fill="#FF7262"/>
+                    <path d="M28.5 0V19C28.5 24.2467 24.2467 28.5 19 28.5V0H28.5Z" fill="#A259FF"/>
+                    <path d="M9.5 38C9.5 32.7533 13.7533 28.5 19 28.5V47.5C13.7533 47.5 9.5 43.2467 9.5 38Z" fill="#0ACF83"/>
+                    <path d="M28.5 28.5C28.5 33.7467 24.2467 38 19 38C13.7533 38 9.5 33.7467 9.5 28.5C9.5 23.2533 13.7533 19 19 19C24.2467 19 28.5 23.2533 28.5 28.5Z" fill="#1ABCFE"/>
+                  </svg>
+                </div>
+                <!-- Tool 3: Photoshop -->
+                <div class="about-tool-tile tool-ps" title="Adobe Photoshop" aria-label="Adobe Photoshop">
+                  <span class="tool-adobe-text">Ps</span>
+                </div>
+                <!-- Tool 4: Illustrator -->
+                <div class="about-tool-tile tool-ai" title="Adobe Illustrator" aria-label="Adobe Illustrator">
+                  <span class="tool-adobe-text">Ai</span>
+                </div>
+                <!-- Tool 5: Digital Sketching & Rendering -->
+                <div class="about-tool-tile tool-sketch" title="Digital Sketching &amp; Rendering" aria-label="Digital Sketching and Rendering">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                  </svg>
+                </div>
+                <!-- Tool 6: 3D CAD & Prototyping -->
+                <div class="about-tool-tile tool-cad" title="3D Modeling &amp; Prototyping" aria-label="3D Modeling and Prototyping">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Tools Annotation with Curved Arrow -->
+              <div class="about-tools-annotation">
+                <svg class="about-drawn-arrow-tools" width="46" height="52" viewBox="0 0 46 52" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M 22,46 C 8,38 8,18 18,8" />
+                  <path d="M 11,14 L 18,7 L 25,12" />
+                </svg>
+                <div class="about-tools-note-text">
+                  <span>Tools I use</span>
+                  <span>to turn ideas into products.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT COLUMN: Information Panels -->
+          <div class="about-col about-col-cards">
+
+            <!-- CARD 1: EDUCATION -->
+            <div class="about-info-card">
+              <div class="about-card-badge badge-yellow" aria-hidden="true">
+                <!-- Graduation Cap SVG -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                  <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+                </svg>
+              </div>
+              <div class="about-card-body">
+                <div class="about-card-header">
+                  <span class="about-card-title">EDUCATION</span>
+                  <span class="about-card-divider" aria-hidden="true"></span>
+                </div>
+                <h3 class="about-card-main-text">B.Des. Industrial &amp; Product Design</h3>
+                <p class="about-card-sub-text">Chandigarh University</p>
+              </div>
+            </div>
+
+            <!-- CARD 2: FOCUS AREAS -->
+            <div class="about-info-card">
+              <div class="about-card-badge badge-red" aria-hidden="true">
+                <!-- Lightbulb SVG -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 18h6 M10 22h4 M15 14c.95-.97 2-2.3 2-4.5A6 6 0 0 0 5 9.5c0 2.2 1.05 3.53 2 4.5 1 1 1.5 2 1.5 3h7c0-1 .5-2 1.5-3z"/>
+                </svg>
+              </div>
+              <div class="about-card-body">
+                <div class="about-card-header">
+                  <span class="about-card-title">FOCUS AREAS</span>
+                  <span class="about-card-divider" aria-hidden="true"></span>
+                </div>
+                <div class="about-focus-list">
+                  <span>Product Design · UI/UX</span>
+                  <span>3D Modeling · Prototyping</span>
+                  <span>User-Centered Design</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 3: BEYOND DESIGN -->
+            <div class="about-info-card">
+              <div class="about-card-badge badge-yellow" aria-hidden="true">
+                <!-- Game Controller SVG -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="6" y1="12" x2="10" y2="12"/>
+                  <line x1="8" y1="10" x2="8" y2="14"/>
+                  <line x1="15" y1="13" x2="15.01" y2="13"/>
+                  <line x1="18" y1="11" x2="18.01" y2="11"/>
+                  <rect x="2" y="6" width="20" height="12" rx="6"/>
+                </svg>
+              </div>
+              <div class="about-card-body">
+                <div class="about-card-header">
+                  <span class="about-card-title">BEYOND DESIGN</span>
+                  <span class="about-card-divider" aria-hidden="true"></span>
+                </div>
+                <p class="about-card-desc">
+                  Exploring new tools, making physical products, and learning through hands-on experiments.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
         </div>
       </div>
     </section>
 
-    <!-- Scalloped Wave Divider: Maroon to White -->
-    <div class="scallop-divider wave-to-white-bg" aria-hidden="true"></div>
+    <!-- SECTION DIVIDER (About Me to Selected Work) -->
+    <div class="about-work-divider" aria-label="Selected Work and Design Showcase ticker">
+      <div class="divider-marquee-track">
+        <div class="divider-marquee-content">
+          <span class="divider-text-item">SELECTED WORK</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">INDUSTRIAL &amp; PRODUCT DESIGN</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">TURNING IDEAS INTO PRODUCTS</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">3D MODELING &amp; PROTOTYPING</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">PHYSICAL &amp; DIGITAL EXPERIENCES</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+        </div>
+        <!-- Duplicated for seamless infinite loop -->
+        <div class="divider-marquee-content" aria-hidden="true">
+          <span class="divider-text-item">SELECTED WORK</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">INDUSTRIAL &amp; PRODUCT DESIGN</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">TURNING IDEAS INTO PRODUCTS</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">3D MODELING &amp; PROTOTYPING</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+          <span class="divider-text-item">PHYSICAL &amp; DIGITAL EXPERIENCES</span>
+          <span class="divider-star" aria-hidden="true">✦</span>
+        </div>
+      </div>
+    </div>
 
     <!-- SELECTED WORK SECTION -->
-    <section class="work-section" id="work">
-      <div class="section-container">
-        <!-- Work Header -->
-        <div class="section-header-flex">
-          <div class="header-left">
-            <h2 class="section-title text-maroon">SELECTED WORK</h2>
-            <p class="section-subtitle">Ideas transformed into meaningful, functional experiences.</p>
+    <section class="work-section curtain-panel is-below" id="work" data-index="2">
+      <div class="work-sticky-frame" id="workStickyFrame">
+        <div class="section-container">
+        <!-- Work Header Matching Other Sections Layout -->
+        <div class="sw-header-container gallery-header-row">
+          <div class="sw-header-left gallery-header-text">
+            <h2 class="section-title text-maroon sw-title">SELECTED WORK</h2>
+            <p class="section-subtitle sw-subtitle">Ideas transformed into meaningful, functional experiences.</p>
           </div>
 
-          <!-- Category Filter Pills -->
-          <div class="filter-pills" role="tablist">
-            <button class="filter-pill active" data-category="product" role="tab" aria-selected="true">
-              Product Design <span class="pill-badge">7 Projects</span>
-            </button>
-            <button class="filter-pill" data-category="uiux" role="tab" aria-selected="false">
-              UI/UX Design <span class="pill-badge">3 Projects</span>
-            </button>
-            <button class="filter-pill" data-category="graphic" role="tab" aria-selected="false">
-              Graphic Design <span class="pill-badge">5 Projects</span>
-            </button>
+          <div class="sw-header-right">
+            <!-- Category Filter Pills -->
+            <div class="filter-pills" id="workCategoryFilters" role="tablist">
+              <button class="filter-pill active" data-category="product" role="tab" aria-selected="true">
+                <span class="pill-label">Product Design</span> <span class="pill-badge" id="productBadgeCount">7 Projects</span>
+              </button>
+              <button class="filter-pill" data-category="uiux" role="tab" aria-selected="false">
+                <span class="pill-label">UI/UX Design</span> <span class="pill-badge" id="uiuxBadgeCount">3 Projects</span>
+              </button>
+              <button class="filter-pill" data-category="graphic" role="tab" aria-selected="false">
+                <span class="pill-label">Graphic Design</span> <span class="pill-badge" id="graphicBadgeCount">5 Projects</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Work Cards Grid: 7 Product Design, 3 UI/UX Design, 5 Graphic Design -->
-        <div class="work-grid" id="workGrid">
-          <!-- PRODUCT DESIGN (7 Projects) -->
-          <!-- Card 1: LUMA -->
-          <article class="work-card" data-category="product" data-id="luma">
-            <div class="card-media">
-              <img src="assets/images/work_luma.jpg" alt="LUMA Modular Desk Lamp" loading="lazy">
-              <span class="card-pill-tag">CAD &rarr; 3D Print</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">PRODUCT DESIGN</span>
-              <h3 class="card-title">LUMA</h3>
-              <p class="card-desc">A minimalist modular desk lamp exploring diffused warm lighting and ergonomic pivot..</p>
-            </div>
-          </article>
+        <!-- ONE SCREEN ONE CARD: Showcase Carousel Container -->
+        <div class="sw-showcase-container" id="swShowcaseContainer" aria-label="Selected Projects Showcase">
+          <div class="sw-showcase-slider" id="swShowcaseSlider">
+            <!-- Card 1: KINETIC CHAIR (Cinematic Image-First Showcase) -->
+            <a href="projects/kinetic-chair/index.html" target="_self" class="sw-project-card" data-category="product" data-id="kinetic-chair" data-slug="kinetic-chair" data-route="/projects/kinetic-chair" aria-label="View project KINETIC CHAIR">
+              <!-- Full-Bleed Media Layer -->
+              <div class="sw-card-bg">
+                <img class="sw-card-bg-media" src="assets/images/work_chair.jpg" alt="Kinetic Chair Workshop Assembly" loading="eager" style="object-position: center center;">
+              </div>
 
-          <!-- Card 2: ANALOG -->
-          <article class="work-card" data-category="product" data-id="analog">
-            <div class="card-media">
-              <img src="assets/images/work_analog.jpg" alt="Analog Tactile Digital Camera" loading="lazy">
-              <span class="card-pill-tag">Concept CAD</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">INDUSTRIAL DESIGN</span>
-              <h3 class="card-title">ANALOG</h3>
-              <p class="card-desc">A tactile digital camera concept prioritizing mechanical feedback with physical click...</p>
-            </div>
-          </article>
+              <!-- Cinematic Gradient Overlay -->
+              <div class="sw-card-overlay" aria-hidden="true"></div>
 
-          <!-- Card 3: GANTRI LAMP -->
-          <article class="work-card" data-category="product" data-id="gantri">
-            <div class="card-media">
-              <img src="assets/images/work_gantri.jpg" alt="Gantri Lighting Collaboration" loading="lazy">
-              <span class="card-pill-tag">Additive DFM</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">PRODUCT DESIGN</span>
-              <h3 class="card-title">GANTRI LAMP</h3>
-              <p class="card-desc">Modular desktop luminaire engineered for scalable zero-waste additive manufacturing...</p>
-            </div>
-          </article>
+              <!-- Integrated Card Information & CTA -->
+              <div class="sw-card-body">
+                <div class="sw-card-content">
+                  <div class="sw-card-category-pill sw-card-category">FURNITURE DESIGN</div>
+                  <h3 class="sw-card-title">KINETIC CHAIR</h3>
+                  <p class="sw-card-desc">Ergonomic study chairs exploring lightweight bent plywood geometry and spine curvature...</p>
 
-          <!-- Card 4: KINETIC CHAIR -->
-          <article class="work-card" data-category="product" data-id="kinetic_chair">
-            <div class="card-media">
-              <img src="assets/images/work_chair.jpg" alt="Kinetic Ergonomic Chairs" loading="lazy">
-              <span class="card-pill-tag">Scale Prototyping</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">FURNITURE DESIGN</span>
-              <h3 class="card-title">KINETIC CHAIR</h3>
-              <p class="card-desc">Ergonomic study chairs exploring lightweight bent plywood geometry and spine curvature...</p>
-            </div>
-          </article>
+                  <!-- 4 Project Highlights -->
+                  <div class="sw-card-highlights">
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 11a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6H3v-6z"/><line x1="6" y1="18" x2="6" y2="21"/><line x1="18" y1="18" x2="18" y2="21"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Ergonomic seating</span>
+                    </div>
 
-          <!-- Card 5: MODU BOTTLE -->
-          <article class="work-card" data-category="product" data-id="modu_bottles">
-            <div class="card-media">
-              <img src="assets/images/work_bottles.jpg" alt="Modu Interlocking Bottles" loading="lazy">
-              <span class="card-pill-tag">Blow Molding CAD</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">INDUSTRIAL DESIGN</span>
-              <h3 class="card-title">MODU BOTTLE</h3>
-              <p class="card-desc">Parametric ribbed interlocking water bottle system reducing resin usage by 24%...</p>
-            </div>
-          </article>
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3c0 2 3 3 3 5s-3 3-3 5a3 3 0 0 0 6 0c0-2-3-3-3-5s3-3 3-5a3 3 0 0 0-3-3z"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Spine supporting</span>
+                    </div>
 
-          <!-- Card 6: CHASSIS M1 -->
-          <article class="work-card" data-category="product" data-id="chassis_m1">
-            <div class="card-media">
-              <img src="assets/images/work_chassis.jpg" alt="Chassis M1 Rangefinder Body" loading="lazy">
-              <span class="card-pill-tag">Class-A Surfacing</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">HARDWARE DESIGN</span>
-              <h3 class="card-title">CHASSIS M1</h3>
-              <p class="card-desc">Precision machined rangefinder body with knurled physical dials and modular battery sled...</p>
-            </div>
-          </article>
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Lightweight structure</span>
+                    </div>
 
-          <!-- Card 7: APEX GEARS -->
-          <article class="work-card" data-category="product" data-id="apex_gears">
-            <div class="card-media">
-              <img src="assets/images/work_gears.jpg" alt="Apex Planetary Gears" loading="lazy">
-              <span class="card-pill-tag">Additive Tooling</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">MECHANICAL DESIGN</span>
-              <h3 class="card-title">APEX GEARS</h3>
-              <p class="card-desc">High-durability micro planetary gear systems tested for repeatable low-volume production...</p>
-            </div>
-          </article>
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Material efficient</span>
+                    </div>
+                  </div>
+                </div>
 
-          <!-- UI/UX DESIGN (3 Projects) -->
-          <!-- Card 8: BREATHE -->
-          <article class="work-card hidden" data-category="uiux" data-id="breathe">
-            <div class="card-media">
-              <img src="assets/images/work_breathe.png" alt="Breathe Mindful Living App" loading="lazy">
-              <span class="card-pill-tag">Figma Prototype</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">UI/UX DESIGN</span>
-              <h3 class="card-title">BREATHE</h3>
-              <p class="card-desc">A mindful living and alpine meditation app designed with calm typography and..</p>
-            </div>
-          </article>
+                <!-- Lower-Right CTA -->
+                <div class="sw-card-cta sw-view-btn" data-project="kinetic-chair" data-slug="kinetic-chair" data-route="/projects/kinetic-chair" aria-hidden="true">
+                  <div class="sw-cta-circle sw-view-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </div>
+                  <span class="sw-cta-label sw-view-text">VIEW PROJECT</span>
+                </div>
+              </div>
+            </a>
 
-          <!-- Card 9: PULSE OS -->
-          <article class="work-card hidden" data-category="uiux" data-id="pulse_os">
-            <div class="card-media">
-              <img src="assets/images/work_pulse.jpg" alt="Pulse OS Health Tracker" loading="lazy">
-              <span class="card-pill-tag">Design System</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">UI/UX DESIGN</span>
-              <h3 class="card-title">PULSE OS</h3>
-              <p class="card-desc">Haptic telemetry mobile interface designed for connected wearable sports trackers...</p>
-            </div>
-          </article>
+            <!-- Card 2: LUMA (Desk Lamp) -->
+            <a href="projects/luma/index.html" target="_self" class="sw-project-card" data-category="product" data-id="luma" data-slug="luma" data-route="/projects/luma" aria-label="View project LUMA">
+              <!-- Full-Bleed Media Layer -->
+              <div class="sw-card-bg">
+                <img class="sw-card-bg-media" src="assets/images/card_luma.jpg" alt="LUMA Desk Lamp" loading="eager" style="object-position: center center;">
+              </div>
 
-          <!-- Card 10: AETHER DASH -->
-          <article class="work-card hidden" data-category="uiux" data-id="aether_dash">
-            <div class="card-media">
-              <img src="assets/images/work_aether.jpg" alt="Aether Sound Lab Dashboard" loading="lazy">
-              <span class="card-pill-tag">SaaS Platform</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">PRODUCT UI</span>
-              <h3 class="card-title">AETHER DASH</h3>
-              <p class="card-desc">Spatial audio management interface with real-time parametric equalizer visualizers...</p>
-            </div>
-          </article>
+              <!-- Cinematic Gradient Overlay -->
+              <div class="sw-card-overlay" aria-hidden="true"></div>
 
-          <!-- GRAPHIC DESIGN (5 Projects) -->
-          <!-- Card 11: MOVIE TIME -->
-          <article class="work-card hidden" data-category="graphic" data-id="movietime">
-            <div class="card-media">
-              <img src="assets/images/work_movietime.jpg" alt="Movie Time Cinematic Poster Series" loading="lazy">
-              <span class="card-pill-tag">Risograph Print</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">GRAPHIC DESIGN</span>
-              <h3 class="card-title">MOVIE TIME</h3>
-              <p class="card-desc">Retro-inspired cinematic poster series honoring classic storytelling with textured...</p>
-            </div>
-          </article>
+              <!-- Integrated Card Information & CTA -->
+              <div class="sw-card-body">
+                <div class="sw-card-content">
+                  <div class="sw-card-category-pill sw-card-category">LIGHTING DESIGN</div>
+                  <h3 class="sw-card-title">LUMA</h3>
+                  <p class="sw-card-desc">A minimalist modular desk lamp exploring diffused warm lighting and ergonomic pivot points.</p>
 
-          <!-- Card 12: VINYL GROOVES -->
-          <article class="work-card hidden" data-category="graphic" data-id="vinyl_grooves">
-            <div class="card-media">
-              <img src="assets/images/work_vinyl_poster.jpg" alt="Vinyl Grooves Geometric Packaging" loading="lazy">
-              <span class="card-pill-tag">Album Packaging</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">GRAPHIC DESIGN</span>
-              <h3 class="card-title">VINYL GROOVES</h3>
-              <p class="card-desc">Minimalist typography and geometric piano-key layout celebrating vinyl culture...</p>
-            </div>
-          </article>
+                  <!-- 4 Project Highlights -->
+                  <div class="sw-card-highlights">
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Circadian tuning</span>
+                    </div>
 
-          <!-- Card 13: SURREAL AUDIO -->
-          <article class="work-card hidden" data-category="graphic" data-id="surreal_sound">
-            <div class="card-media">
-              <img src="assets/images/work_surreal_audio.jpg" alt="Surreal Audio Record Artwork" loading="lazy">
-              <span class="card-pill-tag">Editorial Print</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">BRAND IDENTITY</span>
-              <h3 class="card-title">SURREAL AUDIO</h3>
-              <p class="card-desc">Conceptual album cover artwork merging analog disc pressings with vintage tailoring...</p>
-            </div>
-          </article>
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="m13 13 6 6"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Capacitive touch</span>
+                    </div>
 
-          <!-- Card 14: CINEMA NOIR -->
-          <article class="work-card hidden" data-category="graphic" data-id="cinema_noir">
-            <div class="card-media">
-              <img src="assets/images/work_cinema_reel.jpg" alt="Cinema Noir Film Festival" loading="lazy">
-              <span class="card-pill-tag">Screen Print</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">POSTER DESIGN</span>
-              <h3 class="card-title">CINEMA NOIR</h3>
-              <p class="card-desc">Dynamic 35mm film reel identity celebrating indie cinema festivals and motion picture heritage...</p>
-            </div>
-          </article>
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Billet aluminum</span>
+                    </div>
 
-          <!-- Card 15: HEROIC HORIZONS -->
-          <article class="work-card hidden" data-category="graphic" data-id="heroic_horizons">
-            <div class="card-media">
-              <img src="assets/images/work_avengers_poster.jpg" alt="Heroic Horizons Blockbuster Poster" loading="lazy">
-              <span class="card-pill-tag">Cinematic Layout</span>
-            </div>
-            <div class="card-body">
-              <span class="card-category-label">POSTER ART</span>
-              <h3 class="card-title">HEROIC HORIZONS</h3>
-              <p class="card-desc">Complex multi-figure blockbuster composition with dramatic lighting and distressed typography...</p>
-            </div>
-          </article>
+                    <div class="sw-highlight-item">
+                      <div class="sw-highlight-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+                      </div>
+                      <span class="sw-highlight-label">Thermal heat-sink</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Lower-Right CTA -->
+                <div class="sw-card-cta sw-view-btn" data-project="luma" data-slug="luma" data-route="/projects/luma" aria-hidden="true">
+                  <div class="sw-cta-circle sw-view-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </div>
+                  <span class="sw-cta-label sw-view-text">VIEW PROJECT</span>
+                </div>
+              </div>
+            </a>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
     <!-- PROTOTYPING SECTION -->
-    <section class="prototyping-section" id="prototyping">
+    <section class="prototyping-section curtain-panel is-below" id="prototyping" data-index="3">
       <!-- Animated Interactive Parallax Cloudscape / Background -->
       <div class="section-parallax-container" id="protoBgContainer" aria-hidden="true">
         <div class="section-parallax-layer" id="protoBgLayer"></div>
         <div class="section-parallax-overlay proto-parallax-overlay"></div>
       </div>
 
-      <div class="section-container">
-        <div class="proto-header">
-          <h2 class="section-title text-white">PROTOTYPING</h2>
-          <p class="section-subtitle text-cream">Things I've drafted, 3D printed, CNC machined, and iterated with hands-on curiosity.</p>
+      <div class="section-container proto-container">
+        <div class="proto-header-row">
+          <div class="proto-header-left">
+            <h2 class="section-title text-white">PROTOTYPING</h2>
+            <p class="section-subtitle text-cream">Things I've drafted, 3D printed, CNC machined, and iterated with hands-on curiosity.</p>
+          </div>
+
+          <div class="proto-header-right">
+            <span class="proto-tagline">Design. Make. Explore.</span>
+          </div>
         </div>
 
-        <!-- 4 Polaroid Photo Cards with Masking Tape -->
-        <div class="polaroid-grid">
-          <!-- Polaroid 1: Drafting -->
-          <div class="polaroid-card tilt-left" data-proto="drafting">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
+        <!-- 3-Column Responsive Grid with Normal Scrolling -->
+        <div class="proto-cards-grid" id="protoCardsGrid">
+          <!-- Card 1: Drafting -->
+          <div class="proto-card" data-proto="drafting">
+            <div class="proto-photo">
               <img src="assets/images/proto_drafting.jpg" alt="Technical drafting &amp; pencil dimensions" loading="lazy">
             </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 01 &bull; IDEATION</span>
-              <h4 class="proto-caption-title">Technical drafting &amp; pencil dimensions</h4>
+            <div class="proto-card-info">
+              <span class="proto-card-category">STEP 01 &bull; IDEATION</span>
+              <h4 class="proto-card-caption">Technical drafting &amp; pencil dimensions</h4>
             </div>
           </div>
 
-          <!-- Polaroid 2: 3D Print -->
-          <div class="polaroid-card tilt-right" data-proto="3dprint">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
+          <!-- Card 2: 3D Print -->
+          <div class="proto-card" data-proto="3dprint">
+            <div class="proto-photo">
               <img src="assets/images/proto_3dprint.jpg" alt="White resin mechanical joint test" loading="lazy">
             </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 02 &bull; RAPID PROTOTYPING</span>
-              <h4 class="proto-caption-title">White resin mechanical joint test</h4>
+            <div class="proto-card-info">
+              <span class="proto-card-category">STEP 02 &bull; RAPID PROTOTYPING</span>
+              <h4 class="proto-card-caption">White resin mechanical joint test</h4>
             </div>
           </div>
 
-          <!-- Polaroid 3: CNC Machining -->
-          <div class="polaroid-card tilt-slight-left" data-proto="cnc">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
+          <!-- Card 3: CNC Machining -->
+          <div class="proto-card" data-proto="cnc">
+            <div class="proto-photo">
               <img src="assets/images/proto_cnc.jpg" alt="Spindle machining billet components" loading="lazy">
             </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 03 &bull; PRECISION MILLING</span>
-              <h4 class="proto-caption-title">Spindle machining billet components</h4>
+            <div class="proto-card-info">
+              <span class="proto-card-category">STEP 03 &bull; PRECISION MILLING</span>
+              <h4 class="proto-card-caption">Spindle machining billet components</h4>
             </div>
           </div>
 
-          <!-- Polaroid 4: Illustration -->
-          <div class="polaroid-card tilt-slight-right" data-proto="illustration">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
+          <!-- Card 4: Illustration -->
+          <div class="proto-card" data-proto="illustration">
+            <div class="proto-photo">
               <img src="assets/images/proto_illustration.jpg" alt="Sketch, Model, Make, Test, Repeat." loading="lazy">
             </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 04 &bull; SCALE VERIFICATION</span>
-              <h4 class="proto-caption-title">Sketch, Model, Make, Test, Repeat.</h4>
+            <div class="proto-card-info">
+              <span class="proto-card-category">STEP 04 &bull; SCALE VERIFICATION</span>
+              <h4 class="proto-card-caption">Sketch, Model, Make, Test, Repeat.</h4>
             </div>
           </div>
 
-          <!-- Polaroid 5: Extrusion -->
-          <div class="polaroid-card tilt-left extra-card" data-proto="extrusion">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
+          <!-- Card 5: Extrusion -->
+          <div class="proto-card" data-proto="extrusion">
+            <div class="proto-photo">
               <img src="assets/images/proto_extrusion.jpg" alt="Precision nozzle extrusion testing" loading="lazy">
             </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 05 &bull; ADDITIVE FABRICATION</span>
-              <h4 class="proto-caption-title">Precision nozzle extrusion testing</h4>
+            <div class="proto-card-info">
+              <span class="proto-card-category">STEP 05 &bull; ADDITIVE FABRICATION</span>
+              <h4 class="proto-card-caption">Precision nozzle extrusion testing</h4>
             </div>
           </div>
 
-          <!-- Polaroid 6: Assembly -->
-          <div class="polaroid-card tilt-right extra-card" data-proto="assembly">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
+          <!-- Card 6: Assembly -->
+          <div class="proto-card" data-proto="assembly">
+            <div class="proto-photo">
               <img src="assets/images/proto_assembly.jpg" alt="Hands-on bench assembly &amp; fit check" loading="lazy">
             </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 06 &bull; PHYSICAL ASSEMBLY</span>
-              <h4 class="proto-caption-title">Hands-on bench assembly &amp; fit check</h4>
+            <div class="proto-card-info">
+              <span class="proto-card-category">STEP 06 &bull; PHYSICAL ASSEMBLY</span>
+              <h4 class="proto-card-caption">Hands-on bench assembly &amp; fit check</h4>
             </div>
           </div>
-
-          <!-- Polaroid 7: CAD -->
-          <div class="polaroid-card tilt-slight-left extra-card" data-proto="cad">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
-              <img src="assets/images/proto_cad.jpg" alt="3D mechanical chassis surface model" loading="lazy">
-            </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 07 &bull; PARAMETRIC CAD</span>
-              <h4 class="proto-caption-title">3D mechanical chassis surface model</h4>
-            </div>
-          </div>
-
-          <!-- Polaroid 8: Scale Study -->
-          <div class="polaroid-card tilt-slight-right extra-card" data-proto="scale">
-            <div class="masking-tape"></div>
-            <div class="polaroid-photo">
-              <img src="assets/images/proto_scale.jpg" alt="Ergonomic miniature study models" loading="lazy">
-            </div>
-            <div class="polaroid-caption">
-              <span class="proto-tag">STEP 08 &bull; SCALE STUDY</span>
-              <h4 class="proto-caption-title">Ergonomic miniature study models</h4>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section Bottom Bar -->
-        <div class="section-action-bar">
-          <p class="proto-quote">"Workshop hands are curious hands."</p>
-          <button class="btn btn-proto-view-all" id="viewPrototypesBtn">
-            <span>View All</span>
-            <span class="btn-arrow">&rarr;</span>
-          </button>
         </div>
       </div>
     </section>
 
-    <!-- Scalloped Wave Divider: Maroon to White -->
-    <div class="scallop-divider wave-to-white-bg" aria-hidden="true"></div>
-
     <!-- GALLERY SECTION -->
-    <section class="gallery-section" id="gallery">
-      <div class="section-container">
-        <div class="gallery-header">
-          <h2 class="section-title text-maroon">GALLERY</h2>
-          <p class="section-subtitle">Photography and visual experiments from travel and studio.</p>
+    <section class="gallery-section curtain-panel is-below" id="gallery" data-index="4">
+      <div class="section-container gallery-container">
+        <div class="gallery-header-row">
+          <div class="gallery-header-text">
+            <h2 class="section-title text-maroon">FIELD NOTES &amp; FRAMES</h2>
+            <p class="section-subtitle">Visual journal of travels, prototypes, and material inspirations.</p>
+          </div>
+
+          <div class="gallery-header-right">
+            <span class="gallery-tagline">Design. Make. Explore.</span>
+          </div>
         </div>
 
-        <!-- 4-Column Masonry/Bento Grid -->
-        <div class="gallery-grid">
+        <!-- 3-Column Alternating Bento/Masonry Grid with Normal Scrolling -->
+        <div class="gallery-masonry-grid" id="galleryMasonryGrid">
           <!-- Column 1 -->
-          <div class="gallery-col">
-            <!-- Col 1 Top: Forest -->
-            <div class="gallery-card card-tall" data-caption="Alpine Pine Forest — Find Beauty in Details" data-src="assets/images/gallery_forest.jpg">
+          <div class="gallery-col" data-col="1">
+            <!-- Col 1, Card 1: Tall (Row 1) -->
+            <div class="gallery-card card-tall" style="order: 1;" data-caption="Alpine Pine Forest Mountain Landscape" data-src="assets/images/gallery_forest.jpg">
               <img src="assets/images/gallery_forest.jpg" alt="Alpine pine forest mountain landscape" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
 
-            <!-- Col 1 Bottom: Astro night sky -->
-            <div class="gallery-card card-short" data-caption="Milky Way over Frozen Alpine Lake (Astro 2024)" data-src="assets/images/gallery_astro.png">
-              <img src="assets/images/gallery_astro.png" alt="Milky Way starry night above snow covered mountain lake" loading="lazy">
-              <span class="gallery-badge">Astro 2024</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
+            <!-- Col 1, Card 2: Square (Row 2) -->
+            <div class="gallery-card card-square" style="order: 4;" data-caption="Industrial Design CAD Wireframe Bottles" data-src="assets/images/gallery_bottles.jpg">
+              <img src="assets/images/gallery_bottles.jpg" alt="3D CAD wireframe study of modular bottle design" loading="lazy">
             </div>
 
-            <!-- Col 1 Extra 1: Peaks with Star Trails -->
-            <div class="gallery-card card-tall extra-gallery-card" data-caption="Alpine Night Summit &amp; Star Trails" data-src="assets/images/gallery_peaks.jpg">
+            <!-- Col 1, Card 3: Tall (Row 3) -->
+            <div class="gallery-card card-tall" style="order: 7;" data-caption="Alpine Night Summit &amp; Star Trails" data-src="assets/images/gallery_peaks.jpg">
               <img src="assets/images/gallery_peaks.jpg" alt="Snowy mountain summit under star trails at night" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
 
-            <!-- Col 1 Extra 2: Rolling Alpine Hills -->
-            <div class="gallery-card card-short extra-gallery-card" data-caption="Sunlit Alpine Ridge &amp; Evergreen Hills" data-src="assets/images/gallery_hills.jpg">
+            <!-- Col 1, Card 4: Square (Row 4) -->
+            <div class="gallery-card card-square" style="order: 10;" data-caption="Sunlit Alpine Ridge &amp; Evergreen Hills" data-src="assets/images/gallery_hills.jpg">
               <img src="assets/images/gallery_hills.jpg" alt="Sunlit rolling green mountain ridges" loading="lazy">
-              <span class="gallery-badge">Alpine Vista</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
           </div>
 
           <!-- Column 2 -->
-          <div class="gallery-col">
-            <!-- Col 2 Top: Lizard Eye Macro -->
-            <div class="gallery-card card-short" data-caption="Macro Reptile Eye Study" data-src="assets/images/gallery_lizard_eye.png">
-              <img src="assets/images/gallery_lizard_eye.png" alt="Macro close-up of emerald green lizard eye" loading="lazy">
-              <span class="gallery-badge">Emerald Macro</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
+          <div class="gallery-col" data-col="2">
+            <!-- Col 2, Card 1: Square (Row 1) -->
+            <div class="gallery-card card-square" style="order: 2;" data-caption="Milky Way over Frozen Alpine Lake (Astro 2024)" data-src="assets/images/gallery_astro.png">
+              <img src="assets/images/gallery_astro.png" alt="Milky Way starry night above snow covered mountain lake" loading="lazy">
             </div>
 
-            <!-- Col 2 Bottom: Snake Scales -->
-            <div class="gallery-card card-tall" data-caption="Green Reptile Scales — Find Beauty in Details" data-src="assets/images/gallery_snake_scales.jpg">
+            <!-- Col 2, Card 2: Tall (Row 2) -->
+            <div class="gallery-card card-tall" style="order: 5;" data-caption="Macro Iridescent Green Scales Pattern" data-src="assets/images/gallery_snake_scales.jpg">
               <img src="assets/images/gallery_snake_scales.jpg" alt="Macro iridescent green scales pattern" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
 
-            <!-- Col 2 Extra 1: Blue Blossom Macro -->
-            <div class="gallery-card card-short extra-gallery-card" data-caption="Cobalt Botanical Flower Blossom" data-src="assets/images/gallery_flower.jpg">
+            <!-- Col 2, Card 3: Square (Row 3) -->
+            <div class="gallery-card card-square" style="order: 8;" data-caption="Vintage Vinyl &amp; Analog Audio" data-src="assets/images/gallery_vinyl.jpg">
+              <img src="assets/images/gallery_vinyl.jpg" alt="Surreal vintage vinyl head in woolen tweed jacket" loading="lazy">
+            </div>
+
+            <!-- Col 2, Card 4: Tall (Row 4) -->
+            <div class="gallery-card card-tall" style="order: 11;" data-caption="Cobalt Botanical Flower Blossom Macro" data-src="assets/images/gallery_flower.jpg">
               <img src="assets/images/gallery_flower.jpg" alt="Vivid cobalt blue botanical flower blossom macro" loading="lazy">
-              <span class="gallery-badge">Botanic Macro</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
-            </div>
-
-            <!-- Col 2 Extra 2: Stream Lily Pads Macro -->
-            <div class="gallery-card card-tall extra-gallery-card" data-caption="Sunlit Stream Pebbles &amp; Lily Pads" data-src="assets/images/gallery_pond_macro.jpg">
-              <img src="assets/images/gallery_pond_macro.jpg" alt="Sunlit lily pads and river pebbles in crystal clear stream" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
           </div>
 
           <!-- Column 3 -->
-          <div class="gallery-col">
-            <!-- Col 3 Top: Water Stream -->
-            <div class="gallery-card card-tall" data-caption="Water Lilies in Forest Stream — Find Beauty in Details" data-src="assets/images/gallery_stream.jpg">
+          <div class="gallery-col" data-col="3">
+            <!-- Col 3, Card 1: Tall (Row 1) -->
+            <div class="gallery-card card-tall" style="order: 3;" data-caption="Water Lilies &amp; Sunlit Forest Stream" data-src="assets/images/gallery_stream.jpg">
               <img src="assets/images/gallery_stream.jpg" alt="Sunlit lily pads and dew drops in forest stream" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
 
-            <!-- Col 3 Bottom: Studio Camera Bench -->
-            <div class="gallery-card card-short" data-caption="Studio Workbench &amp; Analog Cameras" data-src="assets/images/gallery_studio_camera.png">
+            <!-- Col 3, Card 2: Square (Row 2) -->
+            <div class="gallery-card card-square" style="order: 6;" data-caption="Studio Workbench &amp; Vintage Cameras" data-src="assets/images/gallery_studio_camera.png">
               <img src="assets/images/gallery_studio_camera.png" alt="Vintage camera and lenses on wooden studio desk" loading="lazy">
-              <span class="gallery-badge">Studio Work</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
 
-            <!-- Col 3 Extra 1: Cyanotype & Vintage Camera Collage -->
-            <div class="gallery-card card-tall extra-gallery-card" data-caption="Cyanotype Printmaking &amp; Vintage Camera" data-src="assets/images/gallery_cyanotype.jpg">
+            <!-- Col 3, Card 3: Tall (Row 3) -->
+            <div class="gallery-card card-tall" style="order: 9;" data-caption="Cyanotype Printmaking &amp; Vintage Camera" data-src="assets/images/gallery_cyanotype.jpg">
               <img src="assets/images/gallery_cyanotype.jpg" alt="Cyanotype art collage with vintage rangefinder camera" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
             </div>
 
-            <!-- Col 3 Extra 2: Analog Vinyl Portrait -->
-            <div class="gallery-card card-short extra-gallery-card" data-caption="Vintage Vinyl &amp; Analog Audio" data-src="assets/images/gallery_vinyl.jpg">
-              <img src="assets/images/gallery_vinyl.jpg" alt="Surreal vintage vinyl head in woolen tweed jacket" loading="lazy">
-              <span class="gallery-badge">Analog Sound</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
+            <!-- Col 3, Card 4: Square (Row 4) -->
+            <div class="gallery-card card-square" style="order: 12;" data-caption="Glacial Moraine Lake Reflections" data-src="assets/images/gallery_moraine_lake.png">
+              <img src="assets/images/gallery_moraine_lake.png" alt="Turquoise alpine glacial Moraine lake surrounded by peaks" loading="lazy">
             </div>
           </div>
-
-          <!-- Column 4 -->
-          <div class="gallery-col">
-            <!-- Col 4 Top: Lily Pond Reflections -->
-            <div class="gallery-card card-short" data-caption="Serene Lotus Water Pond" data-src="assets/images/gallery_lily_pond.png">
-              <img src="assets/images/gallery_lily_pond.png" alt="Lotus flowers and lily pads on water surface" loading="lazy">
-              <span class="gallery-badge">Flora &amp; Reflections</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
-            </div>
-
-            <!-- Col 4 Bottom: Twilight Blue Mountain Peak -->
-            <div class="gallery-card card-tall" data-caption="Twilight Snow Peak — Find Beauty in Details" data-src="assets/images/gallery_blue_mountain.jpg">
-              <img src="assets/images/gallery_blue_mountain.jpg" alt="Twilight deep blue starry mountain summit" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
-            </div>
-
-            <!-- Col 4 Extra 1: 3D Model Bottles Prototype -->
-            <div class="gallery-card card-short extra-gallery-card" data-caption="Parametric Surface CAD Wireframe Study" data-src="assets/images/gallery_bottles.jpg">
-              <img src="assets/images/gallery_bottles.jpg" alt="3D CAD wireframe study of modular bottle design" loading="lazy">
-              <span class="gallery-badge">Industrial CAD</span>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
-            </div>
-
-            <!-- Col 4 Extra 2: Moraine Lake Reflections -->
-            <div class="gallery-card card-tall extra-gallery-card" data-caption="Glacial Moraine Lake Reflections" data-src="assets/images/gallery_moraine_lake.png">
-              <img src="assets/images/gallery_moraine_lake.png" alt="Turquoise alpine glacial Moraine lake surrounded by Rocky Mountain peaks" loading="lazy">
-              <div class="gallery-script-overlay">Find Beauty<br>in Details.</div>
-              <div class="gallery-hover-scrim">
-                <span class="zoom-icon">&#x2922;</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Gallery Bottom Bar -->
-        <div class="section-action-bar text-dark-action">
-          <span class="action-question text-dark">Want to explore more captures &amp; visual experiments?</span>
-          <button class="btn btn-pill-maroon-sm" id="galleryViewAllBtn">
-            <span>View All</span>
-            <span class="btn-arrow">&rarr;</span>
-          </button>
         </div>
       </div>
     </section>
 
-    <!-- Scalloped Wave Divider (White on top, Maroon/Clouds below) -->
-    <div class="scallop-divider wave-to-maroon-bg" aria-hidden="true"></div>
-
     <!-- LET'S CONNECT SECTION -->
-    <section class="connect-section" id="connect">
-      <!-- Animated Interactive Parallax Cloudscape / Background -->
-      <div class="section-parallax-container" id="connectBgContainer" aria-hidden="true">
-        <div class="section-parallax-layer" id="connectBgLayer"></div>
-        <div class="section-parallax-overlay connect-parallax-overlay"></div>
-      </div>
+    <section class="connect-section curtain-panel is-below" id="connect" data-index="5">
+      <div class="connect-frame">
+        <!-- Media Banner: Image or Video as in Reference Design -->
+        <div class="connect-media-wrap" id="connectMediaWrap">
+          <img src="assets/images/footer_media.jpg" alt="Industrial design prototyping workshop assembly" class="connect-media-asset" id="connectMediaImg" loading="eager">
+          <video class="connect-media-video" id="connectMediaVideo" autoplay muted loop playsinline style="display:none;"></video>
+        </div>
 
-      <div class="section-container">
-        <div class="connect-grid">
-          <!-- Left Column: Contact info & CTA buttons -->
+        <!-- Bottom Navy Content Bar -->
+        <div class="connect-bar">
           <div class="connect-content">
-            <h2 class="connect-title">LET'S CONNECT</h2>
-            <p class="connect-desc">Have a project hardware concept, digital interface, or just want to say hi? I'd love to hear from you.</p>
+            <h2 class="connect-title connect-title-display">LET'S BUILD SOMETHING EXTRAORDINARY</h2>
 
             <div class="connect-actions">
-              <button class="btn btn-white" id="shootEmailBtn">
+              <a href="mailto:pawankushwaha1@gmail.com" class="btn btn-connect-white" id="shootEmailBtn">
                 <span>Send an Email</span>
                 <span class="btn-arrow">&rarr;</span>
-              </button>
+              </a>
               
-              <a href="#resume" class="btn btn-outline" id="downloadResumeBtn">
+              <a href="assets/PORTFOLIO.pdf" download="Pawan_Kushwaha_Portfolio.pdf" class="btn btn-connect-translucent" id="downloadResumeBtn">
                 <span>Download Resume</span>
                 <span class="btn-download-icon">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
                     <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                    <line x1="4" y1="21" x2="20" y2="21"></line>
                   </svg>
                 </span>
               </a>
@@ -776,69 +1109,24 @@
                 </svg>
               </a>
             </div>
-          </div>
 
-          <!-- Right Column: Character Graphic (Aligned on Thin Line) -->
-          <div class="connect-visual">
-            <div class="avatar-container connect-avatar-container">
-              <img src="assets/images/connect_character.png" alt="Pawan K. Kushwaha illustration portrait" class="hero-character-img connect-character-img">
+            <!-- Studio Colophon -->
+            <div class="connect-studio-colophon" id="connectStudioColophon">
+              PAWAN K. KUSHWAHA &bull; INDUSTRIAL DESIGNER<br>
+              <span>NEW DELHI, INDIA &bull; 2026</span>
+              <div><a href="admin.html" class="admin-entry-link" title="Owner Admin Control Center (Ctrl+Shift+A)" style="opacity: 0.35; color: inherit; text-decoration: none; font-size: 10px; letter-spacing: 0.08em; display: inline-block; margin-top: 6px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.35'">• ADMIN CONTROL</a></div>
             </div>
           </div>
         </div>
-
-        <!-- Footer Bottom Bar -->
-        <footer class="site-footer">
-          <div class="footer-inner">
-            <span class="footer-copy">&copy; 2026 Pawan Kumar Kushwaha</span>
-            <span class="footer-tagline">Design with curiosity.</span>
-          </div>
-        </footer>
       </div>
     </section>
+      </div><!-- /.site-curtain-stack -->
+    </div><!-- /.site-curtain-wrapper -->
   </main>
 
   <!-- ==================== MODALS & DRAWERS ==================== -->
 
-  <!-- 1. Interactive Project Detail Modal -->
-  <div class="modal-overlay" id="projectModal" aria-hidden="true">
-    <div class="modal-content project-modal-box">
-      <button class="modal-close-btn" id="closeProjectModal" aria-label="Close project modal">&times;</button>
-      <div class="modal-scroll-body">
-        <div class="modal-hero-img-wrap">
-          <img src="" alt="" id="modalProjectImg" class="modal-project-img">
-          <span class="modal-pill-tag" id="modalProjectTag">Hardware Design</span>
-        </div>
-        <div class="modal-text-content">
-          <span class="modal-category" id="modalProjectCategory">CONSUMER ELECTRONICS</span>
-          <h2 class="modal-title" id="modalProjectTitle">Project Title</h2>
-          <p class="modal-description" id="modalProjectDesc">Project detailed description.</p>
-          
-          <div class="project-specs-grid">
-            <div class="spec-item">
-              <span class="spec-label">Timeline</span>
-              <span class="spec-value" id="modalProjectTimeline">4 Months (2024)</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-label">Role</span>
-              <span class="spec-value" id="modalProjectRole">Lead Industrial Designer</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-label">Tools Used</span>
-              <span class="spec-value" id="modalProjectTools">Fusion 360, Keyshot, Figma</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-label">Deliverables</span>
-              <span class="spec-value" id="modalProjectDeliverable">Working Prototype &amp; DFM CAD</span>
-            </div>
-          </div>
 
-          <div class="modal-footer-actions">
-            <a href="#connect" class="btn btn-maroon-small" id="modalInquireBtn">Inquire About This Project &rarr;</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- 2. Fullscreen Gallery Lightbox -->
   <div class="lightbox-overlay" id="galleryLightbox" aria-hidden="true">
@@ -846,13 +1134,14 @@
     <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous image">&#10094;</button>
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next image">&#10095;</button>
     
-    <div class="lightbox-center">
+    <div class="lightbox-center" data-lenis-prevent>
       <div class="lightbox-img-wrapper">
-        <img src="" alt="" id="lightboxImg" class="lightbox-img">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" alt="Gallery Photo Fullscreen Preview" id="lightboxImg" class="lightbox-img">
+        <video id="lightboxVideo" class="lightbox-video" autoplay controls loop playsinline style="display:none;"></video>
       </div>
       <div class="lightbox-meta">
         <p class="lightbox-caption" id="lightboxCaption">Photo title and location</p>
-        <span class="lightbox-counter" id="lightboxCounter">1 / 8</span>
+        <span class="lightbox-counter" id="lightboxCounter">1 / 16</span>
       </div>
     </div>
   </div>
@@ -886,81 +1175,13 @@
         
         <div class="direct-contact-note">
           <span>Or email directly:</span>
-          <a href="mailto:pawankushwaha.design@gmail.com" class="direct-email-link">pawankushwaha.design@gmail.com</a>
+          <a href="mailto:pawankushwaha1@gmail.com" class="direct-email-link">pawankushwaha1@gmail.com</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 4. Prototypes Gallery Modal -->
-  <div class="modal-overlay" id="prototypesModal" aria-hidden="true">
-    <div class="modal-content proto-modal-box">
-      <button class="modal-close-btn" id="closePrototypesModal" aria-label="Close prototypes modal">&times;</button>
-      <div class="proto-modal-body">
-        <h3 class="contact-modal-title">Hands-on Prototyping Workshop</h3>
-        <p class="contact-modal-sub">A peek into the machining, additive manufacturing, and physical testing workflows.</p>
-        
-        <div class="proto-steps-list">
-          <div class="proto-step-item">
-            <div class="step-num">01</div>
-            <div>
-              <h5>Rapid Ideation &amp; Drafting</h5>
-              <p>Hand-drawn orthographic sketches on layout paper to establish human ergonomics and critical tolerance envelopes.</p>
-            </div>
-          </div>
-          <div class="proto-step-item">
-            <div class="step-num">02</div>
-            <div>
-              <h5>High-Precision SLA Resin Printing</h5>
-              <p>Rigid 50-micron resin prints for mechanical snapping tests, interlocking gears, and optical clear light pipes.</p>
-            </div>
-          </div>
-          <div class="proto-step-item">
-            <div class="step-num">03</div>
-            <div>
-              <h5>5-Axis CNC Aluminum Machining</h5>
-              <p>Billet aerospace-grade 6061 aluminum milled on high-speed CNC with bead-blasted satin anodized finishing.</p>
-            </div>
-          </div>
-          <div class="proto-step-item">
-            <div class="step-num">04</div>
-            <div>
-              <h5>Custom Character &amp; Brand Art</h5>
-              <p>Vector illustrations and mascot styling designed to accompany hardware unboxing and brand digital presences.</p>
-            </div>
-          </div>
-          <div class="proto-step-item">
-            <div class="step-num">05</div>
-            <div>
-              <h5>Additive Fabrication &amp; Micro Extrusion</h5>
-              <p>Direct drive toolhead micro-extrusion calibration for high-tolerance mechanical gears and internal snap joints.</p>
-            </div>
-          </div>
-          <div class="proto-step-item">
-            <div class="step-num">06</div>
-            <div>
-              <h5>Hands-on Bench Assembly</h5>
-              <p>Physical fitting and tactile testing of modular parts, weighted balance, and user contact points.</p>
-            </div>
-          </div>
-          <div class="proto-step-item">
-            <div class="step-num">07</div>
-            <div>
-              <h5>Parametric 3D Surface CAD</h5>
-              <p>High-curvature class-A surface generation in CAD ensuring seamless draft angles and parting lines.</p>
-            </div>
-          </div>
-          <div class="proto-step-item">
-            <div class="step-num">08</div>
-            <div>
-              <h5>Ergonomic Scale Studies</h5>
-              <p>Rapid physical scale models to evaluate proportion, spatial footprint, and user interaction before full tooling.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Pure Optical Glass / Lens Cursor (Small, No Frame/Handle) -->
   <div class="magnifier-cursor" id="magnifierCursor" aria-hidden="true">
@@ -980,7 +1201,9 @@
     <span class="toggle-text">Lens: <strong id="magnifierStatusText">ON</strong></span>
   </button>
 
-  <script src="data-manager.js"></script>
-  <script src="app.js"></script>
+  <script src="lenis.min.js"></script>
+  <script src="data-manager.js?v=2026.10.13.about_tools"></script>
+  <script src="components.js?v=2026.10.13.about_tools"></script>
+  <script src="app.js?v=2026.10.17.direct_work_card"></script>
 </body>
 </html>

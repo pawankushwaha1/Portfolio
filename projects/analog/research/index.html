@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANALOG — Tactile Digital Camera — Research | Pawan K. Kushwaha</title>
+  <meta name="description" content="Detailed project showcase and case study by Pawan K. Kushwaha.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Google Fonts: Bebas Neue (Condensed Headings), Caveat (Signature Script), Plus Jakarta Sans (Clean Body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/favicon.svg">
+  <link rel="alternate icon" href="../../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../../assets/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../../styles.css?v=2026.10.01.optimized">
+  <!-- Anti-Flicker Pre-Hydration: Instantly applies saved backgrounds, lens state & theme colors before first paint -->
+  <!-- Anti-Flicker Pre-Hydration: Instantly applies saved backgrounds, lens state & theme colors before first paint -->
+  <script>
+    (function() {
+      try {
+        var root = document.documentElement;
+
+        // Device restriction pre-hydration: check if smartphone or mobile desktop mode
+        try {
+          var saved = localStorage.getItem('portfolio_custom_data') || localStorage.getItem('portfolio_master_data');
+          if (saved) {
+            var parsed = JSON.parse(saved);
+            if (parsed && parsed.customization && parsed.customization.mobileRestriction && parsed.customization.mobileRestriction.enabled === false) {
+              root.classList.add('mobile-allowed');
+              return;
+            }
+          }
+        } catch(e) {}
+        try {
+          var ua = (navigator.userAgent || '').toLowerCase();
+          var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+          var screenW = window.screen ? (window.screen.width || 0) : 0;
+          var screenH = window.screen ? (window.screen.height || 0) : 0;
+          var screenMin = (screenW > 0 && screenH > 0) ? Math.min(screenW, screenH) : 0;
+          var innerW = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || 0;
+          var innerH = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
+          var viewMin = (innerW > 0 && innerH > 0) ? Math.min(innerW, innerH) : 0;
+
+          var isIPad = (/macintosh/i.test(ua) && isTouch && screenMin >= 600) || /ipad/i.test(ua);
+          var isMobileUa = /iphone|ipod|blackberry|iemobile|opera mini|windows phone/i.test(ua) || 
+                           (/android/i.test(ua) && /mobile/i.test(ua));
+
+          var shouldRestrict = false;
+          if (!isIPad && !(isTouch && screenMin >= 600 && !isMobileUa)) {
+            if (isMobileUa || (isTouch && screenMin > 0 && screenMin < 560) || (viewMin > 0 && viewMin <= 480 && (isTouch || innerW > innerH)) || (innerW > 0 && innerW < 768)) {
+              shouldRestrict = true;
+            }
+          }
+          if (shouldRestrict) {
+            root.classList.add('device-restricted');
+          }
+        } catch(e) {}
+
+        if ('scrollRestoration' in history) {
+          history.scrollRestoration = 'manual';
+        }
+        var lensVal = localStorage.getItem('portfolio_lens_enabled');
+        if (lensVal === 'false') {
+          root.classList.add('lens-off');
+          root.classList.remove('lens-active');
+        } else {
+          root.classList.add('lens-active');
+          root.classList.remove('lens-off');
+        }
+        var raw = localStorage.getItem('portfolio_custom_data') || localStorage.getItem('portfolio_master_data');
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        if (!d) return;
+
+        root.classList.add('has-custom-data');
+        setTimeout(function() {
+          root.classList.add('portfolio-hydrated');
+        }, 800);
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var currentProjId = urlParams.get('id') || (window.location.pathname.match(/\/projects\/([^\/\.]+)/) ? window.location.pathname.match(/\/projects\/([^\/\.]+)/)[1] : null);
+        var matchedProj = currentProjId && Array.isArray(d.projects) ? d.projects.find(function(p) { return p.id === currentProjId || p.slug === currentProjId; }) : null;
+        var isProjWavesDisabled = false;
+        if (matchedProj && matchedProj.wavesAnimation !== undefined && matchedProj.wavesAnimation !== null) {
+          isProjWavesDisabled = matchedProj.wavesAnimation === false;
+        } else if (d.customization && d.customization.projectPage && (d.customization.projectPage.wavesAnimation === false || d.customization.projectPage.enableWavesAnimation === false)) {
+          isProjWavesDisabled = true;
+        }
+        if (isProjWavesDisabled) {
+          root.classList.add('waves-animation-off');
+        }
+
+        var isProjResearchDisabled = false;
+        if (matchedProj && (matchedProj.viewResearch !== undefined && matchedProj.viewResearch !== null || matchedProj.showViewResearch !== undefined)) {
+          isProjResearchDisabled = matchedProj.viewResearch === false || matchedProj.showViewResearch === false;
+        } else if (d.customization && d.customization.projectPage && (d.customization.projectPage.viewResearch === false || d.customization.projectPage.showViewResearch === false)) {
+          isProjResearchDisabled = true;
+        }
+        if (isProjResearchDisabled) {
+          root.classList.add('view-research-off');
+        }
+
+        var isProjCoverTitleDisabled = false;
+        if (matchedProj && (matchedProj.showCoverTitle !== undefined && matchedProj.showCoverTitle !== null || matchedProj.coverTitle !== undefined)) {
+          isProjCoverTitleDisabled = matchedProj.showCoverTitle === false || matchedProj.coverTitle === false;
+        } else if (d.customization && d.customization.projectPage && (d.customization.projectPage.showCoverTitle === false || d.customization.projectPage.coverTitle === false)) {
+          isProjCoverTitleDisabled = true;
+        }
+        if (isProjCoverTitleDisabled) {
+          root.classList.add('cover-title-off');
+        }
+
+        var isProjShowcaseHeaderDisabled = false;
+        if (matchedProj && matchedProj.showShowcaseHeader !== undefined && matchedProj.showShowcaseHeader !== null) {
+          isProjShowcaseHeaderDisabled = matchedProj.showShowcaseHeader === false;
+        } else if (d.customization && d.customization.projectPage && d.customization.projectPage.showShowcaseHeader === false) {
+          isProjShowcaseHeaderDisabled = true;
+        }
+        if (isProjShowcaseHeaderDisabled) {
+          root.classList.add('showcase-header-off');
+        }
+
+        var isProjVerticalDisabled = false;
+        if (matchedProj && matchedProj.showVerticalSection !== undefined && matchedProj.showVerticalSection !== null) {
+          isProjVerticalDisabled = matchedProj.showVerticalSection === false;
+        } else if (d.customization && d.customization.projectPage && d.customization.projectPage.showVerticalSection === false) {
+          isProjVerticalDisabled = true;
+        }
+        if (isProjVerticalDisabled) {
+          root.classList.add('vertical-section-off');
+        }
+
+        if (!d.customization) return;
+        var c = d.customization;
+        if (lensVal === null && c.lens && c.lens.enabled === false) {
+          root.classList.add('lens-off');
+          root.classList.remove('lens-active');
+        }
+
+        if (c.colors) {
+          var primary = c.colors.primary || c.colors.maroon || '#13294A';
+          var headerBg = c.colors.headerBg || c.colors.maroonDark || primary;
+          var boldText = c.colors.boldText || primary;
+          var buttons = c.colors.buttons || primary;
+          var cream = c.colors.cream || '#FAF9F6';
+          var gold = c.colors.gold || '#E5A93C';
+          var textDark = c.colors.textDark || '#1F1F1F';
+          root.style.setProperty('--primary-theme-color', primary);
+          root.style.setProperty('--header-bg-color', headerBg);
+          root.style.setProperty('--bold-heading-color', boldText);
+          root.style.setProperty('--btn-theme-color', buttons);
+          root.style.setProperty('--color-maroon', primary);
+          root.style.setProperty('--color-maroon-dark', headerBg);
+          root.style.setProperty('--color-cream', cream);
+          root.style.setProperty('--color-gold', gold);
+          root.style.setProperty('--color-text-dark', textDark);
+          root.style.setProperty('--connect-bg-color', headerBg);
+        }
+
+        if (c.backgrounds && c.backgrounds.connect) {
+          var b = c.backgrounds.connect;
+          var isConnCol = b.type === 'color' || (!b.image && b.color);
+          var connCol = b.color || (c.colors && c.colors.headerBg) || '#13294A';
+          root.style.setProperty('--connect-bg-color', connCol);
+          root.style.setProperty('--connect-bg-image', (!isConnCol && b.image) ? "url('" + b.image + "')" : 'none');
+          if (b.overlayOpacity !== undefined) {
+            var cOp = b.overlayOpacity > 1 ? b.overlayOpacity / 100 : b.overlayOpacity;
+            root.style.setProperty('--connect-overlay-opacity', cOp);
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style id="antiFlickerStyle">
+    /* Anti-flicker: hide unhydrated project slides and gallery until hydration completes */
+    html.has-custom-data:not(.portfolio-hydrated) .project-slides-track,
+    html.has-custom-data:not(.portfolio-hydrated) .pflow-gallery-stack,
+    html.has-custom-data:not(.portfolio-hydrated) .pflow-vertical-grid {
+      opacity: 0 !important;
+    }
+    .project-slides-track,
+    .pflow-gallery-stack,
+    .pflow-vertical-grid {
+      transition: opacity 0.2s ease-out;
+    }
+  </style>
+</head>
+<body class="project-page-body" data-project-id="analog" data-page-view="research">
+
+  <!-- ==================== DEVICE RESTRICTION MODAL ==================== -->
+  <div id="deviceRestrictionScreen" class="device-restriction-screen" role="dialog" aria-modal="true" aria-labelledby="restrictionTitle">
+    <div class="restriction-card">
+      <div class="restriction-brand">
+        <img src="../../../assets/images/restriction_logo.png" alt="Pawan Product Designer" class="restriction-brand-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div style="display:none; flex-direction:column; align-items:center;">
+          <span class="logo-script restriction-brand-logo">Pawan.</span>
+          <div class="restriction-role">PRODUCT DESIGNER</div>
+        </div>
+      </div>
+
+      <div class="restriction-illustration" aria-hidden="true">
+        <img src="../../../assets/images/restriction_character.png" alt="Pawan working at design desk illustration" class="restriction-character-img" id="restrictionCharacterImg" onerror="this.onerror=null; this.src='assets/images/hero_character.png';">
+      </div>
+
+      <div class="restriction-title-wrap">
+        <img src="../../../assets/images/restriction_arrow.png" alt="" class="restriction-arrow-img" aria-hidden="true" onerror="this.style.display='none';">
+        <h1 id="restrictionTitle" class="restriction-title">
+          Best viewed on a<br>larger screen<span class="title-dot">.</span>
+        </h1>
+      </div>
+
+      <p class="restriction-desc">
+        For the full interactive portfolio,<br>open this link on a desktop or tablet.
+      </p>
+
+      <div class="restriction-action-box">
+        <button type="button" id="copyPortfolioLinkBtn" class="btn-copy-portfolio" aria-label="Copy portfolio link to clipboard">
+          <span class="btn-copy-icon">
+            <svg viewBox="0 0 24 24" fill="none" class="copy-svg" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="4" width="12" height="15" rx="2.5" stroke="currentColor" stroke-width="2.2"/>
+              <path d="M4 8.5V18C4 19.3807 5.11929 20.5 6.5 20.5H15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span id="copyPortfolioLinkText">Copy portfolio link</span>
+        </button>
+      </div>
+
+      <div class="restriction-contact-hint">
+        <span>Need to connect directly?</span>
+        <a href="mailto:pawankushwaha1@gmail.com" class="restriction-email-link">pawankushwaha1@gmail.com &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Floating Controls: Back to Work (Left) & View Research (Right) -->
+  <div class="project-top-controls" id="projectTopControls">
+    <div class="project-top-left-bar" id="projectTopLeftBar">
+      <a href="../../../index.html?project=analog" class="project-pill-btn project-back-btn" id="projectBackBtn" aria-label="Back to Work">
+        <span class="pill-arrow">
+          <svg class="back-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span class="desktop-arrow">&larr;</span>
+        </span>
+        <span class="back-btn-text">Back to Work</span>
+      </a>
+    </div>
+
+    <div class="project-top-right-bar" id="projectTopRightBar">
+      <a href="../index.html" class="project-pill-btn project-top-cta" id="projectTopResearchBtn" aria-label="View research">
+        <span class="pill-arrow">&larr;</span>
+        <span class="cta-text-full">Project Overview</span>
+        <span class="cta-text-short">Overview</span>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- First Page Optical Liquid Distortion SVG Filter Definition -->
+  <svg id="projectDistortionSvg" class="project-distortion-svg" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;">
+    <defs>
+      <filter id="heroDistortionFilter" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence id="heroTurbulence" type="fractalNoise" baseFrequency="0.014 0.018" numOctaves="2" result="noise" seed="3"/>
+        <feDisplacementMap id="heroDisplacement" in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Hero Cover Stage -->
+  <section class="project-hero-stage" id="projectHeroStage">
+    <div class="project-viewport-stage" id="projectViewportStage">
+      <!-- Slides Stage: Cinematic horizontal slide deck -->
+      <div class="project-slides-track" id="projectSlidesTrack">
+        <!-- Rendered dynamically by project.js -->
+      </div>
+
+
+    </div>
+  </section>
+
+  <!-- Main Project Detail Flow: Normal Vertical Bottom Scroll Experience -->
+  <main class="project-detail-flow" id="projectDetailFlow">
+
+
+    <!-- 2. Visual Showcase Gallery -->
+    <section class="pflow-section pflow-gallery" id="projectGallerySection">
+      <div class="section-container pflow-container">
+        <div class="gallery-header-row pflow-header-row">
+          <div class="gallery-header-text pflow-header-left">
+            <h2 class="section-title text-maroon" id="pflowSectionTitle">VISUAL SHOWCASE</h2>
+            <p class="section-subtitle" id="pflowSectionSubtitle">Form, ergonomics, and production detail studies.</p>
+          </div>
+          <div class="pflow-header-right">
+            <span class="pflow-tag" id="pflowSectionTag">DESIGN ARCHITECTURE 16:9 SHOWCASE</span>
+          </div>
+        </div>
+        <div class="pflow-gallery-stack" id="pflowGalleryStack">
+          <!-- Populated dynamically by project.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Vertical 9:16 Showcase (3 Columns Per Row) -->
+    <section class="pflow-section pflow-vertical-showcase" id="projectVerticalSection">
+      <div class="section-container pflow-container">
+        <div class="gallery-header-row pflow-header-row" id="pflowVerticalHeaderRow" style="display: none !important;">
+          <div class="gallery-header-text pflow-header-left">
+            <h2 class="section-title text-maroon" id="pflowVerticalTitle">VERTICAL STUDIES</h2>
+            <p class="section-subtitle" id="pflowVerticalSubtitle">Mobile interactions, vertical prototyping, and tactile ergonomics.</p>
+          </div>
+          <div class="pflow-header-right">
+            <span class="pflow-tag" id="pflowVerticalTag">MOBILE INTERFACE 9:16 SHOWCASE</span>
+          </div>
+        </div>
+        <div class="pflow-vertical-grid" id="pflowVerticalGrid">
+          <!-- Populated dynamically by project.js -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+
+  <!-- Pure Optical Glass / Lens Cursor (Small, No Frame/Handle) -->
+  <div class="magnifier-cursor" id="magnifierCursor" aria-hidden="true">
+    <div class="magnifier-assembly">
+      <div class="magnifier-lens">
+        <div class="magnifier-zoom-content" id="magnifierZoomContent"></div>
+        <div class="magnifier-glass-glare"></div>
+        <div class="magnifier-glass-highlight"></div>
+        <div class="magnifier-glass-sub-highlight"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subtle Floating Toggle Button for Magnifier Lens -->
+  <button class="magnifier-toggle-btn" id="magnifierToggleBtn" aria-label="Toggle Magnifying Lens Cursor" title="Toggle Magnifier Lens (Press 'M')">
+    <span class="toggle-icon"></span>
+    <span class="toggle-text">Lens: <strong id="magnifierStatusText">ON</strong></span>
+  </button>
+
+  <!-- Page Interaction Script -->
+  <script src="../../../lenis.min.js"></script>
+  <script src="../../../data-manager.js"></script>
+  <script src="../../../components.js"></script>
+  <script src="../../../project.js"></script>
+</body>
+</html>

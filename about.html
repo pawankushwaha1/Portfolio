@@ -9,12 +9,53 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Google Fonts: Bebas Neue (Condensed Headings), Caveat (Signature Script), Plus Jakarta Sans (Clean Body) -->
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="alternate icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
   <!-- Anti-Flicker Pre-Hydration: Instantly applies saved backgrounds & theme colors before first paint -->
   <script>
     (function() {
       try {
-        var raw = localStorage.getItem('portfolio_master_data');
+        var root = document.documentElement;
+
+        // Device restriction pre-hydration: check if smartphone or mobile desktop mode
+        try {
+          var saved = localStorage.getItem('portfolio_custom_data') || localStorage.getItem('portfolio_master_data');
+          if (saved) {
+            var parsed = JSON.parse(saved);
+            if (parsed && parsed.customization && parsed.customization.mobileRestriction && parsed.customization.mobileRestriction.enabled === false) {
+              root.classList.add('mobile-allowed');
+              return;
+            }
+          }
+        } catch(e) {}
+        try {
+          var ua = (navigator.userAgent || '').toLowerCase();
+          var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+          var screenW = window.screen ? (window.screen.width || 0) : 0;
+          var screenH = window.screen ? (window.screen.height || 0) : 0;
+          var screenMin = (screenW > 0 && screenH > 0) ? Math.min(screenW, screenH) : 0;
+          var innerW = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || 0;
+          var innerH = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
+          var viewMin = (innerW > 0 && innerH > 0) ? Math.min(innerW, innerH) : 0;
+
+          var isIPad = (/macintosh/i.test(ua) && isTouch && screenMin >= 600) || /ipad/i.test(ua);
+          var isMobileUa = /iphone|ipod|blackberry|iemobile|opera mini|windows phone/i.test(ua) || 
+                           (/android/i.test(ua) && /mobile/i.test(ua));
+
+          var shouldRestrict = false;
+          if (!isIPad && !(isTouch && screenMin >= 600 && !isMobileUa)) {
+            if (isMobileUa || (isTouch && screenMin > 0 && screenMin < 560) || (viewMin > 0 && viewMin <= 480 && (isTouch || innerW > innerH)) || (innerW > 0 && innerW < 768)) {
+              shouldRestrict = true;
+            }
+          }
+          if (shouldRestrict) {
+            root.classList.add('device-restricted');
+          }
+        } catch(e) {}
+
+        var raw = localStorage.getItem('portfolio_custom_data') || localStorage.getItem('portfolio_master_data');
         if (!raw) return;
         var d = JSON.parse(raw);
         if (!d || !d.customization) return;
@@ -46,6 +87,51 @@
   </script>
 </head>
 <body class="project-page-body">
+
+  <!-- ==================== DEVICE RESTRICTION MODAL ==================== -->
+  <div id="deviceRestrictionScreen" class="device-restriction-screen" role="dialog" aria-modal="true" aria-labelledby="restrictionTitle">
+    <div class="restriction-card">
+      <div class="restriction-brand">
+        <img src="assets/images/restriction_logo.png" alt="Pawan Product Designer" class="restriction-brand-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div style="display:none; flex-direction:column; align-items:center;">
+          <span class="logo-script restriction-brand-logo">Pawan.</span>
+          <div class="restriction-role">PRODUCT DESIGNER</div>
+        </div>
+      </div>
+
+      <div class="restriction-illustration" aria-hidden="true">
+        <img src="assets/images/restriction_character.png" alt="Pawan working at design desk illustration" class="restriction-character-img" id="restrictionCharacterImg" onerror="this.onerror=null; this.src='assets/images/hero_character.png';">
+      </div>
+
+      <div class="restriction-title-wrap">
+        <img src="assets/images/restriction_arrow.png" alt="" class="restriction-arrow-img" aria-hidden="true" onerror="this.style.display='none';">
+        <h1 id="restrictionTitle" class="restriction-title">
+          Best viewed on a<br>larger screen<span class="title-dot">.</span>
+        </h1>
+      </div>
+
+      <p class="restriction-desc">
+        For the full interactive portfolio,<br>open this link on a desktop or tablet.
+      </p>
+
+      <div class="restriction-action-box">
+        <button type="button" id="copyPortfolioLinkBtn" class="btn-copy-portfolio" aria-label="Copy portfolio link to clipboard">
+          <span class="btn-copy-icon">
+            <svg viewBox="0 0 24 24" fill="none" class="copy-svg" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="4" width="12" height="15" rx="2.5" stroke="currentColor" stroke-width="2.2"/>
+              <path d="M4 8.5V18C4 19.3807 5.11929 20.5 6.5 20.5H15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span id="copyPortfolioLinkText">Copy portfolio link</span>
+        </button>
+      </div>
+
+      <div class="restriction-contact-hint">
+        <span>Need to connect directly?</span>
+        <a href="mailto:pawankushwaha1@gmail.com" class="restriction-email-link">pawankushwaha1@gmail.com &rarr;</a>
+      </div>
+    </div>
+  </div>
 
   <!-- Sticky Navbar (Unified with Portfolio) -->
   <header class="site-header" id="siteHeader">
@@ -381,6 +467,7 @@
 
   <!-- Scripts -->
   <script src="data-manager.js"></script>
+  <script src="components.js"></script>
   <script src="about.js"></script>
 </body>
 </html>

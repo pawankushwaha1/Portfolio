@@ -1,0 +1,28 @@
+[build]
+  publish = "."
+
+# Ensure portfolio-data.json is never cached by browser or CDN
+# Guarantees that mobile and desktop devices immediately see latest admin edits
+[[headers]]
+  for = "/portfolio-data.json"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
+    Pragma = "no-cache"
+    Expires = "0"
+    Access-Control-Allow-Origin = "*"
+
+# Admin panel should always be fresh
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
+    Pragma = "no-cache"
+    Expires = "0"
+
+# General security and performance headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
