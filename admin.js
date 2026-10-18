@@ -4852,7 +4852,7 @@ function initCloudSyncManager() {
     const topbarText = document.getElementById('topbarSyncText');
 
     if (chkEnabled) chkEnabled.checked = Boolean(cfg.enabled);
-    if (selProvider) selProvider.value = cfg.provider || 'jsonbin';
+    if (selProvider) selProvider.value = cfg.provider || 'github';
     if (txtEndpoint) txtEndpoint.value = cfg.endpointUrl || '';
     if (txtApiKey) txtApiKey.value = cfg.apiKey || '';
     if (txtGitHubRepo) txtGitHubRepo.value = cfg.githubRepo || 'pawankushwaha1/Portfolio';
@@ -4861,7 +4861,7 @@ function initCloudSyncManager() {
     if (chkAutoPush) chkAutoPush.checked = cfg.autoPushOnSave !== false;
 
     // Toggle provider sub-boxes
-    const prov = selProvider ? selProvider.value : 'jsonbin';
+    const prov = selProvider ? selProvider.value : 'github';
     if (boxJsonBin) boxJsonBin.style.display = (prov === 'github') ? 'none' : 'block';
     if (boxGitHub) boxGitHub.style.display = (prov === 'github') ? 'block' : 'none';
 
@@ -4938,7 +4938,7 @@ function initCloudSyncManager() {
     btnSaveConfig.addEventListener('click', () => {
       const cfg = {
         enabled: chkEnabled ? chkEnabled.checked : false,
-        provider: selProvider ? selProvider.value : 'jsonbin',
+        provider: selProvider ? selProvider.value : 'github',
         endpointUrl: txtEndpoint ? txtEndpoint.value.trim() : '',
         apiKey: txtApiKey ? txtApiKey.value.trim() : '',
         githubRepo: txtGitHubRepo ? txtGitHubRepo.value.trim() : '',
@@ -6560,15 +6560,24 @@ function saveAllAdminChanges(showNotification = true) {
     data.customization.sections.connectTitle = data.connect.title;
   }
 
-  const success = PortfolioData.save(data);
+  const success = PortfolioData.save(data, { skipCloudPush: true });
   updateDashboardStats();
   syncPreviewIframe();
 
   if (showNotification) {
     if (success) {
       const cloudCfg = PortfolioData.getCloudSyncConfig ? PortfolioData.getCloudSyncConfig() : null;
-      if (cloudCfg && cloudCfg.enabled) {
-        showToast('All changes saved & synced live to all devices worldwide! 🌐', 'success');
+      if (cloudCfg && cloudCfg.enabled && cloudCfg.autoPushOnSave) {
+        showToast('💾 Saved locally! Syncing live with GitHub & Netlify... ⏳', 'info');
+        PortfolioData.pushToCloud(data).then(res => {
+          if (res.success) {
+            showToast('🚀 Synced to GitHub! Netlify is publishing updates worldwide.', 'success');
+          } else {
+            showToast('⚠️ Saved locally, but GitHub sync failed: ' + res.error, 'warning');
+          }
+        }).catch(err => {
+          showToast('⚠️ Saved locally, but sync error: ' + err.message, 'warning');
+        });
       } else {
         showToast('Saved to this computer! To update all other devices, export to Netlify or enable Cloud Sync.', 'success');
       }

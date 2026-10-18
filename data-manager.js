@@ -1569,10 +1569,16 @@
     /**
      * Save active data with multi-channel persistence and broadcasting
      */
-    save(data) {
+    save(data, options = {}) {
       try {
+        if (!data || typeof data !== 'object') {
+          console.error('PortfolioData.save: invalid data object provided');
+          return false;
+        }
+
         data.updatedAt = new Date().toISOString();
         window._activePortfolioData = data;
+
         // Auto-migrate oversized Base64 media (> 64KB) to IndexedDB to guarantee localStorage quota safety
         try {
           const checkAndMigrate = (obj, path) => {
@@ -1603,6 +1609,13 @@
         } catch (lsErr) {
           console.warn('localStorage save warning (quota or restricted):', lsErr);
           try {
+            // Free up stale cache keys if localStorage is near quota
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+              const k = localStorage.key(i);
+              if (k && (k.startsWith('fast_media_') || k.startsWith('fast_hero_card_') || k.startsWith('portfolio_cache_'))) {
+                localStorage.removeItem(k);
+              }
+            }
             // Second pass: migrate any remaining data: URIs over 10KB
             const stripped = JSON.parse(serialized);
             const deepMigrate = (obj) => {
@@ -1620,7 +1633,9 @@
             deepMigrate(stripped);
             localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(stripped));
             lsSuccess = true;
-          } catch(stripErr) {}
+          } catch(stripErr) {
+            console.warn('localStorage secondary save note:', stripErr);
+          }
         }
 
         // 2. Secondary Session Storage (sessionStorage)
@@ -1660,7 +1675,9 @@
           try {
             const cloudCfg = this.getCloudSyncConfig();
             if (cloudCfg && cloudCfg.enabled && cloudCfg.autoPushOnSave) {
-              this.pushToCloud(data).catch(() => {});
+              this.pushToCloud(data).catch((pErr) => {
+                console.warn('Auto cloud push notice:', pErr);
+              });
             }
           } catch (e) {}
         }
@@ -1924,10 +1941,10 @@
       } catch(e) {}
       return {
         enabled: false,
-        provider: 'jsonbin',
+        provider: 'github',
         endpointUrl: '',
         apiKey: '',
-        githubRepo: '',
+        githubRepo: 'pawankushwaha1/Portfolio',
         githubToken: '',
         githubBranch: 'main',
         githubPath: 'portfolio-data.json',
@@ -1950,22 +1967,28 @@
     },
 
     /**
-     * Push active dataset to configured Cloud Database (JSONBin, REST API, or GitHub Auto-Deploy)
+     * Push active dataset to configured Cloud Database (GitHub Auto-Deploy, JSONBin, or REST API)
      */
     async pushToCloud(data) {
       const cfg = this.getCloudSyncConfig();
       if (!cfg || !cfg.enabled) {
-        return { success: false, error: 'Cloud sync is disabled in settings' };
+        return { success: false, error: 'Cloud sync is disabled. Enable it in the Cloud Sync tab.' };
       }
 
       const portable = this.getPortableData(data || this.get());
 
       // 1. GitHub Direct Commit (Triggers Netlify Auto-Deploy)
-      if (cfg.provider === 'github' && cfg.githubRepo && cfg.githubToken) {
+      if (cfg.provider === 'github') {
+        if (!cfg.githubRepo) {
+          return { success: false, error: 'GitHub repository is missing (e.g. pawankushwaha1/Portfolio).' };
+        }
+        if (!cfg.githubToken) {
+          return { success: false, error: 'Personal Access Token (PAT) is required to push to GitHub. Generate one with repo scope at github.com/settings/tokens.' };
+        }
         try {
           const path = cfg.githubPath || 'portfolio-data.json';
           const branch = cfg.githubBranch || 'main';
-          const cleanRepo = cfg.githubRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/\/$/, '');
+          const cleanRepo = cfg.githubRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '');
           const jsonStr = JSON.stringify(portable, null, 2);
           const b64Content = btoa(unescape(encodeURIComponent(jsonStr)));
 
@@ -2004,7 +2027,12 @@
 
           if (!putRes.ok) {
             const errText = await putRes.text();
-            throw new Error(`GitHub error (${putRes.status}): ${errText}`);
+            let parsedMsg = errText;
+            try {
+              const errJson = JSON.parse(errText);
+              if (errJson && errJson.message) parsedMsg = errJson.message;
+            } catch(e) {}
+            throw new Error(`GitHub error (${putRes.status}): ${parsedMsg}`);
           }
 
           cfg.lastSyncTime = new Date().toISOString();
@@ -2075,7 +2103,7 @@
         }
       }
 
-      return { success: false, error: 'Incomplete cloud sync configuration. Please check your URL and Key.' };
+      return { success: false, error: 'Incomplete cloud sync configuration. Please check your settings.' };
     },
 
     /**
@@ -2088,8 +2116,28 @@
         let remoteData = null;
         let source = null;
 
-        // 1. Try Cloud Sync Endpoint if configured
-        if (cloudCfg && cloudCfg.enabled && cloudCfg.endpointUrl) {
+        // 1. Try GitHub Direct Raw if GitHub Auto-Deploy configured
+        if (cloudCfg && cloudCfg.enabled && cloudCfg.provider === 'github' && cloudCfg.githubRepo) {
+          try {
+            const cleanRepo = cloudCfg.githubRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '');
+            const branch = cloudCfg.githubBranch || 'main';
+            const path = cloudCfg.githubPath || 'portfolio-data.json';
+            const ghRawUrl = `https://raw.githubusercontent.com/${cleanRepo}/${branch}/${path}?t=${Date.now()}`;
+            const ghRes = await fetch(ghRawUrl, { cache: 'no-store' });
+            if (ghRes.ok) {
+              const parsed = await ghRes.json();
+              if (parsed && (parsed.profile || parsed.projects)) {
+                remoteData = parsed;
+                source = 'github';
+              }
+            }
+          } catch(ghErr) {
+            console.warn('GitHub direct fetch note:', ghErr);
+          }
+        }
+
+        // 2. Try Cloud Sync Endpoint if configured
+        if (!remoteData && cloudCfg && cloudCfg.enabled && cloudCfg.endpointUrl) {
           try {
             let fetchUrl = cloudCfg.endpointUrl;
             if (cloudCfg.provider === 'jsonbin' || fetchUrl.includes('jsonbin.io')) {
@@ -2112,7 +2160,7 @@
           }
         }
 
-        // 2. Try static portfolio-data.json from server
+        // 3. Try static portfolio-data.json from server
         if (!remoteData) {
           try {
             const isSubdir = (typeof window !== 'undefined' && window.location && window.location.pathname.includes('/projects/'));

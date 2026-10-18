@@ -2055,14 +2055,38 @@
               <div class="form-group" style="margin-bottom: 14px;">
                 <label class="form-label" for="selCloudProvider">Sync Provider</label>
                 <select id="selCloudProvider" class="form-control">
+                  <option value="github" selected>GitHub Auto-Deploy (Recommended — 100 MB Limit, Direct Netlify Sync)</option>
                   <option value="jsonbin">JSONBin.io (Auto-Compressed, 100 KB Free Plan)</option>
-                  <option value="github">GitHub Auto-Deploy (Recommended — 100 MB Limit, Direct Netlify Sync)</option>
                   <option value="rest">Custom REST API Endpoint (PUT JSON)</option>
                 </select>
               </div>
 
-              <!-- JSONBin & REST Settings -->
-              <div id="boxJsonBinSettings">
+              <!-- GitHub Settings (Default) -->
+              <div id="boxGitHubSettings" style="display: block;">
+                <div style="background: rgba(229,169,60,0.12); border: 1px solid rgba(229,169,60,0.35); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; line-height: 1.5; color: #13294B;">
+                  <strong>⚡ How GitHub Auto-Deploy Works:</strong><br>
+                  When you click <em>"Save &amp; Publish All"</em>, your updates are committed directly to your repository (<strong>pawankushwaha1/Portfolio</strong>). Netlify automatically detects the commit and updates your live website across every phone, tablet, and computer worldwide!
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                  <label class="form-label" for="txtGitHubRepo">GitHub Repository</label>
+                  <input type="text" id="txtGitHubRepo" class="form-control" value="pawankushwaha1/Portfolio" placeholder="pawankushwaha1/Portfolio">
+                  <span class="form-hint">The GitHub repository connected to your Netlify site.</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                  <label class="form-label" for="txtGitHubToken">Personal Access Token (PAT)</label>
+                  <input type="password" id="txtGitHubToken" class="form-control" placeholder="ghp_... or github_pat_..." autocomplete="off">
+                  <span class="form-hint">
+                    👉 <a href="https://github.com/settings/tokens/new?scopes=repo&description=Portfolio+Admin+Panel" target="_blank" style="color: var(--color-gold); font-weight: 700; text-decoration: underline;">Click here to generate your token with 'repo' scope on GitHub ↗</a> (scroll down, click green "Generate token", and paste here).
+                  </span>
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label class="form-label" for="txtGitHubBranch">Target Branch</label>
+                  <input type="text" id="txtGitHubBranch" class="form-control" value="main">
+                </div>
+              </div>
+
+              <!-- JSONBin & REST Settings (Secondary) -->
+              <div id="boxJsonBinSettings" style="display: none;">
                 <div class="form-group" style="margin-bottom: 14px;">
                   <label class="form-label" for="txtCloudEndpoint">Cloud Endpoint URL (Bin URL)</label>
                   <input type="url" id="txtCloudEndpoint" class="form-control" placeholder="https://api.jsonbin.io/v3/b/YOUR_BIN_ID">
@@ -2072,24 +2096,6 @@
                   <label class="form-label" for="txtCloudApiKey">API Master Key / Secret</label>
                   <input type="password" id="txtCloudApiKey" class="form-control" placeholder="e.g. $2a$10$..." autocomplete="off">
                   <span class="form-hint">Found under "API Keys" on your JSONBin dashboard.</span>
-                </div>
-              </div>
-
-              <!-- GitHub Settings -->
-              <div id="boxGitHubSettings" style="display: none;">
-                <div class="form-group" style="margin-bottom: 14px;">
-                  <label class="form-label" for="txtGitHubRepo">GitHub Repository</label>
-                  <input type="text" id="txtGitHubRepo" class="form-control" value="pawankushwaha1/Portfolio" placeholder="pawankushwaha1/Portfolio">
-                  <span class="form-hint">The GitHub repository connected to your Netlify site.</span>
-                </div>
-                <div class="form-group" style="margin-bottom: 14px;">
-                  <label class="form-label" for="txtGitHubToken">Personal Access Token (PAT)</label>
-                  <input type="password" id="txtGitHubToken" class="form-control" placeholder="ghp_..." autocomplete="off">
-                  <span class="form-hint">Generate a token with <code>repo</code> contents permission at <a href="https://github.com/settings/tokens" target="_blank" style="color: var(--color-gold);">github.com/settings/tokens ↗</a>.</span>
-                </div>
-                <div class="form-group" style="margin-bottom: 16px;">
-                  <label class="form-label" for="txtGitHubBranch">Target Branch</label>
-                  <input type="text" id="txtGitHubBranch" class="form-control" value="main">
                 </div>
               </div>
 
@@ -2960,7 +2966,7 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <!-- Central Data Store & Admin Script -->
-  <script src="data-manager.js?v=2026.10.18.sync_v4"></script>
-  <script src="admin.js?v=2026.10.18.sync_v4"></script>
+  <script src="data-manager.js?v=2026.10.18.sync_v5"></script>
+  <script src="admin.js?v=2026.10.18.sync_v5"></script>
 </body>
 </html>
