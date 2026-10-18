@@ -229,61 +229,61 @@
       "deliverable": "Gear Involute DFM, Backlash Analysis Report, Functional Actuator",
       "showcaseImages": [
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316739291",
           "alt": "Apex Mountain Gear Mechanism & Carbon Lever",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316724051",
           "alt": "Indexing Pawl Tooth Engagement Engineering Draft",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316732689",
           "alt": "High-Impact Stress Finite Element Simulation",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316754333",
           "alt": "Wellness Journey Overview 4",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316758406",
           "alt": "Wellness Journey Overview 5",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316773282",
           "alt": "Wellness Journey Overview 6",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316783314",
           "alt": "Wellness Journey Overview 7",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316789766",
           "alt": "Wellness Journey Overview 8",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316800130",
           "alt": "Wellness Journey Overview 9",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316805910",
           "alt": "Wellness Journey Overview 10",
           "isVideo": false,
           "mediaType": "image"
@@ -341,25 +341,26 @@
       "verticalSectionTag": "",
       "verticalImages": [
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316822509",
           "alt": "Wellness Journey 9:16 Study 1",
           "isVideo": true,
           "mediaType": "video"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316832413",
           "alt": "Wellness Journey 9:16 Study 2",
           "isVideo": true,
           "mediaType": "video"
         },
         {
-          "src": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+          "src": "idb://dyn_media_1792316840613",
           "alt": "Wellness Journey 9:16 Study 3",
           "isVideo": true,
           "mediaType": "video"
         }
       ],
-      "brief": "I chose Snakes and Ladders as the foundation because it is a familiar game that children can understand quickly. By connecting its existing gameplay with health-related knowledge and physical activity, Wellness Journey makes learning about healthy habits more enjoyable and encourages children to play together."
+      "brief": "I chose Snakes and Ladders as the foundation because it is a familiar game that children can understand quickly. By connecting its existing gameplay with health-related knowledge and physical activity, Wellness Journey makes learning about healthy habits more enjoyable and encourages children to play together.",
+      "focalPoint": "center center"
     },
     {
       "id": "breathe",
@@ -1493,7 +1494,7 @@
       "timestamp": "2026-09-26T20:50:49.223Z"
     }
   ],
-  "updatedAt": "2026-10-18T09:43:49.016Z",
+  "updatedAt": "2026-10-18T09:47:22.574Z",
   "sections": {
     "workTitle": "SELECTED WORK",
     "workSubtitle": "Ideas transformed into meaningful, functional experiences.",
