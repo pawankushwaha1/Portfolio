@@ -1798,6 +1798,23 @@
       };
 
       deepResolve(clone);
+
+      // Automatically slim down redundant and empty fields so payload stays well under cloud limits (42 KB instead of 102 KB)
+      if (clone.projects && Array.isArray(clone.projects)) {
+        clone.projects.forEach(p => {
+          delete p.contentBlocks;
+          delete p.sections;
+          delete p.content;
+          delete p.blocks;
+          if (Array.isArray(p.alias) && p.alias.length === 0) delete p.alias;
+          if (!p.focalPoint) delete p.focalPoint;
+          if (p.shortDescription && p.shortDescription === p.shortDesc) delete p.shortDescription;
+          if (!p.publishedAt) delete p.publishedAt;
+          if (p.desc1 === p.shortDesc) delete p.desc1;
+          if (p.features && p.features.length === 0) delete p.features;
+        });
+      }
+
       clone.updatedAt = new Date().toISOString();
       return clone;
     },
@@ -1906,7 +1923,7 @@
           } catch(e) {}
 
           const putBody = {
-            message: `Update portfolio content via Admin Panel [skip ci]`,
+            message: `Update portfolio content via Admin Panel`,
             content: b64Content,
             branch: branch
           };
@@ -1940,8 +1957,19 @@
       if (cfg.endpointUrl) {
         try {
           let targetUrl = cfg.endpointUrl;
-          if (cfg.provider === 'jsonbin' || targetUrl.includes('jsonbin.io')) {
+          const isJsonBin = (cfg.provider === 'jsonbin' || targetUrl.includes('jsonbin.io'));
+          if (isJsonBin) {
             targetUrl = normalizeJsonBinUrl(targetUrl);
+          }
+
+          const payloadStr = JSON.stringify(portable);
+          const payloadSize = (typeof Blob !== 'undefined') ? new Blob([payloadStr]).size : payloadStr.length;
+
+          if (isJsonBin && payloadSize > 98000) {
+            return {
+              success: false,
+              error: `Payload size (${(payloadSize / 1024).toFixed(1)} KB) exceeds JSONBin free tier limit of 100 KB. Switch Provider to "GitHub Auto-Deploy" (100 MB limit) or use Option A (1-Click Netlify download).`
+            };
           }
 
           const headers = {
@@ -1956,11 +1984,21 @@
           const res = await fetch(targetUrl, {
             method: 'PUT',
             headers: headers,
-            body: JSON.stringify(portable)
+            body: payloadStr
           });
 
           if (!res.ok) {
-            const errText = await res.text();
+            let errText = await res.text();
+            try {
+              const errJson = JSON.parse(errText);
+              if (errJson && errJson.message) {
+                if (errJson.message.includes('100kb') || res.status === 403) {
+                  errText = 'JSONBin free tier limit (100 KB) exceeded. Please switch Provider to "GitHub Auto-Deploy" for 100 MB limit, or use Option A.';
+                } else {
+                  errText = errJson.message;
+                }
+              }
+            } catch(e) {}
             throw new Error(`Cloud endpoint returned status ${res.status}: ${errText}`);
           }
 
