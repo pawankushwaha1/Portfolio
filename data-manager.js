@@ -1994,36 +1994,92 @@
 
           const authHeader = (cfg.githubToken.startsWith('ghp_') ? `token ${cfg.githubToken}` : `Bearer ${cfg.githubToken}`);
 
-          let sha = null;
-          try {
-            const checkRes = await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}?ref=${branch}`, {
+          // Robust SHA retrieval using cache-busting timestamp and headers
+          const getLatestSha = async () => {
+            try {
+              const checkRes = await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}?ref=${encodeURIComponent(branch)}&_t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: {
+                  'Authorization': authHeader,
+                  'Accept': 'application/vnd.github.v3+json',
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  'Pragma': 'no-cache'
+                }
+              });
+              if (checkRes.ok || checkRes.status === 200) {
+                const fileData = await checkRes.json();
+                return fileData.sha || null;
+              }
+            } catch(e) {}
+            return null;
+          };
+
+          // Secondary tree lookup if contents endpoint returns 304 or null
+          const getShaFromTree = async () => {
+            try {
+              const treeRes = await fetch(`https://api.github.com/repos/${cleanRepo}/git/trees/${encodeURIComponent(branch)}?_t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: {
+                  'Authorization': authHeader,
+                  'Accept': 'application/vnd.github.v3+json',
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  'Pragma': 'no-cache'
+                }
+              });
+              if (treeRes.ok) {
+                const treeData = await treeRes.json();
+                if (treeData && Array.isArray(treeData.tree)) {
+                  const entry = treeData.tree.find(item => item.path === path);
+                  if (entry && entry.sha) return entry.sha;
+                }
+              }
+            } catch(e) {}
+            return null;
+          };
+
+          let sha = await getLatestSha();
+          if (!sha) sha = await getShaFromTree();
+
+          const commitFile = async (currentSha) => {
+            const putBody = {
+              message: `Update portfolio content via Admin Panel`,
+              content: b64Content,
+              branch: branch
+            };
+            if (currentSha) putBody.sha = currentSha;
+
+            return await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}`, {
+              method: 'PUT',
               headers: {
                 'Authorization': authHeader,
+                'Content-Type': 'application/json',
                 'Accept': 'application/vnd.github.v3+json'
-              }
+              },
+              body: JSON.stringify(putBody)
             });
-            if (checkRes.ok) {
-              const fileData = await checkRes.json();
-              sha = fileData.sha;
-            }
-          } catch(e) {}
-
-          const putBody = {
-            message: `Update portfolio content via Admin Panel`,
-            content: b64Content,
-            branch: branch
           };
-          if (sha) putBody.sha = sha;
 
-          const putRes = await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': authHeader,
-              'Content-Type': 'application/json',
-              'Accept': 'application/vnd.github.v3+json'
-            },
-            body: JSON.stringify(putBody)
-          });
+          let putRes = await commitFile(sha);
+
+          // If GitHub reports a 409 Conflict, auto-extract the remote SHA from response or tree and retry immediately!
+          if (putRes.status === 409) {
+            console.warn('GitHub 409 Conflict detected. Auto-resolving fresh SHA and retrying commit...');
+            const errText = await putRes.text();
+            let freshSha = null;
+            const match = errText.match(/does not match ([a-f0-9]{40})/i);
+            if (match && match[1]) {
+              freshSha = match[1];
+            } else {
+              await new Promise(r => setTimeout(r, 400));
+              freshSha = (await getLatestSha()) || (await getShaFromTree());
+            }
+
+            if (freshSha) {
+              putRes = await commitFile(freshSha);
+            } else {
+              throw new Error(`GitHub conflict (409): ${errText}`);
+            }
+          }
 
           if (!putRes.ok) {
             const errText = await putRes.text();
