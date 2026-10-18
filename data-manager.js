@@ -1837,6 +1837,91 @@
     },
 
     /**
+     * Asynchronously resolve all local idb:// media references into self-contained portable Base64 Data URLs
+     * Reads directly from IndexedDB so exported files or cloud commits are 100% self-contained across all devices
+     */
+    async getPortableDataAsync(targetData) {
+      const raw = targetData || this.get();
+      const clone = JSON.parse(JSON.stringify(raw));
+
+      const blobToDataUrl = (blob) => {
+        return new Promise((resolve) => {
+          if (!blob) return resolve('');
+          if (typeof blob === 'string') return resolve(blob);
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result || '');
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(blob);
+        });
+      };
+
+      const resolveIdbRefAsync = async (val) => {
+        if (typeof val !== 'string' || !val.startsWith('idb://')) return val;
+        const key = val.replace(/^idb:\/\//, '');
+
+        // 1. Check fast localStorage cache first
+        try {
+          const fast = localStorage.getItem(`fast_media_${key}`);
+          if (fast && fast.startsWith('data:')) return fast;
+          const m = key.match(/hero_card_(\d)/);
+          if (m) {
+            const fastHc = localStorage.getItem(`fast_hero_card_${m[1]}`);
+            if (fastHc && fastHc.startsWith('data:')) return fastHc;
+          }
+        } catch(e) {}
+
+        // 2. Query IndexedDB directly for original media record
+        if (window.PortfolioMediaDB && typeof window.PortfolioMediaDB.getMedia === 'function') {
+          try {
+            const record = await window.PortfolioMediaDB.getMedia(key);
+            if (record && record.data) {
+              if (typeof record.data === 'string' && record.data.startsWith('data:')) {
+                return record.data;
+              } else if (record.data instanceof Blob) {
+                const dataUrl = await blobToDataUrl(record.data);
+                if (dataUrl) return dataUrl;
+              }
+            }
+          } catch(e) {}
+        }
+
+        return val;
+      };
+
+      const deepResolveAsync = async (obj) => {
+        if (!obj || typeof obj !== 'object') return;
+        for (const k of Object.keys(obj)) {
+          if (typeof obj[k] === 'string' && obj[k].startsWith('idb://')) {
+            obj[k] = await resolveIdbRefAsync(obj[k]);
+          } else if (typeof obj[k] === 'object') {
+            await deepResolveAsync(obj[k]);
+          }
+        }
+      };
+
+      await deepResolveAsync(clone);
+
+      // Automatically slim down redundant and empty fields so payload stays compact
+      if (clone.projects && Array.isArray(clone.projects)) {
+        clone.projects.forEach(p => {
+          delete p.contentBlocks;
+          delete p.sections;
+          delete p.content;
+          delete p.blocks;
+          if (Array.isArray(p.alias) && p.alias.length === 0) delete p.alias;
+          if (!p.focalPoint) delete p.focalPoint;
+          if (p.shortDescription && p.shortDescription === p.shortDesc) delete p.shortDescription;
+          if (!p.publishedAt) delete p.publishedAt;
+          if (p.desc1 === p.shortDesc) delete p.desc1;
+          if (p.features && p.features.length === 0) delete p.features;
+        });
+      }
+
+      clone.updatedAt = new Date().toISOString();
+      return clone;
+    },
+
+    /**
      * Compress all base64 data URLs in a portable dataset to keep payload well under 100KB for JSONBin
      */
     async compressPortableMedia(obj, maxDim = 480, quality = 0.55) {
@@ -1900,8 +1985,8 @@
     /**
      * Export all data as downloadable JSON file with resolved portable media
      */
-    exportJSON() {
-      const data = this.getPortableData();
+    async exportJSON() {
+      const data = await this.getPortableDataAsync();
       const jsonStr = JSON.stringify(data, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -1917,8 +2002,8 @@
     /**
      * Download clean portfolio-data.json ready to drop into repository root for Netlify
      */
-    exportNetlifyDataJSON() {
-      const data = this.getPortableData();
+    async exportNetlifyDataJSON() {
+      const data = await this.getPortableDataAsync();
       const jsonStr = JSON.stringify(data, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -1967,15 +2052,54 @@
     },
 
     /**
+     * Mutex state for cloud sync pushes
+     */
+    _isPushing: false,
+    _pushQueue: null,
+    _activePushPromise: null,
+
+    /**
      * Push active dataset to configured Cloud Database (GitHub Auto-Deploy, JSONBin, or REST API)
+     * Protected by mutex queue to prevent racing concurrent commits
      */
     async pushToCloud(data) {
+      if (this._isPushing) {
+        console.log('[CloudSync] A push is already in progress. Queuing request...');
+        if (!this._pushQueue) {
+          this._pushQueue = (async () => {
+            try {
+              await this._activePushPromise;
+            } catch(e) {}
+            this._pushQueue = null;
+            return await this.pushToCloud(data);
+          })();
+        }
+        return await this._pushQueue;
+      }
+
+      this._isPushing = true;
+      this._activePushPromise = (async () => {
+        try {
+          return await this._executePushToCloud(data);
+        } finally {
+          this._isPushing = false;
+        }
+      })();
+
+      return await this._activePushPromise;
+    },
+
+    /**
+     * Internal implementation of cloud push with auto-retry and SHA reconciliation
+     */
+    async _executePushToCloud(data) {
       const cfg = this.getCloudSyncConfig();
       if (!cfg || !cfg.enabled) {
         return { success: false, error: 'Cloud sync is disabled. Enable it in the Cloud Sync tab.' };
       }
 
-      const portable = this.getPortableData(data || this.get());
+      // Crucial: Resolve all local idb:// media references to self-contained Base64 Data URLs so other devices render them
+      const portable = await this.getPortableDataAsync(data || this.get());
 
       // 1. GitHub Direct Commit (Triggers Netlify Auto-Deploy)
       if (cfg.provider === 'github') {
@@ -1990,7 +2114,21 @@
           const branch = cfg.githubBranch || 'main';
           const cleanRepo = cfg.githubRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '');
           const jsonStr = JSON.stringify(portable, null, 2);
-          const b64Content = btoa(unescape(encodeURIComponent(jsonStr)));
+
+          // Chunked, stack-safe Unicode Base64 encoding for payloads of any size
+          let b64Content;
+          if (typeof TextEncoder !== 'undefined') {
+            const bytes = new TextEncoder().encode(jsonStr);
+            let binary = '';
+            const len = bytes.byteLength;
+            const chunkSize = 0x8000;
+            for (let i = 0; i < len; i += chunkSize) {
+              binary += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, len)));
+            }
+            b64Content = btoa(binary);
+          } else {
+            b64Content = btoa(unescape(encodeURIComponent(jsonStr)));
+          }
 
           const authHeader = (cfg.githubToken.startsWith('ghp_') ? `token ${cfg.githubToken}` : `Bearer ${cfg.githubToken}`);
 
@@ -2033,9 +2171,6 @@
             return null;
           };
 
-          let sha = await getLatestSha();
-          if (!sha) sha = await getShaFromTree();
-
           const commitFile = async (currentSha) => {
             const putBody = {
               message: `Update portfolio content via Admin Panel`,
@@ -2055,41 +2190,39 @@
             });
           };
 
-          let putRes = await commitFile(sha);
+          let putRes = null;
+          let lastErrText = '';
 
-          // If GitHub reports a 409 Conflict or 422 Missing SHA, auto-extract the remote SHA and retry immediately!
-          if (putRes.status === 409 || putRes.status === 422) {
-            console.warn(`GitHub ${putRes.status} detected. Auto-resolving fresh SHA and retrying commit...`);
-            const errText = await putRes.text();
-            let freshSha = null;
-            const match = errText.match(/does not match ([a-f0-9]{40})/i);
-            if (match && match[1]) {
-              freshSha = match[1];
-            } else {
-              await new Promise(r => setTimeout(r, 400));
-              freshSha = (await getLatestSha()) || (await getShaFromTree());
+          // Retry loop: up to 3 attempts with fresh SHA fetching on 409 Conflict or 422
+          for (let attempt = 1; attempt <= 3; attempt++) {
+            let sha = await getLatestSha();
+            if (!sha) sha = await getShaFromTree();
+
+            putRes = await commitFile(sha);
+
+            if (putRes.ok) {
+              break; // Commit successful!
             }
 
-            if (freshSha) {
-              putRes = await commitFile(freshSha);
+            lastErrText = await putRes.text();
+            console.warn(`[GitHub Push] Attempt ${attempt} returned status ${putRes.status}:`, lastErrText);
+
+            if ((putRes.status === 409 || putRes.status === 422) && attempt < 3) {
+              // Wait for GitHub's git ref cache to settle before fetching new SHA and retrying
+              await new Promise(r => setTimeout(r, 600 * attempt));
+              continue;
             } else {
-              let errMsg = errText;
-              try {
-                const errJson = JSON.parse(errText);
-                if (errJson && errJson.message) errMsg = errJson.message.replace(/\n+/g, ' ');
-              } catch(e) {}
-              throw new Error(`GitHub error (${putRes.status}): ${errMsg}`);
+              break;
             }
           }
 
-          if (!putRes.ok) {
-            const errText = await putRes.text();
-            let parsedMsg = errText;
+          if (!putRes || !putRes.ok) {
+            let parsedMsg = lastErrText;
             try {
-              const errJson = JSON.parse(errText);
-              if (errJson && errJson.message) parsedMsg = errJson.message;
+              const errJson = JSON.parse(lastErrText);
+              if (errJson && errJson.message) parsedMsg = errJson.message.replace(/\n+/g, ' ');
             } catch(e) {}
-            throw new Error(`GitHub error (${putRes.status}): ${parsedMsg}`);
+            throw new Error(`GitHub error (${putRes ? putRes.status : 'network'}): ${parsedMsg}`);
           }
 
           cfg.lastSyncTime = new Date().toISOString();

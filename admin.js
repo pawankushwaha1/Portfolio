@@ -471,8 +471,8 @@ function initTabs() {
   }
 
   if (btnQuickExport) {
-    btnQuickExport.addEventListener('click', () => {
-      PortfolioData.exportJSON();
+    btnQuickExport.addEventListener('click', async () => {
+      await PortfolioData.exportJSON();
       showToast('Backup JSON downloaded successfully!', 'success');
     });
   }
@@ -4779,8 +4779,8 @@ function initBackupManager() {
   const btnReset = document.getElementById('btnResetToDefault');
 
   if (btnExport) {
-    btnExport.addEventListener('click', () => {
-      PortfolioData.exportJSON();
+    btnExport.addEventListener('click', async () => {
+      await PortfolioData.exportJSON();
       showToast('Site data backup downloaded!', 'success');
     });
   }
@@ -4923,9 +4923,9 @@ function initCloudSyncManager() {
 
   // 1-Click Netlify JSON Download
   if (btnDownloadNetlifyData) {
-    btnDownloadNetlifyData.addEventListener('click', () => {
+    btnDownloadNetlifyData.addEventListener('click', async () => {
       try {
-        PortfolioData.exportNetlifyDataJSON();
+        await PortfolioData.exportNetlifyDataJSON();
         showToast('📥 Downloaded portfolio-data.json! Commit or upload to Netlify to update all devices worldwide.', 'success');
       } catch (err) {
         showToast('Export error: ' + err.message, 'error');
@@ -6564,24 +6564,47 @@ function saveAllAdminChanges(showNotification = true) {
   updateDashboardStats();
   syncPreviewIframe();
 
+  const btnGlobal = document.getElementById('btnGlobalSave');
+  let origBtnHtml = '';
+  if (showNotification && btnGlobal) {
+    origBtnHtml = btnGlobal.innerHTML;
+    btnGlobal.disabled = true;
+    btnGlobal.style.pointerEvents = 'none';
+    btnGlobal.style.opacity = '0.75';
+    btnGlobal.innerHTML = '<span>⏳ Publishing to GitHub...</span>';
+  }
+
+  const restoreBtn = () => {
+    if (btnGlobal && origBtnHtml) {
+      btnGlobal.disabled = false;
+      btnGlobal.style.pointerEvents = '';
+      btnGlobal.style.opacity = '';
+      btnGlobal.innerHTML = origBtnHtml;
+    }
+  };
+
   if (showNotification) {
     if (success) {
       const cloudCfg = PortfolioData.getCloudSyncConfig ? PortfolioData.getCloudSyncConfig() : null;
       if (cloudCfg && cloudCfg.enabled && cloudCfg.autoPushOnSave) {
         showToast('⏳ Syncing live to GitHub & all devices worldwide...', 'info');
         PortfolioData.pushToCloud(data).then(res => {
+          restoreBtn();
           if (res.success) {
             showToast('🌐 Synced to GitHub! All devices & phones will now show your updates.', 'success');
           } else {
             showToast('⚠️ Saved locally, but GitHub sync failed: ' + res.error, 'warning');
           }
         }).catch(err => {
+          restoreBtn();
           showToast('⚠️ Saved locally, but sync error: ' + err.message, 'warning');
         });
       } else {
+        restoreBtn();
         showToast('Saved to this computer! To update all other devices, export to Netlify or enable Cloud Sync.', 'success');
       }
     } else {
+      restoreBtn();
       showToast('Warning: Storage limit exceeded. Please reduce media file size.', 'error');
     }
   }
