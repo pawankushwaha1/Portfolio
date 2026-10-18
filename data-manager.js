@@ -1820,6 +1820,67 @@
     },
 
     /**
+     * Compress all base64 data URLs in a portable dataset to keep payload well under 100KB for JSONBin
+     */
+    async compressPortableMedia(obj, maxDim = 480, quality = 0.55) {
+      if (!obj || typeof obj !== 'object') return obj;
+
+      const compressDataUrl = (dataUrl) => {
+        return new Promise((resolve) => {
+          if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/') || typeof document === 'undefined') {
+            return resolve(dataUrl);
+          }
+          if (dataUrl.length < 18000) return resolve(dataUrl);
+          try {
+            const img = new Image();
+            img.onload = () => {
+              try {
+                let w = img.width;
+                let h = img.height;
+                if (w > maxDim || h > maxDim) {
+                  if (w > h) {
+                    h = Math.round((h * maxDim) / w);
+                    w = maxDim;
+                  } else {
+                    w = Math.round((w * maxDim) / h);
+                    h = maxDim;
+                  }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                const compressed = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressed.length < dataUrl.length ? compressed : dataUrl);
+              } catch(e) {
+                resolve(dataUrl);
+              }
+            };
+            img.onerror = () => resolve(dataUrl);
+            img.src = dataUrl;
+          } catch(e) {
+            resolve(dataUrl);
+          }
+        });
+      };
+
+      const recurse = async (item) => {
+        if (!item || typeof item !== 'object') return;
+        for (const k of Object.keys(item)) {
+          if (typeof item[k] === 'string' && item[k].startsWith('data:image/')) {
+            item[k] = await compressDataUrl(item[k]);
+          } else if (typeof item[k] === 'object') {
+            await recurse(item[k]);
+          }
+        }
+      };
+
+      await recurse(obj);
+      return obj;
+    },
+
+    /**
      * Export all data as downloadable JSON file with resolved portable media
      */
     exportJSON() {
@@ -1960,6 +2021,7 @@
           const isJsonBin = (cfg.provider === 'jsonbin' || targetUrl.includes('jsonbin.io'));
           if (isJsonBin) {
             targetUrl = normalizeJsonBinUrl(targetUrl);
+            await this.compressPortableMedia(portable, 480, 0.55);
           }
 
           const payloadStr = JSON.stringify(portable);

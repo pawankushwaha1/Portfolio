@@ -2055,8 +2055,8 @@
               <div class="form-group" style="margin-bottom: 14px;">
                 <label class="form-label" for="selCloudProvider">Sync Provider</label>
                 <select id="selCloudProvider" class="form-control">
-                  <option value="jsonbin">JSONBin.io (Recommended — Free, Zero-Server)</option>
-                  <option value="github">GitHub Auto-Deploy (Commits directly to Netlify Repo)</option>
+                  <option value="jsonbin">JSONBin.io (Auto-Compressed, 100 KB Free Plan)</option>
+                  <option value="github">GitHub Auto-Deploy (Recommended — 100 MB Limit, Direct Netlify Sync)</option>
                   <option value="rest">Custom REST API Endpoint (PUT JSON)</option>
                 </select>
               </div>
@@ -2079,7 +2079,7 @@
               <div id="boxGitHubSettings" style="display: none;">
                 <div class="form-group" style="margin-bottom: 14px;">
                   <label class="form-label" for="txtGitHubRepo">GitHub Repository</label>
-                  <input type="text" id="txtGitHubRepo" class="form-control" placeholder="username/portfolio-repo">
+                  <input type="text" id="txtGitHubRepo" class="form-control" value="pawankushwaha1/Portfolio" placeholder="pawankushwaha1/Portfolio">
                   <span class="form-hint">The GitHub repository connected to your Netlify site.</span>
                 </div>
                 <div class="form-group" style="margin-bottom: 14px;">
@@ -2960,7 +2960,7 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <!-- Central Data Store & Admin Script -->
-  <script src="data-manager.js?v=2026.10.13.about_tools"></script>
-  <script src="admin.js?v=2026.10.13.about_tools"></script>
+  <script src="data-manager.js?v=2026.10.18.sync_v4"></script>
+  <script src="admin.js?v=2026.10.18.sync_v4"></script>
 </body>
 </html>

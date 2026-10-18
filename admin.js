@@ -4855,7 +4855,7 @@ function initCloudSyncManager() {
     if (selProvider) selProvider.value = cfg.provider || 'jsonbin';
     if (txtEndpoint) txtEndpoint.value = cfg.endpointUrl || '';
     if (txtApiKey) txtApiKey.value = cfg.apiKey || '';
-    if (txtGitHubRepo) txtGitHubRepo.value = cfg.githubRepo || '';
+    if (txtGitHubRepo) txtGitHubRepo.value = cfg.githubRepo || 'pawankushwaha1/Portfolio';
     if (txtGitHubToken) txtGitHubToken.value = cfg.githubToken || '';
     if (txtGitHubBranch) txtGitHubBranch.value = cfg.githubBranch || 'main';
     if (chkAutoPush) chkAutoPush.checked = cfg.autoPushOnSave !== false;
