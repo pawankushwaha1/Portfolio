@@ -1994,16 +1994,14 @@
 
           const authHeader = (cfg.githubToken.startsWith('ghp_') ? `token ${cfg.githubToken}` : `Bearer ${cfg.githubToken}`);
 
-          // Robust SHA retrieval using cache-busting timestamp and headers
+          // Robust SHA retrieval using cache-busting timestamp (no forbidden CORS headers)
           const getLatestSha = async () => {
             try {
-              const checkRes = await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}?ref=${encodeURIComponent(branch)}&_t=${Date.now()}`, {
+              const checkRes = await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}?ref=${encodeURIComponent(branch)}&t=${Date.now()}`, {
                 cache: 'no-store',
                 headers: {
                   'Authorization': authHeader,
-                  'Accept': 'application/vnd.github.v3+json',
-                  'Cache-Control': 'no-cache, no-store, must-revalidate',
-                  'Pragma': 'no-cache'
+                  'Accept': 'application/vnd.github.v3+json'
                 }
               });
               if (checkRes.ok || checkRes.status === 200) {
@@ -2014,16 +2012,14 @@
             return null;
           };
 
-          // Secondary tree lookup if contents endpoint returns 304 or null
+          // Secondary tree lookup if contents endpoint fails
           const getShaFromTree = async () => {
             try {
-              const treeRes = await fetch(`https://api.github.com/repos/${cleanRepo}/git/trees/${encodeURIComponent(branch)}?_t=${Date.now()}`, {
+              const treeRes = await fetch(`https://api.github.com/repos/${cleanRepo}/git/trees/${encodeURIComponent(branch)}?t=${Date.now()}`, {
                 cache: 'no-store',
                 headers: {
                   'Authorization': authHeader,
-                  'Accept': 'application/vnd.github.v3+json',
-                  'Cache-Control': 'no-cache, no-store, must-revalidate',
-                  'Pragma': 'no-cache'
+                  'Accept': 'application/vnd.github.v3+json'
                 }
               });
               if (treeRes.ok) {
@@ -2061,9 +2057,9 @@
 
           let putRes = await commitFile(sha);
 
-          // If GitHub reports a 409 Conflict, auto-extract the remote SHA from response or tree and retry immediately!
-          if (putRes.status === 409) {
-            console.warn('GitHub 409 Conflict detected. Auto-resolving fresh SHA and retrying commit...');
+          // If GitHub reports a 409 Conflict or 422 Missing SHA, auto-extract the remote SHA and retry immediately!
+          if (putRes.status === 409 || putRes.status === 422) {
+            console.warn(`GitHub ${putRes.status} detected. Auto-resolving fresh SHA and retrying commit...`);
             const errText = await putRes.text();
             let freshSha = null;
             const match = errText.match(/does not match ([a-f0-9]{40})/i);
@@ -2077,7 +2073,12 @@
             if (freshSha) {
               putRes = await commitFile(freshSha);
             } else {
-              throw new Error(`GitHub conflict (409): ${errText}`);
+              let errMsg = errText;
+              try {
+                const errJson = JSON.parse(errText);
+                if (errJson && errJson.message) errMsg = errJson.message.replace(/\n+/g, ' ');
+              } catch(e) {}
+              throw new Error(`GitHub error (${putRes.status}): ${errMsg}`);
             }
           }
 
