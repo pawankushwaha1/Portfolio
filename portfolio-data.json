@@ -413,7 +413,8 @@
       "route": "/projects/breathe",
       "desc2": "",
       "projectBrief": "A mindful living and alpine meditation app designed with calm typography and..",
-      "brief": "A mindful living and alpine meditation app designed with calm typography and.."
+      "brief": "A mindful living and alpine meditation app designed with calm typography and..",
+      "desc1": "A mindful living and alpine meditation app designed with calm typography and serene pacing. BREATHE synchronizes breathing cadences with subtle linear resonant haptic pulses. By pairing a pebble-sized pocket stone with an iOS companion, users regulate stress without gazing at glowing screens."
     },
     {
       "id": "movie-time",
@@ -1492,7 +1493,7 @@
       "timestamp": "2026-09-26T20:50:49.223Z"
     }
   ],
-  "updatedAt": "2026-10-18T07:11:42.090Z",
+  "updatedAt": "2026-10-18T07:26:02.069Z",
   "sections": {
     "workTitle": "SELECTED WORK",
     "workSubtitle": "Ideas transformed into meaningful, functional experiences.",
