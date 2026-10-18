@@ -1969,11 +1969,13 @@
           const jsonStr = JSON.stringify(portable, null, 2);
           const b64Content = btoa(unescape(encodeURIComponent(jsonStr)));
 
+          const authHeader = (cfg.githubToken.startsWith('ghp_') ? `token ${cfg.githubToken}` : `Bearer ${cfg.githubToken}`);
+
           let sha = null;
           try {
             const checkRes = await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}?ref=${branch}`, {
               headers: {
-                'Authorization': `token ${cfg.githubToken}`,
+                'Authorization': authHeader,
                 'Accept': 'application/vnd.github.v3+json'
               }
             });
@@ -1993,7 +1995,7 @@
           const putRes = await fetch(`https://api.github.com/repos/${cleanRepo}/contents/${path}`, {
             method: 'PUT',
             headers: {
-              'Authorization': `token ${cfg.githubToken}`,
+              'Authorization': authHeader,
               'Content-Type': 'application/json',
               'Accept': 'application/vnd.github.v3+json'
             },
