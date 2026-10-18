@@ -6568,10 +6568,10 @@ function saveAllAdminChanges(showNotification = true) {
     if (success) {
       const cloudCfg = PortfolioData.getCloudSyncConfig ? PortfolioData.getCloudSyncConfig() : null;
       if (cloudCfg && cloudCfg.enabled && cloudCfg.autoPushOnSave) {
-        showToast('💾 Saved locally! Syncing live with GitHub & Netlify... ⏳', 'info');
+        showToast('⏳ Syncing live to GitHub & all devices worldwide...', 'info');
         PortfolioData.pushToCloud(data).then(res => {
           if (res.success) {
-            showToast('🚀 Synced to GitHub! Netlify is publishing updates worldwide.', 'success');
+            showToast('🌐 Synced to GitHub! All devices & phones will now show your updates.', 'success');
           } else {
             showToast('⚠️ Saved locally, but GitHub sync failed: ' + res.error, 'warning');
           }

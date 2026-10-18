@@ -2173,13 +2173,15 @@
         let remoteData = null;
         let source = null;
 
-        // 1. Try GitHub Direct Raw if GitHub Auto-Deploy configured
-        if (cloudCfg && cloudCfg.enabled && cloudCfg.provider === 'github' && cloudCfg.githubRepo) {
+        // 1. Try GitHub Direct Raw (Instant worldwide CDN sync for all phones, tablets & devices)
+        const targetRepo = (cloudCfg && cloudCfg.githubRepo) ? cloudCfg.githubRepo : 'pawankushwaha1/Portfolio';
+        const targetBranch = (cloudCfg && cloudCfg.githubBranch) ? cloudCfg.githubBranch : 'main';
+        const targetPath = (cloudCfg && cloudCfg.githubPath) ? cloudCfg.githubPath : 'portfolio-data.json';
+        const cleanRepo = targetRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '');
+
+        if (cleanRepo) {
           try {
-            const cleanRepo = cloudCfg.githubRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '');
-            const branch = cloudCfg.githubBranch || 'main';
-            const path = cloudCfg.githubPath || 'portfolio-data.json';
-            const ghRawUrl = `https://raw.githubusercontent.com/${cleanRepo}/${branch}/${path}?t=${Date.now()}`;
+            const ghRawUrl = `https://raw.githubusercontent.com/${cleanRepo}/${targetBranch}/${targetPath}?t=${Date.now()}`;
             const ghRes = await fetch(ghRawUrl, { cache: 'no-store' });
             if (ghRes.ok) {
               const parsed = await ghRes.json();
@@ -2246,6 +2248,8 @@
           const localRaw = localStorage.getItem(STORAGE_KEY_DATA);
           let shouldAdopt = false;
 
+          const isViewer = (typeof window !== 'undefined' && window.location && !window.location.pathname.includes('admin.html'));
+
           if (!localRaw) {
             shouldAdopt = true;
           } else {
@@ -2253,8 +2257,14 @@
               const localParsed = JSON.parse(localRaw);
               const remoteTime = remoteData.updatedAt ? new Date(remoteData.updatedAt).getTime() : 0;
               const localTime = localParsed.updatedAt ? new Date(localParsed.updatedAt).getTime() : 0;
-              if (remoteTime > localTime) {
+
+              if (remoteTime > localTime || remoteData.updatedAt !== localParsed.updatedAt) {
                 shouldAdopt = true;
+              } else if (isViewer) {
+                // On visitor / mobile devices, always adopt if remote published data differs from local cache
+                if (JSON.stringify(remoteData) !== localRaw) {
+                  shouldAdopt = true;
+                }
               }
             } catch(e) {
               shouldAdopt = true;
