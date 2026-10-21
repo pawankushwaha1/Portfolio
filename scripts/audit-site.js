@@ -108,6 +108,11 @@ async function auditPage(cdp, url, name) {
     errors.push(`[Exception] ${desc}`);
   };
 
+  const requestUrls = new Map();
+  const onRequestWillBeSent = (params) => {
+    requestUrls.set(params.requestId, params.request.url);
+  };
+
   const onResponse = (params) => {
     if (params.response.status >= 400) {
       network404s.push(`[HTTP ${params.response.status}] ${params.response.url}`);
@@ -116,10 +121,12 @@ async function auditPage(cdp, url, name) {
 
   const onLoadingFailed = (params) => {
     if (params.errorText !== 'net::ERR_ABORTED') {
-      network404s.push(`[Load Failed: ${params.errorText}] ${params.requestId}`);
+      const url = requestUrls.get(params.requestId) || params.requestId;
+      network404s.push(`[Load Failed: ${params.errorText}] ${url}`);
     }
   };
 
+  cdp.on('Network.requestWillBeSent', onRequestWillBeSent);
   cdp.on('Runtime.consoleAPICalled', onConsole);
   cdp.on('Runtime.exceptionThrown', onException);
   cdp.on('Network.responseReceived', onResponse);

@@ -1215,6 +1215,41 @@
       return url;
     },
 
+    setMemoryCache(key, url) {
+      if (key && url) {
+        _mediaUrlCache.set(key, url);
+      }
+    },
+
+    getMediaFallback(key) {
+      let pathPrefix = '';
+      if (typeof window !== 'undefined' && window.location && window.location.pathname) {
+        const p = window.location.pathname.toLowerCase();
+        if (p.includes('/projects/') && (p.includes('/research') || p.includes('\\research'))) {
+          pathPrefix = '../../../';
+        } else if (p.includes('/projects/') || p.includes('\\projects\\')) {
+          pathPrefix = '../../';
+        }
+      }
+
+      if (!key || typeof key !== 'string') return pathPrefix + 'assets/images/hero_card_1.jpg';
+      const lower = key.toLowerCase();
+      if (lower.includes('portrait')) return pathPrefix + 'assets/images/hero_card_2.jpg';
+      if (lower.includes('hero_card_1')) return pathPrefix + 'assets/images/hero_card_1.jpg';
+      if (lower.includes('hero_card_2')) return pathPrefix + 'assets/images/hero_card_2.jpg';
+      if (lower.includes('hero_card_3')) return pathPrefix + 'assets/images/hero_card_3.jpg';
+      if (lower.includes('hero_card_4')) return pathPrefix + 'assets/images/hero_card_4.jpg';
+      if (lower.includes('hero_card')) return pathPrefix + 'assets/images/hero_card_1.jpg';
+      if (lower.includes('conn_') || lower.includes('footer')) return pathPrefix + 'assets/images/footer_media.jpg';
+      if (lower.includes('gallery')) return pathPrefix + 'assets/images/gallery_forest.jpg';
+      if (lower.includes('proto')) return pathPrefix + 'assets/images/proto_drafting.jpg';
+      if (lower.includes('wellness') || lower.includes('dyn_media')) return pathPrefix + 'assets/images/showcase_wellness_1.png';
+      if (lower.includes('proj_thumb')) return pathPrefix + 'assets/images/wellness_journey_cover.jpg';
+      if (lower.includes('proj')) return pathPrefix + 'assets/images/work_luma.jpg';
+      if (lower.includes('lock')) return pathPrefix + 'assets/images/restriction_character.png';
+      return pathPrefix + 'assets/images/hero_card_1.jpg';
+    },
+
     resolveUrlSync(src) {
       if (!src || typeof src !== 'string') return src || '';
       if (!src.startsWith('idb://')) return src;
@@ -1225,29 +1260,40 @@
       try {
         const m = key.match(/hero_card_(\d)/);
         const fast = localStorage.getItem(`fast_media_${key}`) || (m ? localStorage.getItem(`fast_hero_card_${m[1]}`) : null);
-        if (fast) {
+        if (fast && !fast.startsWith('idb://')) {
           _mediaUrlCache.set(key, fast);
           return fast;
         }
       } catch(_) {}
+
+      const fallback = this.getMediaFallback(key);
+
       // Trigger async fetch and automatically populate any elements using this src
       this.getMediaUrl(key).then(resolvedUrl => {
-        if (resolvedUrl && typeof document !== 'undefined') {
-          const elements = document.querySelectorAll(`[src="${src}"], [data-src="${src}"], [data-idb-src="${src}"]`);
-          elements.forEach(el => {
-            if (el.tagName === 'IMG' || el.tagName === 'VIDEO' || el.tagName === 'SOURCE') {
-              el.src = resolvedUrl;
-              if (el.tagName === 'VIDEO' && el.autoplay) {
-                el.muted = true;
-                el.play().catch(() => {});
+        const finalUrl = resolvedUrl || fallback;
+        if (finalUrl && typeof document !== 'undefined') {
+          _mediaUrlCache.set(key, finalUrl);
+          const selector = `[src*="${key}"], [data-src*="${key}"], [data-raw-src*="${key}"], [data-idb-key*="${key}"], [src="${src}"], [data-src="${src}"]`;
+          try {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+              if (el.tagName === 'IMG' || el.tagName === 'SOURCE') {
+                el.src = finalUrl;
+              } else if (el.tagName === 'VIDEO') {
+                el.src = finalUrl;
+                if (el.autoplay) {
+                  el.muted = true;
+                  el.play().catch(() => {});
+                }
+              } else if (el.style && el.style.backgroundImage && el.style.backgroundImage.includes(key)) {
+                el.style.backgroundImage = `url('${finalUrl}')`;
               }
-            } else if (el.style && el.style.backgroundImage && el.style.backgroundImage.includes(src)) {
-              el.style.backgroundImage = `url('${resolvedUrl}')`;
-            }
-          });
+            });
+          } catch(e) {}
         }
       });
-      return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>';
+
+      return fallback;
     },
 
     async storeFile(file, keyPrefix = 'media') {
@@ -1579,15 +1625,19 @@
         data.updatedAt = new Date().toISOString();
         window._activePortfolioData = data;
 
-        // Auto-migrate oversized Base64 media (> 64KB) to IndexedDB to guarantee localStorage quota safety
+        // Auto-migrate oversized Base64 media (> 300KB) to IndexedDB to guarantee localStorage quota safety
         try {
           const checkAndMigrate = (obj, path) => {
             if (!obj || typeof obj !== 'object') return;
             for (const k of Object.keys(obj)) {
               const val = obj[k];
-              if (typeof val === 'string' && val.startsWith('data:') && val.length > 65536) {
+              if (typeof val === 'string' && val.startsWith('data:') && val.length > 300000) {
                 const mediaKey = `media_auto_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
                 PortfolioMediaDB.saveMedia(mediaKey, val);
+                if (typeof PortfolioMediaDB.setMemoryCache === 'function') {
+                  PortfolioMediaDB.setMemoryCache(mediaKey, val);
+                }
+                try { localStorage.setItem(`fast_media_${mediaKey}`, val); } catch(_) {}
                 obj[k] = `idb://${mediaKey}`;
               } else if (val && typeof val === 'object') {
                 checkAndMigrate(val, path + '.' + k);
@@ -1859,6 +1909,12 @@
         if (typeof val !== 'string' || !val.startsWith('idb://')) return val;
         const key = val.replace(/^idb:\/\//, '');
 
+        // 0. Check in-memory cache first
+        if (typeof _mediaUrlCache !== 'undefined' && _mediaUrlCache.has(key)) {
+          const cached = _mediaUrlCache.get(key);
+          if (cached && (cached.startsWith('data:') || cached.startsWith('assets/'))) return cached;
+        }
+
         // 1. Check fast localStorage cache first
         try {
           const fast = localStorage.getItem(`fast_media_${key}`);
@@ -1885,7 +1941,11 @@
           } catch(e) {}
         }
 
-        return val;
+        // 3. Fallback to asset so no broken idb:// ever leaks to GitHub or other devices!
+        if (window.PortfolioMediaDB && typeof window.PortfolioMediaDB.getMediaFallback === 'function') {
+          return window.PortfolioMediaDB.getMediaFallback(key);
+        }
+        return 'assets/images/hero_card_1.jpg';
       };
 
       const deepResolveAsync = async (obj) => {

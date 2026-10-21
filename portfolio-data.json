@@ -235,55 +235,55 @@
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316724051",
+          "src": "assets/images/showcase_wellness_2.png",
           "alt": "Indexing Pawl Tooth Engagement Engineering Draft",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316732689",
+          "src": "assets/images/showcase_wellness_3.png",
           "alt": "High-Impact Stress Finite Element Simulation",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316754333",
+          "src": "assets/images/gallery_snake_scales.jpg",
           "alt": "Wellness Journey Overview 4",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316758406",
+          "src": "assets/images/proto_illustration.jpg",
           "alt": "Wellness Journey Overview 5",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316773282",
+          "src": "assets/images/wellness_journey_cover.jpg",
           "alt": "Wellness Journey Overview 6",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316783314",
+          "src": "assets/images/showcase_wellness_1.png",
           "alt": "Wellness Journey Overview 7",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316789766",
+          "src": "assets/images/showcase_wellness_2.png",
           "alt": "Wellness Journey Overview 8",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316800130",
+          "src": "assets/images/showcase_wellness_3.png",
           "alt": "Wellness Journey Overview 9",
           "isVideo": false,
           "mediaType": "image"
         },
         {
-          "src": "idb://dyn_media_1792316805910",
+          "src": "assets/images/wellness_journey_cover.jpg",
           "alt": "Wellness Journey Overview 10",
           "isVideo": false,
           "mediaType": "image"
@@ -341,19 +341,19 @@
       "verticalSectionTag": "",
       "verticalImages": [
         {
-          "src": "idb://dyn_media_1792316822509",
+          "src": "assets/images/showcase_wellness_1.png",
           "alt": "Wellness Journey 9:16 Study 1",
           "isVideo": true,
           "mediaType": "video"
         },
         {
-          "src": "idb://dyn_media_1792316832413",
+          "src": "assets/images/showcase_wellness_2.png",
           "alt": "Wellness Journey 9:16 Study 2",
           "isVideo": true,
           "mediaType": "video"
         },
         {
-          "src": "idb://dyn_media_1792316840613",
+          "src": "assets/images/showcase_wellness_3.png",
           "alt": "Wellness Journey 9:16 Study 3",
           "isVideo": true,
           "mediaType": "video"
@@ -424,7 +424,7 @@
       "shortTitle": "PYNEX",
       "title": "PYNEX",
       "tag": "",
-      "image": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>",
+      "image": "assets/images/work_movie.jpg",
       "shortDesc": "",
       "description": "A mindful living and alpine meditation app designed with calm typography and serene pacing. BREATHE synchronizes breathing cadences with subtle linear resonant haptic pulses. By pairing a pebble-sized pocket stone with an iOS companion, users regulate stress without gazing at glowing screens.",
       "timeline": "3 Months (2023)",

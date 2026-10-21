@@ -3,7 +3,10 @@
  * Handles navigation, mobile drawer, lens cursor, contact modal, and data hydration
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (window.PortfolioMediaDB && typeof window.PortfolioMediaDB.waitForReady === 'function') {
+    await window.PortfolioMediaDB.waitForReady(800);
+  }
   if (window.PortfolioData && typeof window.PortfolioData.loadRemoteData === 'function') {
     window.PortfolioData.loadRemoteData();
   }
@@ -14,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAboutContactModal();
   initAboutScrollAnimations();
 
+  window.addEventListener('portfolioMediaReady', hydrateAboutPage);
   window.addEventListener('portfolioDataUpdated', hydrateAboutPage);
   window.addEventListener('storage', (e) => {
     if (e.key === 'portfolio_custom_data') hydrateAboutPage();
@@ -377,12 +381,14 @@ function hydrateAboutPage() {
     }
   }
 
+  const resolveMedia = (src) => (window.PortfolioMediaDB ? window.PortfolioMediaDB.resolveUrlSync(src) : src) || src || '';
+
   // Profile & Connect data
   if (data.profile) {
     const p = data.profile;
     const aboutAvatars = document.querySelectorAll('.about-character-img, .connect-character-img');
     if (p.avatar) {
-      aboutAvatars.forEach(img => img.src = p.avatar);
+      aboutAvatars.forEach(img => img.src = resolveMedia(p.avatar));
     }
   }
 
@@ -438,7 +444,7 @@ function hydrateAboutPage() {
       if (pillEl && h.floatingPill) pillEl.textContent = h.floatingPill;
 
       const charImg = document.querySelector('.about-character-img');
-      if (charImg && h.characterImg) charImg.src = h.characterImg;
+      if (charImg && h.characterImg) charImg.src = resolveMedia(h.characterImg);
     }
 
     // 2. Quick Highlights / Metrics

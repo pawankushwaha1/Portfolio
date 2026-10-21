@@ -9,7 +9,10 @@
  * Plus Security (Password) and Backup/Restore.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (window.PortfolioMediaDB && typeof window.PortfolioMediaDB.waitForReady === 'function') {
+    await window.PortfolioMediaDB.waitForReady(800);
+  }
   initAuth();
   initTabs();
   initProfileManager();
@@ -25,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initModalCloseHandlers();
   initLivePreviewModal();
   initAutoSave();
+
+  window.addEventListener('portfolioMediaReady', () => {
+    refreshAllPanels();
+  });
 
   const btnGlobal = document.getElementById('btnGlobalSave');
   if (btnGlobal) {
@@ -90,62 +97,59 @@ async function handleAdminFileUpload(file, inputEl, previewEl, keyPrefix, isVide
     let processedFile = file;
     if (!isVideo && file.type && file.type.startsWith('image/')) {
       if (window.PortfolioMediaDB && typeof window.PortfolioMediaDB.compressImage === 'function') {
-        processedFile = await window.PortfolioMediaDB.compressImage(file, 1920, 1920, 0.88);
+        processedFile = await window.PortfolioMediaDB.compressImage(file, 1600, 1600, 0.84);
       }
     }
     const mediaKey = `${keyPrefix}_${Date.now()}`;
+
+    // Read complete Data URL
+    const toDataUrl = (blobOrFile) => new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result || '');
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(blobOrFile);
+    });
+    const dataUrl = await toDataUrl(processedFile);
+
+    // 1. Save in IndexedDB and cache in memory immediately
     if (window.PortfolioMediaDB) {
       await window.PortfolioMediaDB.saveMedia(mediaKey, processedFile);
-      if (inputEl) inputEl.value = `idb://${mediaKey}`;
-    } else {
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        if (inputEl) inputEl.value = evt.target.result;
-      };
-      reader.readAsDataURL(processedFile);
+      if (typeof window.PortfolioMediaDB.setMemoryCache === 'function') {
+        window.PortfolioMediaDB.setMemoryCache(mediaKey, dataUrl);
+      }
     }
 
-    const blobUrl = URL.createObjectURL(processedFile);
+    // 2. Set input value
+    if (inputEl) {
+      inputEl.value = `idb://${mediaKey}`;
+    }
+
+    // 3. Set preview directly
     if (previewEl) {
-      previewEl.src = blobUrl;
+      previewEl.src = dataUrl || (processedFile instanceof Blob ? URL.createObjectURL(processedFile) : '');
       if (isVideo && typeof previewEl.play === 'function') {
         previewEl.muted = true;
         previewEl.play().catch(() => {});
       }
     }
 
-    // Fast cache for zero-delay refresh on hero cards
-    if (!isVideo && processedFile) {
-      const m = keyPrefix.match(/hero_card_(\d)/);
-      if (m) {
+    // 4. Cache in localStorage for zero-delay refresh
+    if (!isVideo && dataUrl) {
+      try {
+        localStorage.setItem(`fast_media_${mediaKey}`, dataUrl);
+        const m = keyPrefix.match(/hero_card_(\d)/);
+        if (m) {
+          localStorage.setItem(`fast_hero_card_${m[1]}`, dataUrl);
+        }
+      } catch (quotaErr) {
         try {
-          const fastDataUrl = await generateFastCardDataUrl(processedFile, 900, 0.80);
-          if (fastDataUrl) {
-            try {
-              localStorage.setItem(`fast_hero_card_${m[1]}`, fastDataUrl);
-              localStorage.setItem(`fast_media_${mediaKey}`, fastDataUrl);
-            } catch(quotaErr) {
-              try {
-                Object.keys(localStorage).forEach(k => {
-                  if (k.startsWith('fast_media_') && k !== `fast_media_${mediaKey}`) {
-                    localStorage.removeItem(k);
-                  }
-                });
-                localStorage.setItem(`fast_hero_card_${m[1]}`, fastDataUrl);
-              } catch(_) {}
+          Object.keys(localStorage).forEach(k => {
+            if (k.startsWith('fast_media_') && k !== `fast_media_${mediaKey}`) {
+              localStorage.removeItem(k);
             }
-          }
-        } catch(_) {}
-      } else {
-        try {
-          const fastR = new FileReader();
-          fastR.onload = (fe) => {
-            try {
-              localStorage.setItem(`fast_media_${mediaKey}`, fe.target.result);
-            } catch(_) {}
-          };
-          fastR.readAsDataURL(processedFile);
-        } catch(_) {}
+          });
+          localStorage.setItem(`fast_media_${mediaKey}`, dataUrl);
+        } catch (_) {}
       }
     }
 

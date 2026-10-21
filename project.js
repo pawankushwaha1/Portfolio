@@ -87,11 +87,9 @@
   });
 
   window.addEventListener('portfolioMediaReady', () => {
-    if (!isProjectPageHydrated) {
-      initProjectPage();
-      isProjectPageHydrated = true;
-      document.documentElement.classList.add('portfolio-hydrated');
-    }
+    initProjectPage();
+    isProjectPageHydrated = true;
+    document.documentElement.classList.add('portfolio-hydrated');
   });
 
   let isResearchView = false;
@@ -99,9 +97,9 @@
   function resolveMediaUrl(src) {
     if (!src) return '';
     if (src.startsWith('idb://')) {
-      return (window.PortfolioMediaDB && window.PortfolioMediaDB.resolveUrlSync(src)) || src;
+      src = (window.PortfolioMediaDB && window.PortfolioMediaDB.resolveUrlSync(src)) || src;
     }
-    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:') || src.startsWith('blob:') || src.startsWith('/')) {
+    if (!src || src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:') || src.startsWith('blob:') || src.startsWith('/')) {
       return src;
     }
     const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';

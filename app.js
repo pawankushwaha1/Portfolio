@@ -144,16 +144,16 @@ async function startApp() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (window.PortfolioMediaDB && typeof window.PortfolioMediaDB.waitForReady === 'function') {
+    await window.PortfolioMediaDB.waitForReady(800);
+  }
   startApp();
 
-  // Listen for IndexedDB preloading completion (only if startApp hasn't hydrated yet)
+  // Listen for IndexedDB preloading completion to re-hydrate any late-arriving media
   window.addEventListener('portfolioMediaReady', () => {
-    if (!isAppHydrated) {
-      hydratePortfolioFromData();
-      isAppHydrated = true;
-      document.documentElement.classList.add('portfolio-hydrated');
-    }
+    hydrateHeroCardsFast();
+    hydratePortfolioFromData();
   });
 
   // 1. Listen for live updates in same window
