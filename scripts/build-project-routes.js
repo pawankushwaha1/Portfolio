@@ -17,9 +17,9 @@ const subfolderHtml = template
   .replace(/href="assets\//g, 'href="../../assets/')
   .replace(/src="assets\//g, 'src="../../assets/')
   .replace(/src="lenis\.min\.js"/g, 'src="../../lenis.min.js"')
-  .replace(/src="data-manager\.js(?:\?[^"]*)?"/g, 'src="../../data-manager.js?v=2026.10.21.sync_v11"')
-  .replace(/src="components\.js(?:\?[^"]*)?"/g, 'src="../../components.js?v=2026.10.21.sync_v11"')
-  .replace(/src="project\.js(?:\?[^"]*)?"/g, 'src="../../project.js?v=2026.10.21.sync_v11"')
+  .replace(/src="data-manager\.js(?:\?[^"]*)?"/g, 'src="../../data-manager.js?v=2026.10.21.sync_v12"')
+  .replace(/src="components\.js(?:\?[^"]*)?"/g, 'src="../../components.js?v=2026.10.21.sync_v12"')
+  .replace(/src="project\.js(?:\?[^"]*)?"/g, 'src="../../project.js?v=2026.10.21.sync_v12"')
   .replace('href="project-research.html"', 'href="research/index.html"');
 
 // 2. Research subfolder template (3 levels deep, for /projects/<slug>/research/)
@@ -30,9 +30,9 @@ const researchSubfolderHtml = template
   .replace(/href="assets\//g, 'href="../../../assets/')
   .replace(/src="assets\//g, 'src="../../../assets/')
   .replace(/src="lenis\.min\.js"/g, 'src="../../../lenis.min.js"')
-  .replace(/src="data-manager\.js(?:\?[^"]*)?"/g, 'src="../../../data-manager.js?v=2026.10.21.sync_v11"')
-  .replace(/src="components\.js(?:\?[^"]*)?"/g, 'src="../../../components.js?v=2026.10.21.sync_v11"')
-  .replace(/src="project\.js(?:\?[^"]*)?"/g, 'src="../../../project.js?v=2026.10.21.sync_v11"')
+  .replace(/src="data-manager\.js(?:\?[^"]*)?"/g, 'src="../../../data-manager.js?v=2026.10.21.sync_v12"')
+  .replace(/src="components\.js(?:\?[^"]*)?"/g, 'src="../../../components.js?v=2026.10.21.sync_v12"')
+  .replace(/src="project\.js(?:\?[^"]*)?"/g, 'src="../../../project.js?v=2026.10.21.sync_v12"')
   .replace('href="project-research.html"', 'href="../index.html"')
   .replace('href="research/index.html"', 'href="../index.html"')
   .replace(/<span class="cta-text-full">View research<\/span>\s*<span class="cta-text-short">Research<\/span>\s*<span class="pill-arrow">&rarr;<\/span>|<span>View research<\/span>\s*<span class="pill-arrow">&rarr;<\/span>/, '<span class="pill-arrow">&larr;</span>\n        <span class="cta-text-full">Project Overview</span>\n        <span class="cta-text-short">Overview</span>');

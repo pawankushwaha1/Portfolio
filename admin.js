@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initModalCloseHandlers();
   initLivePreviewModal();
   initAutoSave();
+  initMediaGuideModal();
+  setupMediaUrlEnhancers();
 
   window.addEventListener('portfolioMediaReady', () => {
     refreshAllPanels();
@@ -188,6 +190,412 @@ function checkLocalPathWarning(inputEl) {
     }
   } else {
     if (warningEl) warningEl.remove();
+  }
+}
+
+/* ==========================================================================
+   SMART MEDIA URL PROCESSING, AUTO-CONVERSION & LINK VALIDATION
+   ========================================================================== */
+function processMediaUrlInput(rawInput, expectedType = 'any') {
+  if (!rawInput || typeof rawInput !== 'string') {
+    return { original: '', url: '', isExternal: false, detectedType: 'unknown' };
+  }
+  let url = rawInput.trim();
+  // Strip surrounding quotes
+  url = url.replace(/^[\"'«»“”]|[\"'«»“”]$/g, '').trim();
+
+  let converted = false;
+  let note = '';
+
+  // 1. Google Drive Share Link conversion
+  // Format: https://drive.google.com/file/d/FILE_ID/view... or https://drive.google.com/open?id=FILE_ID
+  const gDriveMatch = url.match(/drive\.google\.com\/(?:file\/d\/([a-zA-Z0-9_-]+)|open\?id=([a-zA-Z0-9_-]+))/i);
+  if (gDriveMatch) {
+    const fileId = gDriveMatch[1] || gDriveMatch[2];
+    if (fileId) {
+      url = `https://lh3.googleusercontent.com/d/${fileId}`;
+      converted = true;
+      note = 'Auto-converted Google Drive link to direct CDN stream';
+    }
+  }
+
+  // 2. Dropbox share link conversion (dl=0 -> raw=1)
+  if (url.includes('dropbox.com') && (url.includes('dl=0') || !url.includes('raw=1'))) {
+    if (url.includes('dl=0')) url = url.replace('dl=0', 'raw=1');
+    else url += (url.includes('?') ? '&' : '?') + 'raw=1';
+    converted = true;
+    note = 'Auto-converted Dropbox link to direct download stream';
+  }
+
+  // 3. GitHub Blob link conversion (github.com/.../blob/... -> raw.githubusercontent.com)
+  const ghBlobMatch = url.match(/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/i);
+  if (ghBlobMatch) {
+    url = `https://raw.githubusercontent.com/${ghBlobMatch[1]}/${ghBlobMatch[2]}/${ghBlobMatch[3]}/${ghBlobMatch[4]}`;
+    converted = true;
+    note = 'Auto-converted GitHub link to raw CDN';
+  }
+
+  // 4. Imgur single page link to direct image link
+  const imgurMatch = url.match(/^https?:\/\/(?:i\.)?imgur\.com\/([a-zA-Z0-9]+)(?:\.[a-zA-Z]+)?$/i);
+  if (imgurMatch && !url.includes('/a/') && !url.includes('/gallery/')) {
+    const id = imgurMatch[1];
+    if (!/\.(jpg|jpeg|png|gif|webp|mp4)$/i.test(url)) {
+      url = `https://i.imgur.com/${id}.jpg`;
+      converted = true;
+      note = 'Auto-converted Imgur link to direct image';
+    }
+  }
+
+  const isExternal = /^https?:\/\//i.test(url);
+  const isVideoExt = /\.(mp4|webm|mov|ogg|m4v)($|\?)/i.test(url);
+  const isImageExt = /\.(jpg|jpeg|png|webp|gif|svg|avif)($|\?)/i.test(url);
+  const isYouTube = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)/i.test(url);
+  const isVimeo = /vimeo\.com\/(?:video\/)?([0-9]+)/i.test(url);
+
+  let detectedType = 'unknown';
+  if (isVideoExt || isYouTube || isVimeo) detectedType = 'video';
+  else if (isImageExt) detectedType = 'image';
+
+  return {
+    original: rawInput,
+    url: url,
+    converted: converted,
+    note: note,
+    isExternal: isExternal,
+    detectedType: detectedType,
+    isVideoExt: isVideoExt,
+    isImageExt: isImageExt,
+    isYouTube: isYouTube,
+    isVimeo: isVimeo
+  };
+}
+
+function updateMediaInputStatus(inputEl, expectedType = 'any') {
+  if (!inputEl) return;
+  const val = inputEl.value.trim();
+  const parent = inputEl.closest('.form-group') || inputEl.parentNode;
+  let statusRow = parent.querySelector('.media-url-status-row');
+
+  if (!statusRow) {
+    statusRow = document.createElement('div');
+    statusRow.className = 'media-url-status-row';
+    const rowWrap = inputEl.closest('.img-picker-row') || inputEl.closest('.video-picker-row') || inputEl.parentNode;
+    if (rowWrap && rowWrap.parentNode) {
+      rowWrap.parentNode.insertBefore(statusRow, rowWrap.nextSibling);
+    } else {
+      parent.appendChild(statusRow);
+    }
+  }
+
+  // Update open/test link button if present
+  const openBtn = parent.querySelector('.btn-sm-open-link');
+  if (openBtn) {
+    if (/^https?:\/\//i.test(val)) {
+      openBtn.href = val;
+      openBtn.style.display = 'inline-flex';
+    } else {
+      openBtn.style.display = 'none';
+    }
+  }
+
+  if (!val) {
+    statusRow.innerHTML = '';
+    statusRow.style.display = 'none';
+    return;
+  }
+
+  statusRow.style.display = 'flex';
+  const norm = processMediaUrlInput(val, expectedType);
+
+  // Type mismatch check
+  if (expectedType === 'image' && norm.detectedType === 'video') {
+    statusRow.innerHTML = `
+      <span class="media-url-status-pill pill-warn">🎬 Video URL detected</span>
+      <span class="media-url-status-pill pill-switch" data-action="switch-to-video" title="Click to switch this card to Video mode">Switch to Video ➔</span>
+    `;
+    const switchBtn = statusRow.querySelector('[data-action="switch-to-video"]');
+    if (switchBtn) {
+      switchBtn.onclick = () => {
+        const cardBox = inputEl.closest('.hero-card-admin-box') || inputEl.closest('.project-card-editor-box') || inputEl.closest('form');
+        if (cardBox) {
+          const vidRadio = cardBox.querySelector('input[type="radio"][value="video"]');
+          if (vidRadio) {
+            vidRadio.checked = true;
+            vidRadio.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      };
+    }
+    return;
+  }
+
+  if (expectedType === 'video' && norm.detectedType === 'image') {
+    statusRow.innerHTML = `
+      <span class="media-url-status-pill pill-warn">🖼️ Image URL detected</span>
+      <span class="media-url-status-pill pill-switch" data-action="switch-to-image" title="Click to switch this card to Image mode">Switch to Image ➔</span>
+    `;
+    const switchBtn = statusRow.querySelector('[data-action="switch-to-image"]');
+    if (switchBtn) {
+      switchBtn.onclick = () => {
+        const cardBox = inputEl.closest('.hero-card-admin-box') || inputEl.closest('.project-card-editor-box') || inputEl.closest('form');
+        if (cardBox) {
+          const imgRadio = cardBox.querySelector('input[type="radio"][value="image"]');
+          if (imgRadio) {
+            imgRadio.checked = true;
+            imgRadio.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      };
+    }
+    return;
+  }
+
+  if (/^(?:[a-zA-Z]:[\\\/]|\/Users\/|\/home\/|file:)/i.test(val)) {
+    statusRow.innerHTML = '<span class="media-url-status-pill pill-warn">⚠️ Computer path blocked by browser security. Click 📁 Upload or use a web link.</span>';
+    return;
+  }
+
+  if (norm.isExternal) {
+    let extra = '';
+    if (norm.converted) extra = ` • ${norm.note}`;
+    statusRow.innerHTML = `<span class="media-url-status-pill pill-cdn">🌐 Remote CDN Link • 0 KB saved to data • Fast &lt;1s sync${extra}</span>`;
+  } else if (val.startsWith('assets/')) {
+    statusRow.innerHTML = `<span class="media-url-status-pill pill-local">📁 Local Asset: ${val}</span>`;
+  } else if (val.startsWith('idb://')) {
+    statusRow.innerHTML = '<span class="media-url-status-pill pill-cdn">💾 Stored in local database</span>';
+  } else {
+    statusRow.innerHTML = `<span class="media-url-status-pill pill-local">🔗 Path: ${val}</span>`;
+  }
+}
+
+function setupMediaUrlEnhancers() {
+  const mediaInputIds = [
+    { id: 'heroCardImg1', type: 'image' },
+    { id: 'heroCardVid1', type: 'video' },
+    { id: 'heroCardImg2', type: 'image' },
+    { id: 'heroCardVid2', type: 'video' },
+    { id: 'heroCardImg3', type: 'image' },
+    { id: 'heroCardVid3', type: 'video' },
+    { id: 'heroCardImg4', type: 'image' },
+    { id: 'heroCardVid4', type: 'video' },
+    { id: 'aboutPortraitImg', type: 'image' },
+    { id: 'fieldProjImage', type: 'image' },
+    { id: 'fieldProjMobileImage', type: 'image' },
+    { id: 'fieldProjVideo', type: 'video' },
+    { id: 'fieldGallerySrc', type: 'image' },
+    { id: 'fieldGalleryVideo', type: 'video' },
+    { id: 'connMediaSrc', type: 'image' },
+    { id: 'connVideoSrc', type: 'video' },
+    { id: 'fieldProtoSrc', type: 'image' },
+    { id: 'fieldProtoVideo', type: 'video' },
+    { id: 'custLockScreenImage', type: 'image' },
+    { id: 'fieldToolCustomImg', type: 'image' }
+  ];
+
+  mediaInputIds.forEach(({ id, type }) => {
+    const input = document.getElementById(id);
+    if (!input || input.dataset.urlEnhanced === 'true') return;
+    input.dataset.urlEnhanced = 'true';
+
+    // Upgrade placeholder if generic
+    if (type === 'image' && (!input.placeholder || input.placeholder.startsWith('assets/'))) {
+      input.placeholder = 'Paste image link (Cloudinary, Imgur, Supabase) or assets/path';
+    } else if (type === 'video' && (!input.placeholder || input.placeholder.includes('video.mp4'))) {
+      input.placeholder = 'Paste video link (Cloudinary MP4, GitHub CDN) or assets/path';
+    }
+
+    const parent = input.parentNode;
+    if (parent && parent.classList.contains('input-with-action')) {
+      parent.classList.add('media-enhanced');
+      let actionBar = parent.querySelector('.media-url-action-bar');
+      if (!actionBar) {
+        actionBar = document.createElement('div');
+        actionBar.className = 'media-url-action-bar';
+        parent.appendChild(actionBar);
+      }
+
+      // Add Paste Button
+      if (!actionBar.querySelector('.btn-sm-paste')) {
+        const pasteBtn = document.createElement('button');
+        pasteBtn.type = 'button';
+        pasteBtn.className = 'btn-sm-paste';
+        pasteBtn.title = 'Paste Link / URL from clipboard';
+        pasteBtn.innerHTML = '📋 Paste Link';
+
+        pasteBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          let text = '';
+          try {
+            if (navigator.clipboard && navigator.clipboard.readText) {
+              text = await navigator.clipboard.readText();
+            }
+          } catch(err) {}
+          if (!text) {
+            text = window.prompt(`Paste your ${type === 'video' ? 'Video' : 'Photo'} Link / URL:`);
+          }
+          if (text) {
+            const norm = processMediaUrlInput(text, type);
+            input.value = norm.url;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            if (typeof showToast === 'function') {
+              showToast(`✓ ${type === 'video' ? 'Video' : 'Image'} link pasted & loaded!`);
+            }
+          }
+        });
+        actionBar.appendChild(pasteBtn);
+      }
+
+      // Move upload button into action bar if found
+      const uploadBtn = parent.querySelector('.btn-sm-upload');
+      if (uploadBtn && uploadBtn.parentNode !== actionBar) {
+        actionBar.appendChild(uploadBtn);
+      }
+
+      // Add Open Link Test Button
+      if (!actionBar.querySelector('.btn-sm-open-link')) {
+        const testLink = document.createElement('a');
+        testLink.className = 'btn-sm-open-link';
+        testLink.target = '_blank';
+        testLink.rel = 'noopener noreferrer';
+        testLink.title = 'Test link in new tab';
+        testLink.innerHTML = '↗ Open Link';
+        testLink.style.display = 'none';
+        actionBar.appendChild(testLink);
+      }
+    }
+
+    // Input & Paste event handlers for smart normalization
+    const handleValueUpdate = () => {
+      const raw = input.value;
+      const norm = processMediaUrlInput(raw, type);
+      if (norm.converted && norm.url !== raw) {
+        input.value = norm.url;
+      }
+      checkLocalPathWarning(input);
+      updateMediaInputStatus(input, type);
+    };
+
+    input.addEventListener('input', handleValueUpdate);
+    input.addEventListener('change', handleValueUpdate);
+    input.addEventListener('paste', () => setTimeout(handleValueUpdate, 50));
+
+    // Initial status check
+    updateMediaInputStatus(input, type);
+  });
+}
+
+/* ==========================================================================
+   MEDIA HOSTING & DIRECT URL GUIDE MODAL CONTROLLER
+   ========================================================================== */
+function initMediaGuideModal() {
+  const modal = document.getElementById('modalMediaGuide');
+  if (!modal) return;
+
+  // Open triggers
+  document.querySelectorAll('.btn-open-media-guide').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.classList.add('active');
+    });
+  });
+
+  // Tab switching inside guide
+  const tabButtons = modal.querySelectorAll('.btn-guide-tab');
+  const tabPanes = modal.querySelectorAll('.guide-tab-pane');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.tabTarget;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const pane = document.getElementById(targetId);
+      if (pane) pane.classList.add('active');
+    });
+  });
+
+  // Copy sample URLs
+  modal.querySelectorAll('.btn-guide-copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.copyTarget;
+      const codeEl = document.getElementById(targetId);
+      if (codeEl) {
+        const text = codeEl.textContent.trim();
+        navigator.clipboard.writeText(text).then(() => {
+          if (typeof showToast === 'function') showToast('Sample URL copied to clipboard! Click "📋 Paste" next to any input.');
+        }).catch(() => {
+          if (typeof showToast === 'function') showToast('Sample URL: ' + text);
+        });
+      }
+    });
+  });
+
+  // Live Link Tester & Converter inside Guide
+  const testerInput = document.getElementById('guideTesterInput');
+  const btnRunTest = document.getElementById('btnRunGuideTest');
+  const testerResult = document.getElementById('guideTesterResult');
+
+  if (testerInput && btnRunTest && testerResult) {
+    const runTest = () => {
+      const raw = testerInput.value.trim();
+      if (!raw) {
+        testerResult.style.display = 'none';
+        return;
+      }
+
+      const norm = processMediaUrlInput(raw);
+      testerResult.style.display = 'block';
+
+      let mediaPreviewHtml = '';
+      if (norm.detectedType === 'video') {
+        mediaPreviewHtml = `
+          <div style="margin-top: 10px; border-radius: 8px; overflow: hidden; max-height: 200px; background: #000;">
+            <video src="${norm.url}" autoplay muted loop playsinline controls style="width: 100%; max-height: 200px; object-fit: contain;"></video>
+          </div>
+        `;
+      } else {
+        mediaPreviewHtml = `
+          <div style="margin-top: 10px; border-radius: 8px; overflow: hidden; max-height: 200px; background: #F1F5F9; text-align: center;">
+            <img src="${norm.url}" alt="Preview" style="max-width: 100%; max-height: 200px; object-fit: contain;" onerror="this.alt='Failed to load image. Check if URL is public.';">
+          </div>
+        `;
+      }
+
+      testerResult.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <strong style="font-size: 13px; color: #0F172A;">Detected Type: <span style="color: #2563EB; text-transform: uppercase;">${norm.detectedType}</span></strong>
+          <span class="media-url-status-pill ${norm.isExternal ? 'pill-cdn' : 'pill-local'}">${norm.isExternal ? '🌐 Remote CDN' : '📁 Local Path'}</span>
+        </div>
+        ${norm.converted ? `<div style="font-size: 12px; color: #059669; font-weight: 600; margin-bottom: 6px;">✓ ${norm.note}</div>` : ''}
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 8px 10px; font-family: monospace; font-size: 12px; word-break: break-all; margin-bottom: 10px;">
+          ${norm.url}
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-primary btn-sm" id="btnCopyTestedUrl" style="padding: 6px 12px; font-size: 12px;">Copy Direct Link 📋</button>
+          <a href="${norm.url}" target="_blank" class="btn-outline-admin btn-sm" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">Open in New Tab ↗</a>
+        </div>
+        ${mediaPreviewHtml}
+      `;
+
+      const copyBtn = document.getElementById('btnCopyTestedUrl');
+      if (copyBtn) {
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(norm.url).then(() => {
+            if (typeof showToast === 'function') showToast('✓ Direct URL copied! Paste into any input in Admin.');
+          });
+        };
+      }
+    };
+
+    btnRunTest.addEventListener('click', runTest);
+    testerInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        runTest();
+      }
+    });
   }
 }
 
@@ -2287,13 +2695,16 @@ function addDynamicImageCard(containerId, src = '', alt = '', defaultPlaceholder
         </div>
         <button type="button" class="btn-remove-img" title="Remove item">&times;</button>
       </div>
-      <div class="dynamic-img-url-row">
-        <input type="text" class="form-input form-input-sm dynamic-img-url" placeholder="Media URL or path">
+      <div class="dynamic-img-url-row" style="display: flex; gap: 6px; align-items: center;">
+        <input type="text" class="form-input form-input-sm dynamic-img-url" placeholder="Paste link (Cloudinary, Imgur, Supabase, MP4) or assets/path" style="flex: 1;">
+        <button type="button" class="btn-sm-paste dyn-btn-paste" title="Paste link from clipboard">📋 Paste</button>
         <label class="btn-sm-upload" title="Upload local media">
           📁 Upload
           <input type="file" class="dynamic-img-file-input" style="display:none;">
         </label>
+        <a href="#" target="_blank" class="btn-sm-open-link dyn-btn-test" title="Open link in new tab" style="display:none;">↗</a>
       </div>
+      <div class="media-url-status-row dyn-media-status" style="display:none;"></div>
       <input type="text" class="form-input form-input-sm dynamic-img-alt" placeholder="Caption / Title">
     </div>
   `;
@@ -2309,10 +2720,39 @@ function addDynamicImageCard(containerId, src = '', alt = '', defaultPlaceholder
   const fileInput = card.querySelector('.dynamic-img-file-input');
   const removeBtn = card.querySelector('.btn-remove-img');
   const uploadLabel = card.querySelector('.btn-sm-upload');
+  const btnPaste = card.querySelector('.dyn-btn-paste');
+  const dynTestLink = card.querySelector('.dyn-btn-test');
+  const dynStatusRow = card.querySelector('.dyn-media-status');
 
   urlInput.value = currentSrc;
   altInput.value = currentAlt;
   altInput.placeholder = `Caption (e.g. ${labelPrefix} Detail)`;
+
+  function updateDynStatus() {
+    const val = urlInput.value.trim();
+    if (!val) {
+      if (dynStatusRow) { dynStatusRow.style.display = 'none'; dynStatusRow.innerHTML = ''; }
+      if (dynTestLink) dynTestLink.style.display = 'none';
+      return;
+    }
+    if (dynTestLink) {
+      if (/^https?:\/\//i.test(val)) {
+        dynTestLink.href = val;
+        dynTestLink.style.display = 'inline-flex';
+      } else {
+        dynTestLink.style.display = 'none';
+      }
+    }
+    if (dynStatusRow) {
+      dynStatusRow.style.display = 'flex';
+      const norm = processMediaUrlInput(val, currentType);
+      if (norm.isExternal) {
+        dynStatusRow.innerHTML = '<span class="media-url-status-pill pill-cdn">🌐 Remote CDN Link • 0 KB saved • Fast &lt;1s sync</span>';
+      } else if (val.startsWith('assets/')) {
+        dynStatusRow.innerHTML = `<span class="media-url-status-pill pill-local">📁 Local Asset: ${val}</span>`;
+      }
+    }
+  }
 
   function setMediaType(type) {
     currentType = type;
@@ -2320,17 +2760,18 @@ function addDynamicImageCard(containerId, src = '', alt = '', defaultPlaceholder
     if (type === 'video') {
       pillVid.classList.add('active');
       pillImg.classList.remove('active');
-      urlInput.placeholder = 'Video URL or path (e.g. assets/Video-39694.mp4 or .webm)';
+      urlInput.placeholder = 'Paste video link (Cloudinary MP4, GitHub CDN) or assets/path';
       fileInput.accept = 'video/*,video/mp4,video/webm';
       if (uploadLabel) uploadLabel.title = 'Upload local video';
     } else {
       pillImg.classList.add('active');
       pillVid.classList.remove('active');
-      urlInput.placeholder = 'Image URL or path (e.g. assets/images/work_luma.jpg)';
+      urlInput.placeholder = 'Paste image link (Cloudinary, Imgur, Supabase) or assets/path';
       fileInput.accept = 'image/*';
       if (uploadLabel) uploadLabel.title = 'Upload local image';
     }
     updateThumb();
+    updateDynStatus();
   }
 
   function updateThumb() {
@@ -2374,13 +2815,47 @@ function addDynamicImageCard(containerId, src = '', alt = '', defaultPlaceholder
   });
 
   urlInput.addEventListener('input', () => {
-    const val = urlInput.value.trim().toLowerCase();
-    if ((val.includes('.mp4') || val.includes('.webm') || val.startsWith('data:video/')) && currentType !== 'video') {
+    const raw = urlInput.value;
+    const norm = processMediaUrlInput(raw, currentType);
+    if (norm.converted && norm.url !== raw) {
+      urlInput.value = norm.url;
+    }
+    if (norm.detectedType === 'video' && currentType !== 'video') {
       setMediaType('video');
+    } else if (norm.detectedType === 'image' && currentType !== 'image') {
+      setMediaType('image');
     }
     checkLocalPathWarning(urlInput);
     updateThumb();
+    updateDynStatus();
   });
+
+  if (btnPaste) {
+    btnPaste.addEventListener('click', async (e) => {
+      e.preventDefault();
+      let text = '';
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          text = await navigator.clipboard.readText();
+        }
+      } catch(err) {}
+      if (!text) {
+        text = window.prompt(`Paste your ${currentType === 'video' ? 'Video' : 'Photo'} Link / URL:`);
+      }
+      if (text) {
+        const norm = processMediaUrlInput(text, currentType);
+        urlInput.value = norm.url;
+        if (norm.detectedType === 'video' && currentType !== 'video') {
+          setMediaType('video');
+        } else if (norm.detectedType === 'image' && currentType !== 'image') {
+          setMediaType('image');
+        }
+        updateThumb();
+        updateDynStatus();
+        if (typeof showToast === 'function') showToast('✓ Media link pasted and verified!');
+      }
+    });
+  }
 
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -2391,8 +2866,9 @@ function addDynamicImageCard(containerId, src = '', alt = '', defaultPlaceholder
     } else if (!isFileVid && currentType !== 'image') {
       setMediaType('image');
     }
-    handleAdminFileUpload(file, urlInput, null, `dyn_media`, isFileVid || currentType === 'video').then(() => {
+    handleAdminFileUpload(file, urlInput, null, 'dyn_media', isFileVid || currentType === 'video').then(() => {
       updateThumb();
+      updateDynStatus();
     });
   });
 
@@ -2402,6 +2878,7 @@ function addDynamicImageCard(containerId, src = '', alt = '', defaultPlaceholder
   });
 
   setMediaType(currentType);
+  updateDynStatus();
 
   container.appendChild(card);
   updateDynamicImageCounters();
@@ -3073,6 +3550,7 @@ function openProjectModal(projectToEdit = null) {
   }
 
   modal.classList.add('active');
+  setTimeout(setupMediaUrlEnhancers, 60);
 }
 
 function saveProjectRecord() {
