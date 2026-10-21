@@ -97,7 +97,16 @@ async function handleAdminFileUpload(file, inputEl, previewEl, keyPrefix, isVide
     let processedFile = file;
     if (!isVideo && file.type && file.type.startsWith('image/')) {
       if (window.PortfolioMediaDB && typeof window.PortfolioMediaDB.compressImage === 'function') {
-        processedFile = await window.PortfolioMediaDB.compressImage(file, 1600, 1600, 0.84);
+        processedFile = await window.PortfolioMediaDB.compressImage(file, 1600, 1600, 0.82);
+      }
+    }
+    if (isVideo) {
+      const sizeMB = file.size / (1024 * 1024);
+      if (sizeMB > 25) {
+        showToast(`⚠️ Video file is too large (${sizeMB.toFixed(1)} MB). GitHub sync limits files to 25MB. Please compress your clip or paste a direct video link.`, 'warning');
+        return;
+      } else if (sizeMB > 6) {
+        showToast(`Notice: Video is ${sizeMB.toFixed(1)} MB. For instant website updates across all devices, clips under 3MB or direct links are recommended.`, 'info');
       }
     }
     const mediaKey = `${keyPrefix}_${Date.now()}`;

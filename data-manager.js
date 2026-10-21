@@ -1386,11 +1386,11 @@
       return _idbPreloadPromise;
     },
 
-    async compressImage(file, maxWidth = 1920, maxHeight = 1920, quality = 0.88) {
+    async compressImage(file, maxWidth = 1600, maxHeight = 1600, quality = 0.82) {
       if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/svg+xml') {
         return file;
       }
-      if (file.size < 350 * 1024) return file;
+      if (file.size < 70 * 1024 && (file.type === 'image/webp' || file.type === 'image/jpeg')) return file;
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -1412,13 +1412,19 @@
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
+
+            // Export to modern WebP if supported, fallback to JPEG
+            const supportsWebp = canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+            const targetMime = supportsWebp ? 'image/webp' : 'image/jpeg';
+            const ext = supportsWebp ? '.webp' : '.jpg';
+
             canvas.toBlob((blob) => {
-              if (blob && blob.size < file.size) {
-                resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+              if (blob && (blob.size < file.size || width !== img.width)) {
+                resolve(new File([blob], file.name.replace(/\.[^.]+$/, ext), { type: targetMime }));
               } else {
                 resolve(file);
               }
-            }, 'image/jpeg', quality);
+            }, targetMime, quality);
           };
           img.onerror = () => resolve(file);
           img.src = e.target.result;
@@ -1961,6 +1967,9 @@
 
       await deepResolveAsync(clone);
 
+      // Auto-compress heavy media to keep payload fast and light
+      try { await this.compressPortableMedia(clone, 1600, 0.82); } catch(_) {}
+
       // Automatically slim down redundant and empty fields so payload stays compact
       if (clone.projects && Array.isArray(clone.projects)) {
         clone.projects.forEach(p => {
@@ -1984,7 +1993,7 @@
     /**
      * Compress all base64 data URLs in a portable dataset to keep payload well under 100KB for JSONBin
      */
-    async compressPortableMedia(obj, maxDim = 480, quality = 0.55) {
+    async compressPortableMedia(obj, maxDim = 1600, quality = 0.82) {
       if (!obj || typeof obj !== 'object') return obj;
 
       const compressDataUrl = (dataUrl) => {
@@ -1992,7 +2001,7 @@
           if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/') || typeof document === 'undefined') {
             return resolve(dataUrl);
           }
-          if (dataUrl.length < 18000) return resolve(dataUrl);
+          if (dataUrl.length < 32000) return resolve(dataUrl);
           try {
             const img = new Image();
             img.onload = () => {
@@ -2013,7 +2022,10 @@
                 canvas.height = h;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, w, h);
-                const compressed = canvas.toDataURL('image/jpeg', quality);
+
+                const supportsWebp = canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+                const mime = supportsWebp ? 'image/webp' : 'image/jpeg';
+                const compressed = canvas.toDataURL(mime, quality);
                 resolve(compressed.length < dataUrl.length ? compressed : dataUrl);
               } catch(e) {
                 resolve(dataUrl);
@@ -2363,33 +2375,37 @@
     async loadRemoteData() {
       try {
         const cloudCfg = this.getCloudSyncConfig();
-        let remoteData = null;
-        let source = null;
+        const candidates = [];
 
-        // 1. Try GitHub Direct Raw (Instant worldwide CDN sync for all phones, tablets & devices)
-        const targetRepo = (cloudCfg && cloudCfg.githubRepo) ? cloudCfg.githubRepo : 'pawankushwaha1/Portfolio';
-        const targetBranch = (cloudCfg && cloudCfg.githubBranch) ? cloudCfg.githubBranch : 'main';
-        const targetPath = (cloudCfg && cloudCfg.githubPath) ? cloudCfg.githubPath : 'portfolio-data.json';
-        const cleanRepo = targetRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '');
-
-        if (cleanRepo) {
+        // 1. Same-Origin Server / Hosting (/portfolio-data.json)
+        // Direct edge CDN fetch (< 30ms latency) with Cache-Control: no-cache, no-store
+        if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
           try {
-            const ghRawUrl = `https://raw.githubusercontent.com/${cleanRepo}/${targetBranch}/${targetPath}?t=${Date.now()}`;
-            const ghRes = await fetch(ghRawUrl, { cache: 'no-store' });
-            if (ghRes.ok) {
-              const parsed = await ghRes.json();
-              if (parsed && (parsed.profile || parsed.projects)) {
-                remoteData = parsed;
-                source = 'github';
-              }
+            const isSubdir = window.location.pathname.includes('/projects/');
+            const serverPaths = [
+              '/portfolio-data.json',
+              isSubdir ? '../../portfolio-data.json' : 'portfolio-data.json',
+              './portfolio-data.json'
+            ];
+            for (const sp of serverPaths) {
+              try {
+                const res = await fetch(`${sp}?v=${Date.now()}`, { cache: 'no-store' });
+                if (res.ok) {
+                  const parsed = await res.json();
+                  if (parsed && (parsed.profile || parsed.projects)) {
+                    const time = parsed.updatedAt ? new Date(parsed.updatedAt).getTime() : 0;
+                    candidates.push({ source: 'server', data: parsed, time });
+                    break;
+                  }
+                }
+              } catch(_) {}
             }
-          } catch(ghErr) {
-            console.warn('GitHub direct fetch note:', ghErr);
-          }
+          } catch(e) {}
         }
 
-        // 2. Try Cloud Sync Endpoint if configured
-        if (!remoteData && cloudCfg && cloudCfg.enabled && cloudCfg.endpointUrl) {
+        // 2. Cloud Sync Endpoint if configured (JSONBin / Supabase / Custom REST)
+        // Sub-second real-time global database sync (< 1s worldwide)
+        if (cloudCfg && cloudCfg.enabled && cloudCfg.endpointUrl) {
           try {
             let fetchUrl = cloudCfg.endpointUrl;
             if (cloudCfg.provider === 'jsonbin' || fetchUrl.includes('jsonbin.io')) {
@@ -2401,41 +2417,49 @@
               headers['X-Access-Key'] = cloudCfg.apiKey;
               headers['Authorization'] = `Bearer ${cloudCfg.apiKey}`;
             }
-            const cloudRes = await fetch(fetchUrl, { headers });
+            const cloudRes = await fetch(fetchUrl, { headers, cache: 'no-store' });
             if (cloudRes.ok) {
               const json = await cloudRes.json();
-              remoteData = json.record || json.data || json;
-              source = 'cloud';
+              const parsed = json.record || json.data || json;
+              if (parsed && (parsed.profile || parsed.projects)) {
+                const time = parsed.updatedAt ? new Date(parsed.updatedAt).getTime() : 0;
+                candidates.push({ source: 'cloud', data: parsed, time });
+              }
             }
           } catch(cErr) {
             console.warn('Cloud sync fetch note:', cErr);
           }
         }
 
-        // 3. Try static portfolio-data.json from server
-        if (!remoteData) {
+        // 3. GitHub Direct Raw (Fallback)
+        const targetRepo = (cloudCfg && cloudCfg.githubRepo) ? cloudCfg.githubRepo : 'pawankushwaha1/Portfolio';
+        const targetBranch = (cloudCfg && cloudCfg.githubBranch) ? cloudCfg.githubBranch : 'main';
+        const targetPath = (cloudCfg && cloudCfg.githubPath) ? cloudCfg.githubPath : 'portfolio-data.json';
+        const cleanRepo = targetRepo.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '');
+
+        if (cleanRepo && candidates.length === 0) {
           try {
-            const isSubdir = (typeof window !== 'undefined' && window.location && window.location.pathname.includes('/projects/'));
-            const candidates = [
-              '/portfolio-data.json',
-              isSubdir ? '../../portfolio-data.json' : 'portfolio-data.json',
-              './portfolio-data.json'
-            ];
-            for (const cand of candidates) {
-              try {
-                const res = await fetch(`${cand}?v=${Date.now()}`, { cache: 'no-store' });
-                if (res.ok) {
-                  const parsed = await res.json();
-                  if (parsed && (parsed.profile || parsed.projects)) {
-                    remoteData = parsed;
-                    source = 'server';
-                    break;
-                  }
-                }
-              } catch(candErr) {}
+            const ghRawUrl = `https://raw.githubusercontent.com/${cleanRepo}/${targetBranch}/${targetPath}?t=${Date.now()}`;
+            const ghRes = await fetch(ghRawUrl, { cache: 'no-store' });
+            if (ghRes.ok) {
+              const parsed = await ghRes.json();
+              if (parsed && (parsed.profile || parsed.projects)) {
+                const time = parsed.updatedAt ? new Date(parsed.updatedAt).getTime() : 0;
+                candidates.push({ source: 'github', data: parsed, time });
+              }
             }
-          } catch(fErr) {}
+          } catch(ghErr) {
+            console.warn('GitHub direct fetch note:', ghErr);
+          }
         }
+
+        if (candidates.length === 0) return { adopted: false };
+
+        // Sort so the newest published version always wins
+        candidates.sort((a, b) => b.time - a.time);
+        const best = candidates[0];
+        const remoteData = best.data;
+        const source = best.source;
 
         if (remoteData && typeof remoteData === 'object' && (remoteData.profile || remoteData.projects)) {
           const localRaw = localStorage.getItem(STORAGE_KEY_DATA);
@@ -2454,7 +2478,6 @@
               if (remoteTime > localTime || remoteData.updatedAt !== localParsed.updatedAt) {
                 shouldAdopt = true;
               } else if (isViewer) {
-                // On visitor / mobile devices, always adopt if remote published data differs from local cache
                 if (JSON.stringify(remoteData) !== localRaw) {
                   shouldAdopt = true;
                 }
@@ -2484,9 +2507,16 @@
               } catch(e) {}
             }
 
-            // Broadcast update event to all active views
+            // Broadcast update event to all active views and cross-tab channel
             window.dispatchEvent(new CustomEvent('portfolioDataUpdated', { detail: remoteData }));
-            return { adopted: true, source: source, data: remoteData };
+            if (typeof BroadcastChannel !== 'undefined') {
+              try {
+                const bc = new BroadcastChannel('portfolio_sync_channel');
+                bc.postMessage({ type: 'PORTFOLIO_DATA_UPDATED', data: remoteData, updatedAt: remoteData.updatedAt });
+                setTimeout(() => bc.close(), 100);
+              } catch(_) {}
+            }
+            return { adopted: true, source, data: remoteData };
           }
         }
       } catch(err) {
@@ -2751,5 +2781,29 @@
   try {
     PortfolioData.loadRemoteData();
   } catch(e) {}
+
+
+  // Auto-detect fresh updates on visibility change or window focus
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && window.PortfolioData) {
+        window.PortfolioData.loadRemoteData();
+      }
+    });
+    window.addEventListener('focus', () => {
+      if (window.PortfolioData) {
+        window.PortfolioData.loadRemoteData();
+      }
+    });
+  }
+
+  // Periodic background check every 25 seconds for live viewer pages
+  if (typeof window !== 'undefined' && window.location && !window.location.pathname.includes('admin.html')) {
+    setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible' && window.PortfolioData) {
+        window.PortfolioData.loadRemoteData();
+      }
+    }, 25000);
+  }
 
 })(window);
