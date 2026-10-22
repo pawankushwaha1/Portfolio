@@ -247,8 +247,8 @@ function processMediaUrlInput(rawInput, expectedType = 'any') {
   }
 
   const isExternal = /^https?:\/\//i.test(url);
-  const isVideoExt = /\.(mp4|webm|mov|ogg|m4v)($|\?)/i.test(url);
-  const isImageExt = /\.(jpg|jpeg|png|webp|gif|svg|avif)($|\?)/i.test(url);
+  const isVideoExt = /\.(mp4|webm|mov|ogg|m4v)($|\?|#)/i.test(url) || url.includes('/video/upload/') || (url.includes('cloudinary.com') && url.includes('/video/'));
+  const isImageExt = /\.(jpg|jpeg|png|webp|gif|svg|avif)($|\?|#)/i.test(url) || url.includes('/image/upload/') || (url.includes('cloudinary.com') && url.includes('/image/'));
   const isYouTube = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)/i.test(url);
   const isVimeo = /vimeo\.com\/(?:video\/)?([0-9]+)/i.test(url);
 
@@ -435,6 +435,14 @@ function setupMediaUrlEnhancers() {
           }
           if (text) {
             const norm = processMediaUrlInput(text, type);
+            if (input.disabled) {
+              input.disabled = false;
+            }
+            if (id === 'fieldProjVideo') window.updateProjMediaTypeUI?.('video');
+            if (id === 'fieldProjImage') window.updateProjMediaTypeUI?.('image');
+            if (id === 'fieldGalleryVideo') window.updateGalleryMediaTypeUI?.('video');
+            if (id === 'fieldGallerySrc') window.updateGalleryMediaTypeUI?.('image');
+
             input.value = norm.url;
             input.dispatchEvent(new Event('input', { bubbles: true }));
             input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1129,8 +1137,11 @@ function initProfileManager() {
         const rotVal = parseFloat(document.getElementById(`heroCardRot${i}`)?.value) || 0;
         const linkVal = document.getElementById(`heroCardLink${i}`)?.value.trim() || '#work';
         const mediaTypeVal = document.querySelector(`input[name="heroMediaType${i}"]:checked`)?.value || (vidVal ? 'video' : 'image');
+        const isHeroVid = mediaTypeVal === 'video' || (!mediaTypeVal && vidVal && !imgVal);
 
-        if (imgVal) {
+        if (isHeroVid) {
+          try { localStorage.removeItem(`fast_hero_card_${i}`); } catch(e) {}
+        } else if (imgVal) {
           if (!imgVal.startsWith('idb://') && !imgVal.startsWith('blob:')) {
             try { localStorage.setItem(`fast_hero_card_${i}`, imgVal); } catch(e) {}
           } else if (imgVal.startsWith('idb://') && window.PortfolioMediaDB) {
@@ -2929,7 +2940,7 @@ function getImagesFromContainer(containerId, fallbackTitle = 'Project', defaultT
     const isCardVideo = card.dataset.mediaType === 'video' || Boolean(card.querySelector('.dyn-media-pill-video.active'));
     if (url) {
       if (!alt) alt = `${fallbackTitle} ${defaultType} ${idx + 1}`;
-      const isVid = isCardVideo || url.includes('.mp4') || url.includes('.webm') || url.startsWith('data:video/');
+      const isVid = isCardVideo || (typeof window.PortfolioData?.isMediaVideo === 'function' ? window.PortfolioData.isMediaVideo(url) : (/\.(mp4|webm|mov|ogg|m4v)($|\?|#)/i.test(url) || url.includes('/video/upload/') || url.startsWith('data:video/')));
       result.push({
         src: url,
         alt: alt,
@@ -3650,11 +3661,17 @@ function saveProjectRecord() {
     verticalSectionTitle: projVerticalTitleVal,
     verticalSectionSubtitle: projVerticalSubtitleVal,
     verticalSectionTag: projVerticalTagVal,
-    image: fallbackMainImg,
+    image: (showcaseImages.length > 0 && !showcaseImages[0].isVideo && (fallbackMainImg === 'assets/images/work_luma.jpg' || !fallbackMainImg))
+      ? showcaseImages[0].src
+      : fallbackMainImg,
     mobileImage: mobileImgVal,
     mobileThumbnail: mobileImgVal,
-    video: videoDemoVal,
-    videoUrl: videoDemoVal,
+    video: (showcaseImages.length > 0 && showcaseImages[0].isVideo && !videoDemoVal)
+      ? showcaseImages[0].src
+      : videoDemoVal,
+    videoUrl: (showcaseImages.length > 0 && showcaseImages[0].isVideo && !videoDemoVal)
+      ? showcaseImages[0].src
+      : videoDemoVal,
     desc1: desc1Val,
     desc2: desc2Val,
     projectBrief: briefVal,
@@ -3666,9 +3683,11 @@ function saveProjectRecord() {
     tools: document.getElementById('fieldProjTools').value.trim(),
     deliverable: document.getElementById('fieldProjDeliverables').value.trim(),
     features: projectFeatures,
-    showcaseImages: showcaseImages.length > 0 ? showcaseImages : [
-      { src: fallbackMainImg, alt: `${shortTitle} Overview 1`, isVideo: false, mediaType: 'image' }
-    ],
+    showcaseImages: showcaseImages.length > 0 ? showcaseImages : (
+      projMediaTypeVal === 'video' && videoDemoVal
+        ? [{ src: videoDemoVal, alt: `${shortTitle} Overview Video`, isVideo: true, mediaType: 'video' }]
+        : [{ src: fallbackMainImg, alt: `${shortTitle} Overview 1`, isVideo: false, mediaType: 'image' }]
+    ),
     processImages: processImages,
     verticalImages: verticalImages
   };
@@ -6930,8 +6949,11 @@ function saveAllAdminChanges(showNotification = true) {
       const rotVal = parseFloat(document.getElementById(`heroCardRot${i}`)?.value) || 0;
       const linkVal = document.getElementById(`heroCardLink${i}`)?.value.trim() || '#work';
       const mediaTypeVal = document.querySelector(`input[name="heroMediaType${i}"]:checked`)?.value || (vidVal ? 'video' : 'image');
+      const isHeroVid = mediaTypeVal === 'video' || (!mediaTypeVal && vidVal && !imgVal);
 
-      if (imgVal) {
+      if (isHeroVid) {
+        try { localStorage.removeItem(`fast_hero_card_${i}`); } catch(e) {}
+      } else if (imgVal) {
         if (!imgVal.startsWith('idb://') && !imgVal.startsWith('blob:')) {
           try { localStorage.setItem(`fast_hero_card_${i}`, imgVal); } catch(e) {}
         } else if (imgVal.startsWith('idb://') && window.PortfolioMediaDB) {

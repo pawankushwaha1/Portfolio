@@ -74,9 +74,14 @@ function checkAndSyncAppData() {
 
 function hydrateHeroCardsFast() {
   try {
+    const pData = (window.PortfolioData && typeof window.PortfolioData.get === 'function') ? window.PortfolioData.get() : null;
     for (let i = 1; i <= 4; i++) {
       const cardEl = document.querySelector(`.hero-card-${i}`) || document.querySelector(`.hero-card[data-index="${i}"]`);
       if (cardEl) {
+        const hc = pData?.heroCards?.[i - 1];
+        if (hc && (hc.mediaType === 'video' || (!hc.mediaType && hc.video && !hc.image))) {
+          continue; // Card is configured for video, do not force stale image
+        }
         const img = cardEl.querySelector('img');
         const fast = localStorage.getItem(`fast_hero_card_${i}`);
         if (img && fast && !fast.startsWith('idb://')) {
@@ -1575,18 +1580,27 @@ function buildProjectCardHtml(pr) {
     : '';
 
   const resolveMedia = (src) => (window.PortfolioMediaDB ? window.PortfolioMediaDB.resolveUrlSync(src) : src) || '';
-  const rawImageSrc = pr.image || (pr.showcaseImages && pr.showcaseImages[0]?.src) || 'assets/images/card_kinetic_showcase.jpg';
+  const isMediaVidCheck = (item) => (window.PortfolioData && typeof window.PortfolioData.isMediaVideo === 'function')
+    ? window.PortfolioData.isMediaVideo(item)
+    : Boolean(item && (typeof item === 'object' ? (item.isVideo || item.mediaType === 'video') : (/\.(mp4|webm|mov|m4v|ogv|ogg)($|\?|#)/i.test(String(item)) || String(item).includes('/video/upload/'))));
+
+  const firstShowcase = pr.showcaseImages && pr.showcaseImages[0];
+  const firstShowcaseSrc = typeof firstShowcase === 'string' ? firstShowcase : (firstShowcase?.src || firstShowcase?.url || '');
+  const firstShowcaseIsVid = firstShowcase && (firstShowcase.isVideo || firstShowcase.mediaType === 'video' || isMediaVidCheck(firstShowcaseSrc));
+
+  const rawImageSrc = (!firstShowcaseIsVid && firstShowcaseSrc) || pr.image || 'assets/images/card_kinetic_showcase.jpg';
   const imageSrc = resolveMedia(rawImageSrc);
   const rawMobileImageSrc = pr.mobileImage || pr.mobileThumbnail || '';
   const mobileImageSrc = rawMobileImageSrc ? resolveMedia(rawMobileImageSrc) : '';
   const slug = pr.slug || pr.id;
   const navUrl = getProjectNavUrl(pr);
   const route = pr.route || navUrl;
-  const rawProjVid = pr.video || pr.videoUrl || '';
+  const rawProjVid = pr.video || pr.videoUrl || (firstShowcaseIsVid ? firstShowcaseSrc : '') || '';
   const projVid = resolveMedia(rawProjVid);
   const isVideo = Boolean(
     (pr.mediaType === 'video' && projVid) ||
-    (projVid && (!pr.mediaType || pr.mediaType !== 'image'))
+    (projVid && (!pr.mediaType || pr.mediaType !== 'image')) ||
+    isMediaVidCheck(projVid)
   );
   const focalPoint = pr.focalPoint || pr.imageFocalPoint || 'center center';
 
@@ -1596,9 +1610,9 @@ function buildProjectCardHtml(pr) {
       <div class="sw-card-bg">
         ${isVideo
           ? (mobileImageSrc
-              ? `<video class="sw-card-bg-media sw-card-desktop-media" src="${projVid}" autoplay muted loop playsinline style="object-position: ${focalPoint};" onerror="this.style.display='none';"></video>
+              ? `<video class="sw-card-bg-media sw-card-desktop-media" src="${projVid}" autoplay muted loop playsinline webkit-playsinline style="object-position: ${focalPoint};" onerror="this.style.display='none';"></video>
                  <img class="sw-card-bg-media sw-card-mobile-media" src="${mobileImageSrc}" alt="${title}" loading="eager" style="object-position: ${focalPoint};" onerror="this.src='${imageSrc}'">`
-              : `<video class="sw-card-bg-media" src="${projVid}" autoplay muted loop playsinline style="object-position: ${focalPoint};" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';"></video>
+              : `<video class="sw-card-bg-media" src="${projVid}" autoplay muted loop playsinline webkit-playsinline style="object-position: ${focalPoint};" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';"></video>
                  <img class="sw-card-bg-media" src="${imageSrc}" alt="${title}" loading="eager" style="display:none; object-position: ${focalPoint};" onerror="this.src='assets/images/card_kinetic_showcase.jpg'">`
             )
           : (mobileImageSrc
@@ -3112,6 +3126,7 @@ function hydratePortfolioFromData() {
               vid.style.objectFit = 'cover';
               vid.style.borderRadius = '28px';
               vid.style.display = 'block';
+            try { localStorage.removeItem(`fast_hero_card_${idx + 1}`); } catch(e) {}
               vid.style.pointerEvents = 'none';
               inner.prepend(vid);
             }
@@ -3126,6 +3141,7 @@ function hydratePortfolioFromData() {
               vid.src = hcVideo;
             }
             vid.style.display = 'block';
+            try { localStorage.removeItem(`fast_hero_card_${idx + 1}`); } catch(e) {}
             vid.onerror = () => {
               vid.style.display = 'none';
               if (img) img.style.display = 'block';
@@ -3477,9 +3493,13 @@ function hydratePortfolioFromData() {
 
       const ptVideo = resolveMedia(pt.video);
       const ptSrc = resolveMedia(pt.src);
-      const isVideo = Boolean((pt.mediaType === 'video' && ptVideo) || (!pt.mediaType && ptVideo && !ptSrc));
+      const isVideo = Boolean(
+        (pt.mediaType === 'video' && ptVideo) ||
+        (!pt.mediaType && ptVideo && !ptSrc) ||
+        (ptVideo && (window.PortfolioData?.isMediaVideo ? window.PortfolioData.isMediaVideo(ptVideo) : /\.(mp4|webm|mov|m4v|ogv)($|\?|#)/i.test(ptVideo)))
+      );
       const mediaTag = isVideo
-        ? `<video src="${ptVideo}" autoplay muted loop playsinline></video>`
+        ? `<video src="${ptVideo}" autoplay muted loop playsinline webkit-playsinline></video>`
         : `<img src="${ptSrc || 'assets/images/proto_drafting.jpg'}" alt="${pt.title || ''}" loading="lazy" onerror="this.src='assets/images/proto_drafting.jpg'">`;
 
       const categoryText = pt.category || pt.tag || `STEP 0${idx + 1} \u2022 RAPID PROTOTYPING`;
@@ -3494,6 +3514,16 @@ function hydratePortfolioFromData() {
           <h4 class="proto-card-caption">${captionText}</h4>
         </div>
       `;
+
+      if (isVideo) {
+        const v = card.querySelector('video');
+        if (v) {
+          v.muted = true;
+          v.defaultMuted = true;
+          v.playsInline = true;
+          v.play().catch(() => {});
+        }
+      }
       return card;
     };
 
@@ -3553,18 +3583,32 @@ function hydratePortfolioFromData() {
         card.style.order = String(orderNum);
         const gVideo = resolveMedia(g.video);
         const gSrc = resolveMedia(g.src);
-        const isVideo = Boolean((g.mediaType === 'video') || (!g.mediaType && gVideo && !gSrc) || (gVideo && !gSrc) || (gSrc && /\.(mp4|webm|mov|ogg)($|\?)/i.test(gSrc)));
+        const isVideo = Boolean(
+          (g.mediaType === 'video') ||
+          (!g.mediaType && gVideo && !gSrc) ||
+          (gVideo && !gSrc) ||
+          (window.PortfolioData?.isMediaVideo ? (window.PortfolioData.isMediaVideo(gVideo) || window.PortfolioData.isMediaVideo(gSrc)) : (/\.(mp4|webm|mov|ogg|m4v)($|\?|#)/i.test(gVideo || gSrc) || String(gVideo || gSrc).includes('/video/upload/')))
+        );
         const mediaSource = isVideo ? (gVideo || gSrc) : (gSrc || 'assets/images/gallery_forest.jpg');
         card.dataset.caption = g.caption || '';
         card.dataset.src = mediaSource;
         if (isVideo) card.dataset.mediaType = 'video';
 
         const mediaTag = isVideo
-          ? `<video src="${mediaSource}" autoplay muted loop playsinline onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';"></video>
+          ? `<video src="${mediaSource}" autoplay muted loop playsinline webkit-playsinline onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';"></video>
              <img src="${gSrc || 'assets/images/gallery_forest.jpg'}" alt="${g.caption || ''}" loading="lazy" style="display:none;" onerror="this.src='assets/images/gallery_forest.jpg'">`
           : `<img src="${mediaSource}" alt="${g.caption || ''}" loading="lazy" onerror="this.src='assets/images/gallery_forest.jpg'">`;
 
         card.innerHTML = mediaTag;
+        if (isVideo) {
+          const v = card.querySelector('video');
+          if (v) {
+            v.muted = true;
+            v.defaultMuted = true;
+            v.playsInline = true;
+            v.play().catch(() => {});
+          }
+        }
         colEl.appendChild(card);
       });
 
@@ -3597,8 +3641,13 @@ function hydratePortfolioFromData() {
         mediaVideo.src = connVid;
         try { mediaVideo.load(); } catch(e) {}
       }
+      mediaVideo.muted = true;
+      mediaVideo.defaultMuted = true;
+      mediaVideo.playsInline = true;
+      mediaVideo.setAttribute('playsinline', '');
+      mediaVideo.setAttribute('webkit-playsinline', '');
       mediaVideo.style.display = 'block';
-      try { mediaVideo.play(); } catch(e) {}
+      try { mediaVideo.play().catch(() => {}); } catch(e) {}
       if (mediaImg) mediaImg.style.display = 'none';
     } else if (mediaImg && connImg) {
       mediaImg.src = connImg;

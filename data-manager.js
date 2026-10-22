@@ -123,37 +123,76 @@
     return blocks;
   }
 
+  // Universal media type detector: accurately detects videos from URLs, data URLs, Cloudinary, YouTube, or objects
+  function isMediaVideo(item) {
+    if (!item) return false;
+    let src = item;
+    if (typeof item === 'object') {
+      if (item.isVideo === true || item.mediaType === 'video') return true;
+      src = item.src || item.url || item.video || item.image || '';
+    }
+    if (typeof src !== 'string') return false;
+    const s = src.trim().toLowerCase();
+    if (s.startsWith('data:video/')) return true;
+    if (s.includes('/video/upload/') || (s.includes('cloudinary.com') && s.includes('/video/'))) return true;
+    if (/\.(mp4|webm|mov|m4v|ogv|ogg)($|\?|#)/i.test(s)) return true;
+    if (s.includes('youtube.com/embed') || s.includes('player.vimeo.com')) return true;
+    return false;
+  }
+
   // Helper to generate horizontal sections/slides from project data
   function generateDefaultSections(project) {
     if (!project) return [];
     
-    // Build slide pool strictly from showcaseImages if available
+    // Build slide pool strictly from showcaseImages if available, preserving media metadata
     let pool = [];
     if (Array.isArray(project.showcaseImages) && project.showcaseImages.length > 0) {
-      pool = project.showcaseImages.map(img => typeof img === 'string' ? img : (img.src || img.url)).filter(Boolean);
-    } else if (project.image) {
-      pool = [project.image];
+      pool = project.showcaseImages.map(img => {
+        if (!img) return null;
+        if (typeof img === 'string') {
+          const isVid = isMediaVideo(img);
+          return { src: img, alt: '', isVideo: isVid, mediaType: isVid ? 'video' : 'image' };
+        }
+        const src = img.src || img.url || img.video || img.image || '';
+        if (!src) return null;
+        const isVid = img.isVideo === true || img.mediaType === 'video' || isMediaVideo(src);
+        return {
+          src: src,
+          alt: img.alt || '',
+          isVideo: isVid,
+          mediaType: isVid ? 'video' : 'image'
+        };
+      }).filter(Boolean);
+    } else if (project.video || project.image) {
+      const src = project.video || project.image;
+      const isVid = project.mediaType === 'video' || isMediaVideo(src);
+      pool = [{
+        src: src,
+        alt: project.shortTitle || project.title || 'Project Overview',
+        isVideo: isVid,
+        mediaType: isVid ? 'video' : 'image'
+      }];
     }
 
     if (pool.length === 0) {
-      pool = ['assets/images/hero_clouds_bg.png'];
+      pool = [{ src: 'assets/images/hero_clouds_bg.png', alt: '', isVideo: false, mediaType: 'image' }];
     }
 
     // Deduplicate while preserving order
     const uniquePool = [];
-    pool.forEach(src => {
-      if (src && !uniquePool.some(existing => {
-        const cleanA = String(existing).replace(/^[./\\]+/, '').toLowerCase();
-        const cleanB = String(src).replace(/^[./\\]+/, '').toLowerCase();
+    pool.forEach(item => {
+      if (item && item.src && !uniquePool.some(existing => {
+        const cleanA = String(existing.src).replace(/^[./\\]+/, '').toLowerCase();
+        const cleanB = String(item.src).replace(/^[./\\]+/, '').toLowerCase();
         return cleanA === cleanB;
       })) {
-        uniquePool.push(src);
+        uniquePool.push(item);
       }
     });
     pool = uniquePool.length > 0 ? uniquePool : pool;
 
     const firstItem = pool[0];
-    const firstIsVid = typeof firstItem === 'string' && (firstItem.includes('.mp4') || firstItem.includes('.webm') || firstItem.startsWith('data:video/'));
+    const firstIsVid = Boolean(firstItem.isVideo || isMediaVideo(firstItem.src));
 
     const sections = [];
     sections.push({
@@ -161,21 +200,21 @@
       navTitle: 'Overview',
       title: project.title || 'Project Overview',
       subtitle: project.shortDesc || project.description || '',
-      image: firstIsVid ? '' : firstItem,
-      video: firstIsVid ? firstItem : '',
+      image: firstIsVid ? '' : firstItem.src,
+      video: firstIsVid ? firstItem.src : '',
       mediaType: firstIsVid ? 'video' : 'image',
       isVisible: true
     });
 
     for (let i = 1; i < pool.length; i++) {
       const mediaItem = pool[i];
-      const isVid = typeof mediaItem === 'string' && (mediaItem.includes('.mp4') || mediaItem.includes('.webm') || mediaItem.startsWith('data:video/'));
+      const isVid = Boolean(mediaItem.isVideo || isMediaVideo(mediaItem.src));
       sections.push({
         id: `sec-${i + 1}-` + (project.id || Date.now()),
         navTitle: `Visual 0${i + 1}`,
         title: project.title || '',
-        image: isVid ? '' : mediaItem,
-        video: isVid ? mediaItem : '',
+        image: isVid ? '' : mediaItem.src,
+        video: isVid ? mediaItem.src : '',
         mediaType: isVid ? 'video' : 'image',
         isVisible: true
       });
@@ -1442,6 +1481,7 @@
   window.PortfolioMediaDB = PortfolioMediaDB;
 
   const PortfolioData = {
+    isMediaVideo: isMediaVideo,
     generateDefaultSections: generateDefaultSections,
     generateDefaultBlocks: generateDefaultBlocks,
 
@@ -1539,14 +1579,14 @@
             projects: projectsWithBlocks,
             heroCards: (parsed.heroCards && Array.isArray(parsed.heroCards) && parsed.heroCards.length > 0) ? parsed.heroCards : DEFAULT_PORTFOLIO_DATA.heroCards,
             prototypes: (parsed.prototypes && Array.isArray(parsed.prototypes)) ? parsed.prototypes : DEFAULT_PORTFOLIO_DATA.prototypes,
-            gallery: (parsed.gallery && Array.isArray(parsed.gallery) && parsed.gallery.length === 12) ? parsed.gallery : DEFAULT_PORTFOLIO_DATA.gallery,
+            gallery: (parsed.gallery && Array.isArray(parsed.gallery) && parsed.gallery.length > 0) ? parsed.gallery : DEFAULT_PORTFOLIO_DATA.gallery,
             navigation: { ...DEFAULT_PORTFOLIO_DATA.navigation, ...(parsed.navigation || {}) },
             animation: { ...DEFAULT_PORTFOLIO_DATA.animation, ...(parsed.animation || {}) },
             seo: { ...DEFAULT_PORTFOLIO_DATA.seo, ...(parsed.seo || {}) },
             profile: profileData,
             about: (function() {
               const ab = { ...DEFAULT_PORTFOLIO_DATA.about, ...(parsed.about || {}) };
-              if (!ab.tools || !Array.isArray(ab.tools) || ab.tools.length === 0 || (ab.tools.length === 6 && (ab.tools[4]?.id === 'tool-blender' || ab.tools[4]?.preset === 'blender' || ab.tools[0]?.customImage === 'assets/images/tool_fusion.png'))) {
+              if (!ab.tools || !Array.isArray(ab.tools) || ab.tools.length === 0) {
                 ab.tools = DEFAULT_PORTFOLIO_DATA.about.tools;
               }
               return ab;
@@ -2494,7 +2534,10 @@
             // Cache fast hero cards synchronously so page refresh is instant
             if (remoteData.heroCards && Array.isArray(remoteData.heroCards)) {
               remoteData.heroCards.forEach((hc, idx) => {
-                if (hc.image && !hc.image.startsWith('idb://') && !hc.image.startsWith('blob:')) {
+                const isHcVid = hc.mediaType === 'video' || (!hc.mediaType && hc.video && !hc.image) || (typeof isMediaVideo === 'function' && isMediaVideo(hc.video));
+                if (isHcVid) {
+                  try { localStorage.removeItem(`fast_hero_card_${idx + 1}`); } catch(e) {}
+                } else if (hc.image && !hc.image.startsWith('idb://') && !hc.image.startsWith('blob:')) {
                   try { localStorage.setItem(`fast_hero_card_${idx + 1}`, hc.image); } catch(e) {}
                 }
               });
@@ -2508,7 +2551,9 @@
             }
 
             // Broadcast update event to all active views and cross-tab channel
-            window.dispatchEvent(new CustomEvent('portfolioDataUpdated', { detail: remoteData }));
+            if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+              try { window.dispatchEvent(new CustomEvent('portfolioDataUpdated', { detail: remoteData })); } catch(_) {}
+            }
             if (typeof BroadcastChannel !== 'undefined') {
               try {
                 const bc = new BroadcastChannel('portfolio_sync_channel');

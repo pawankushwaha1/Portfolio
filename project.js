@@ -115,6 +115,23 @@
     return src;
   }
 
+  // Universal media type detector: accurately detects videos from URLs, data URLs, Cloudinary, YouTube, or objects
+  function isMediaVideo(item) {
+    if (!item) return false;
+    let src = item;
+    if (typeof item === 'object') {
+      if (item.isVideo === true || item.mediaType === 'video') return true;
+      src = item.src || item.url || item.video || item.image || '';
+    }
+    if (typeof src !== 'string') return false;
+    const s = src.trim().toLowerCase();
+    if (s.startsWith('data:video/')) return true;
+    if (s.includes('/video/upload/') || (s.includes('cloudinary.com') && s.includes('/video/'))) return true;
+    if (/\.(mp4|webm|mov|m4v|ogv|ogg)($|\?|#)/i.test(s)) return true;
+    if (s.includes('youtube.com/embed') || s.includes('player.vimeo.com')) return true;
+    return false;
+  }
+
   function getResearchUrl(project) {
     const slug = (project && (project.slug || project.id)) || 'luma';
     const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
@@ -434,7 +451,7 @@
       });
       
       const firstProc = procPool[0];
-      const firstIsVid = typeof firstProc === 'string' && (firstProc.includes('.mp4') || firstProc.includes('.webm') || firstProc.startsWith('data:video/'));
+      const firstIsVid = isMediaVideo(firstProc);
 
       sections = [
         {
@@ -451,7 +468,7 @@
 
       for (let i = 1; i < procPool.length; i++) {
         const item = procPool[i];
-        const isVid = typeof item === 'string' && (item.includes('.mp4') || item.includes('.webm') || item.startsWith('data:video/'));
+        const isVid = isMediaVideo(item);
         sections.push({
           id: `sec-research-${i + 1}-${project.id || Date.now()}`,
           navTitle: `Study 0${i + 1}`,
@@ -564,17 +581,19 @@
       bgImage = 'assets/images/hero_clouds_bg.png';
     }
 
-    // Slide video only if section explicitly specifies video (card demo video is only for project cards & thumbnails, not reference case study slides)
+    // Slide video check: handles explicit video, mediaType: 'video', or direct video URLs
+    const candidateMedia = sec.video || sec.image || bgImage || '';
     const isSlideVideo = Boolean(
-      (sec.mediaType === 'video' && sec.video) ||
-      (sec.video && (!sec.mediaType || sec.mediaType !== 'image'))
+      (sec.mediaType === 'video' && candidateMedia) ||
+      (sec.video && (!sec.mediaType || sec.mediaType !== 'image')) ||
+      isMediaVideo(candidateMedia)
     );
-    const videoSrc = isSlideVideo ? sec.video : '';
+    const videoSrc = isSlideVideo ? (sec.video || (isMediaVideo(sec.image) ? sec.image : (isMediaVideo(bgImage) ? bgImage : ''))) : '';
 
     // 2. Render pure full-screen media layer matching the main screen (NO black layer)
     const mobileThumbSrc = (idx === 0 && (project.mobileImage || project.mobileThumbnail)) ? (project.mobileImage || project.mobileThumbnail) : '';
     const mediaMarkup = videoSrc
-      ? `<video class="slide-bg-video" autoplay muted loop playsinline src="${escapeHtml(resolveMediaUrl(videoSrc))}"></video>`
+      ? `<video class="slide-bg-video" autoplay muted loop playsinline webkit-playsinline src="${escapeHtml(resolveMediaUrl(videoSrc))}"></video>`
       : (mobileThumbSrc
           ? `<div class="slide-bg-layer desktop-bg-layer" style="background-image: url('${escapeHtml(resolveMediaUrl(bgImage))}');" aria-hidden="true"></div>
              <div class="slide-bg-layer mobile-bg-layer" style="background-image: url('${escapeHtml(resolveMediaUrl(mobileThumbSrc))}');" aria-hidden="true"></div>`
@@ -840,8 +859,7 @@
         imageList.forEach(img => {
           const src = typeof img === 'string' ? img : (img.src || img.url);
           const alt = typeof img === 'string' ? mainTitle : (img.alt || img.title || mainTitle);
-          const isVid = (typeof img === 'object' && Boolean(img.isVideo || img.mediaType === 'video')) ||
-            (typeof src === 'string' && (src.includes('.mp4') || src.includes('.webm') || src.startsWith('data:video/')));
+          const isVid = isMediaVideo(img) || isMediaVideo(src);
           if (src && !pool.some(x => isSameMedia(x.src, src))) pool.push({ src, alt, isVideo: isVid });
         });
       } else if (!isResearchView && Array.isArray(sections)) {
@@ -849,7 +867,7 @@
         sections.forEach(s => {
           const sMedia = s.video || s.image;
           if (sMedia && !pool.some(x => isSameMedia(x.src, sMedia))) {
-            pool.push({ src: sMedia, alt: s.title || mainTitle, isVideo: Boolean(s.video) });
+            pool.push({ src: sMedia, alt: s.title || mainTitle, isVideo: Boolean(s.video || isMediaVideo(sMedia)) });
           }
         });
       }
@@ -875,10 +893,10 @@
         displayPool.forEach((item) => {
           const itemEl = document.createElement('div');
           itemEl.className = 'pflow-gallery-item';
-          const isVid = Boolean(item.isVideo || (typeof item.src === 'string' && (item.src.includes('.mp4') || item.src.includes('.webm') || item.src.startsWith('data:video/'))));
+          const isVid = Boolean(item.isVideo || isMediaVideo(item.src));
           if (isVid) {
             itemEl.innerHTML = `
-              <video class="pflow-gallery-video" autoplay muted loop playsinline src="${escapeHtml(resolveMediaUrl(item.src))}"></video>
+              <video class="pflow-gallery-video" autoplay muted loop playsinline webkit-playsinline src="${escapeHtml(resolveMediaUrl(item.src))}"></video>
             `;
             const v = itemEl.querySelector('video');
             if (v) {
@@ -929,8 +947,7 @@
       vImageList.forEach((img, idx) => {
         const src = typeof img === 'string' ? img : (img.src || img.url);
         const alt = typeof img === 'string' ? `${mainTitle} Mobile Study ${idx + 1}` : (img.alt || img.title || `${mainTitle} Mobile Study ${idx + 1}`);
-        const isVid = (typeof img === 'object' && Boolean(img.isVideo || img.mediaType === 'video')) ||
-          (typeof src === 'string' && (src.includes('.mp4') || src.includes('.webm') || src.startsWith('data:video/')));
+        const isVid = isMediaVideo(img) || isMediaVideo(src);
         if (src) vPool.push({ src, alt, isVideo: isVid });
       });
 
@@ -941,10 +958,10 @@
         vPool.forEach((item) => {
           const itemEl = document.createElement('div');
           itemEl.className = 'pflow-vertical-item';
-          const isVid = Boolean(item.isVideo || (typeof item.src === 'string' && (item.src.includes('.mp4') || item.src.includes('.webm') || item.src.startsWith('data:video/'))));
+          const isVid = Boolean(item.isVideo || isMediaVideo(item.src));
           if (isVid) {
             itemEl.innerHTML = `
-              <video class="pflow-vertical-video" autoplay muted loop playsinline src="${escapeHtml(resolveMediaUrl(item.src))}"></video>
+              <video class="pflow-vertical-video" autoplay muted loop playsinline webkit-playsinline src="${escapeHtml(resolveMediaUrl(item.src))}"></video>
             `;
             const v = itemEl.querySelector('video');
             if (v) {
@@ -955,6 +972,7 @@
               v.setAttribute('autoplay', '');
               v.setAttribute('loop', '');
               v.setAttribute('playsinline', '');
+              v.setAttribute('webkit-playsinline', '');
               v.play().catch(() => {});
             }
           } else {
@@ -978,15 +996,14 @@
         procList.forEach((item, idx) => {
           const src = typeof item === 'string' ? item : (item.src || item.url);
           const title = typeof item === 'string' ? `Process Step 0${idx + 1}` : (item.alt || item.title || `Phase 0${idx + 1}`);
-          const isProcVid = (typeof item === 'object' && Boolean(item.isVideo || item.mediaType === 'video')) ||
-            (typeof src === 'string' && (src.includes('.mp4') || src.includes('.webm') || src.startsWith('data:video/')));
+          const isProcVid = isMediaVideo(item) || isMediaVideo(src);
           const card = document.createElement('div');
           card.className = 'pflow-process-card';
           card.innerHTML = `
             <div class="pflow-process-img-wrap">
               <span class="pflow-process-step-badge">STEP 0${idx + 1}</span>
               ${isProcVid
-                ? `<video class="pflow-process-video" autoplay muted loop playsinline src="${escapeHtml(resolveMediaUrl(src))}"></video>`
+                ? `<video class="pflow-process-video" autoplay muted loop playsinline webkit-playsinline src="${escapeHtml(resolveMediaUrl(src))}"></video>`
                 : `<img src="${escapeHtml(resolveMediaUrl(src))}" alt="${escapeHtml(title)}" loading="lazy">`
               }
             </div>
