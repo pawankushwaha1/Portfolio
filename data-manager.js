@@ -2502,7 +2502,7 @@
         const source = best.source;
 
         if (remoteData && typeof remoteData === 'object' && (remoteData.profile || remoteData.projects)) {
-          const localRaw = localStorage.getItem(STORAGE_KEY_DATA);
+          const localRaw = (typeof localStorage !== 'undefined') ? localStorage.getItem(STORAGE_KEY_DATA) : null;
           let shouldAdopt = false;
 
           const isViewer = (typeof window !== 'undefined' && window.location && !window.location.pathname.includes('admin.html'));
@@ -2528,7 +2528,7 @@
           }
 
           if (shouldAdopt) {
-            localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(remoteData));
+            if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(remoteData));
             window._activePortfolioData = remoteData;
 
             // Cache fast hero cards synchronously so page refresh is instant
@@ -2536,9 +2536,9 @@
               remoteData.heroCards.forEach((hc, idx) => {
                 const isHcVid = hc.mediaType === 'video' || (!hc.mediaType && hc.video && !hc.image) || (typeof isMediaVideo === 'function' && isMediaVideo(hc.video));
                 if (isHcVid) {
-                  try { localStorage.removeItem(`fast_hero_card_${idx + 1}`); } catch(e) {}
+                  try { if (typeof localStorage !== 'undefined') localStorage.removeItem(`fast_hero_card_${idx + 1}`); } catch(e) {}
                 } else if (hc.image && !hc.image.startsWith('idb://') && !hc.image.startsWith('blob:')) {
-                  try { localStorage.setItem(`fast_hero_card_${idx + 1}`, hc.image); } catch(e) {}
+                  try { if (typeof localStorage !== 'undefined') localStorage.setItem(`fast_hero_card_${idx + 1}`, hc.image); } catch(e) {}
                 }
               });
             }
@@ -2546,7 +2546,7 @@
             // Sync fast lock screen image if present
             if (remoteData.customization?.mobileRestriction?.image) {
               try {
-                localStorage.setItem('fast_lockscreen_image', remoteData.customization.mobileRestriction.image);
+                if (typeof localStorage !== 'undefined') localStorage.setItem('fast_lockscreen_image', remoteData.customization.mobileRestriction.image);
               } catch(e) {}
             }
 

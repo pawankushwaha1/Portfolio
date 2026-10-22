@@ -5,7 +5,24 @@ global.window = global;
 global.localStorage = { getItem: () => null, setItem: () => null };
 require('../data-manager.js');
 
-const projects = global.PortfolioData.get().projects;
+const jsonFile = path.join(__dirname, '..', 'portfolio-data.json');
+let customProjects = [];
+try {
+  if (fs.existsSync(jsonFile)) {
+    const raw = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+    if (raw && Array.isArray(raw.projects)) customProjects = raw.projects;
+  }
+} catch(e) {}
+
+const defaultProjects = global.PortfolioData.get().projects || [];
+const allProjects = [...customProjects];
+defaultProjects.forEach(dp => {
+  const slug = dp.slug || dp.id;
+  if (!allProjects.some(x => (x.slug || x.id) === slug)) {
+    allProjects.push(dp);
+  }
+});
+const projects = allProjects;
 const templatePath = path.join(__dirname, '..', 'project.html');
 const template = fs.readFileSync(templatePath, 'utf8');
 
